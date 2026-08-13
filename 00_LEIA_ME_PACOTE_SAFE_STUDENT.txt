@@ -1,0 +1,21 @@
+SAFE STUDENT - PACOTE FINAL DEFINITIVO
+Disciplina: Práticas Extensionistas Integradoras VI
+Professor(a): Altemar Sales de Oliveira
+Gerente do projeto: Richardson Conceição Ferreira - 202323181
+Integrantes: Flavio Gabrig Ferreira - 202323361; Richardson Conceição Ferreira - 202323181
+
+Conteúdo:
+01 Plano de Gerenciamento Unificado - DOCX/PDF
+02 Especificação de Requisitos, UML e DER - DOCX/PDF
+03 Artigo acadêmico ABNT - DOCX/PDF
+04 Plano e Relatório de Testes - DOCX/PDF
+05 Relatório de Pesquisa de Campo Extensionista - DOCX/PDF
+06 Relatório de Auditoria de Conformidade - DOCX/PDF
+07 Checklist, Riscos e Rastreabilidade - XLSX
+08 Apresentação final - PPTX
+09 MVP web completo - ZIP
+10 Manual de Usuário, Implantação, Treinamento e Suporte - DOCX/PDF
+11 Modelos de Termos, Pesquisa e Aceite - DOCX/PDF
+12 Auditoria Competitiva - XLSX
+
+Observação técnica: o MVP utiliza dados de apresentação. Para aplicação real com dados de estudantes, manter autorização institucional, governança de privacidade, termos de ciência, retenção adequada e segurança operacional.

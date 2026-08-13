@@ -1,0 +1,16 @@
+{
+  "name": "safe-student-mvp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MVP acadêmico demonstrável do Safe Student: presença escolar, notificações, relatórios, comunicação, feedback e auditoria, com dados de teste.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/*.test.js",
+    "reset": "node scripts-reset.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

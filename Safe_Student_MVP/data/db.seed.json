@@ -1,0 +1,549 @@
+{
+  "school": {
+    "id": "school_demo",
+    "name": "Escola Piloto Demonstrativa",
+    "city": "Saquarema - RJ",
+    "mode": "DADOS DE DEMONSTRAÇÃO"
+  },
+  "users": [
+    {
+      "id": "u_resp_1",
+      "name": "Mariana Costa",
+      "email": "responsavel@demo.com",
+      "passwordHash": "resp-demo-salt01:d364ccd496d187e968bdfcaa2b6d6ad6b9d6f0eb5978659cc13c621f800047d1bdddb04e0e600f34c97a8487990df5d31b47314d4fd6c25ffd2b8e3efe369dcb",
+      "role": "RESPONSAVEL",
+      "studentIds": [
+        "s1",
+        "s2"
+      ],
+      "status": "ATIVO"
+    },
+    {
+      "id": "u_resp_2",
+      "name": "Marcelo Almeida",
+      "email": "marcelo.responsavel@demo.com",
+      "passwordHash": "resp-demo-salt02:42cefa7a181e6f337cd0850f75b5f988a352ed79db537619215166fba69e143d3c24adf3384c3ab832daa781e5bab7d466087757a01f98012f043e94b3d91cfa",
+      "role": "RESPONSAVEL",
+      "studentIds": [
+        "s3"
+      ],
+      "status": "ATIVO"
+    },
+    {
+      "id": "u_port_1",
+      "name": "Rafael Souza",
+      "email": "portaria@demo.com",
+      "passwordHash": "port-demo-salt01:fe38d2ca1cb6ca8267dd167f516cae2a04c3bb5a2fa98d72bbe13c5b11e2a5880533b99660444477135e11b2fc56a04391c1e9a7572c340e0a51fc533f487ec4",
+      "role": "PORTARIA",
+      "studentIds": [],
+      "status": "ATIVO"
+    },
+    {
+      "id": "u_gest_1",
+      "name": "Ana Martins",
+      "email": "gestor@demo.com",
+      "passwordHash": "gest-demo-salt01:269e0bde12697ff2a839ad463341cd296874f7d6922533617565fd3753f1bb3030ef6846a320eaf8f2334be6c5e04a3669f853e164f864a7a5afd49d976e0735",
+      "role": "GESTAO",
+      "studentIds": [],
+      "status": "ATIVO"
+    }
+  ],
+  "classes": [
+    {
+      "id": "c1",
+      "name": "6º Ano A",
+      "shift": "Manhã"
+    },
+    {
+      "id": "c2",
+      "name": "7º Ano B",
+      "shift": "Manhã"
+    },
+    {
+      "id": "c3",
+      "name": "8º Ano A",
+      "shift": "Tarde"
+    }
+  ],
+  "students": [
+    {
+      "id": "s1",
+      "name": "Lucas Costa",
+      "enrollment": "2026-001",
+      "classId": "c1",
+      "token": "SS-ALU001",
+      "status": "ATIVO"
+    },
+    {
+      "id": "s2",
+      "name": "Beatriz Costa",
+      "enrollment": "2026-002",
+      "classId": "c2",
+      "token": "SS-ALU002",
+      "status": "ATIVO"
+    },
+    {
+      "id": "s3",
+      "name": "Miguel Almeida",
+      "enrollment": "2026-003",
+      "classId": "c3",
+      "token": "SS-ALU003",
+      "status": "ATIVO"
+    },
+    {
+      "id": "s4",
+      "name": "Sofia Nunes",
+      "enrollment": "2026-004",
+      "classId": "c1",
+      "token": "SS-ALU004",
+      "status": "ATIVO"
+    }
+  ],
+  "attendance": [
+    {
+      "id": "as15e",
+      "studentId": "s1",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-07T11:10:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as15s",
+      "studentId": "s1",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-07T16:30:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as14e",
+      "studentId": "s1",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-08T11:10:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as14s",
+      "studentId": "s1",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-08T16:30:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as13e",
+      "studentId": "s1",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-09T11:10:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as13s",
+      "studentId": "s1",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-09T16:30:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as12e",
+      "studentId": "s1",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-10T11:10:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as12s",
+      "studentId": "s1",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-10T16:30:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as11e",
+      "studentId": "s1",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-11T11:10:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as11s",
+      "studentId": "s1",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-11T16:30:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as25e",
+      "studentId": "s2",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-07T12:13:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as25s",
+      "studentId": "s2",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-07T17:33:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as24e",
+      "studentId": "s2",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-08T12:13:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as24s",
+      "studentId": "s2",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-08T17:33:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as23e",
+      "studentId": "s2",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-09T12:13:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as23s",
+      "studentId": "s2",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-09T17:33:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as22e",
+      "studentId": "s2",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-10T12:13:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as22s",
+      "studentId": "s2",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-10T17:33:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as21e",
+      "studentId": "s2",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-11T12:13:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as21s",
+      "studentId": "s2",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-11T17:33:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as35e",
+      "studentId": "s3",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-07T11:16:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as35s",
+      "studentId": "s3",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-07T16:36:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as34e",
+      "studentId": "s3",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-08T11:16:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as34s",
+      "studentId": "s3",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-08T16:36:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as33e",
+      "studentId": "s3",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-09T11:16:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as33s",
+      "studentId": "s3",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-09T16:36:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as32e",
+      "studentId": "s3",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-10T11:16:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as32s",
+      "studentId": "s3",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-10T16:36:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as31e",
+      "studentId": "s3",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-11T11:16:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as31s",
+      "studentId": "s3",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-11T16:36:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as45e",
+      "studentId": "s4",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-07T12:19:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as45s",
+      "studentId": "s4",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-07T17:39:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as44e",
+      "studentId": "s4",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-08T12:19:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as44s",
+      "studentId": "s4",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-08T17:39:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as43e",
+      "studentId": "s4",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-09T12:19:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as43s",
+      "studentId": "s4",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-09T17:39:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as42e",
+      "studentId": "s4",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-10T12:19:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as42s",
+      "studentId": "s4",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-10T17:39:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as41e",
+      "studentId": "s4",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-11T12:19:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "as41s",
+      "studentId": "s4",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-11T17:39:45Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "n1",
+      "userId": "u_resp_1",
+      "studentId": "s1",
+      "title": "Entrada registrada",
+      "message": "Lucas Costa teve entrada registrada no ambiente de apresentação.",
+      "createdAt": "2026-08-12T11:28:45Z",
+      "read": false,
+      "severity": "INFO"
+    },
+    {
+      "id": "n2",
+      "userId": "u_resp_1",
+      "studentId": "s2",
+      "title": "Saída registrada",
+      "message": "Beatriz Costa teve saída registrada no ambiente de apresentação.",
+      "createdAt": "2026-08-11T14:28:45Z",
+      "read": true,
+      "severity": "INFO"
+    },
+    {
+      "id": "n3",
+      "userId": "u_resp_2",
+      "studentId": "s3",
+      "title": "Entrada registrada",
+      "message": "Miguel Almeida teve entrada registrada no ambiente de apresentação.",
+      "createdAt": "2026-08-12T13:28:45Z",
+      "read": false,
+      "severity": "INFO"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "fromUserId": "u_gest_1",
+      "toUserId": "u_resp_1",
+      "text": "Olá! Esta é uma mensagem de teste para apresentar o canal escola-família.",
+      "createdAt": "2026-08-11T15:28:45Z"
+    },
+    {
+      "id": "m2",
+      "fromUserId": "u_resp_1",
+      "toUserId": "u_gest_1",
+      "text": "Recebido. O fluxo de notificação ficou claro durante a apresentação.",
+      "createdAt": "2026-08-11T21:28:45Z"
+    }
+  ],
+  "audit": [
+    {
+      "id": "aud1",
+      "userId": "u_gest_1",
+      "action": "SEED_DEMO",
+      "entity": "sistema",
+      "entityId": "",
+      "details": "Carga inicial de dados de teste",
+      "createdAt": "2026-08-07T15:28:45Z"
+    }
+  ],
+  "feedback": [
+    {
+      "id": "fb1",
+      "userId": "u_resp_1",
+      "profile": "Responsável",
+      "score": 5,
+      "comment": "Notificação clara e histórico fácil de localizar.",
+      "createdAt": "2026-06-18T14:20:00.000Z"
+    },
+    {
+      "id": "fb2",
+      "userId": "u_port_1",
+      "profile": "Portaria",
+      "score": 4,
+      "comment": "Fluxo de token é rápido; seria útil ter leitor físico no futuro.",
+      "createdAt": "2026-06-18T14:35:00.000Z"
+    },
+    {
+      "id": "fb3",
+      "userId": "u_gest_1",
+      "profile": "Gestão",
+      "score": 5,
+      "comment": "Relatórios e auditoria ajudam a justificar a adoção piloto.",
+      "createdAt": "2026-06-18T15:05:00.000Z"
+    }
+  ]
+}
