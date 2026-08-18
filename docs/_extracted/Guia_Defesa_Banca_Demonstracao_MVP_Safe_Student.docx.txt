@@ -1,0 +1,357 @@
+UNIVERSIDADE DE VASSOURAS
+Curso de Engenharia de Software
+Práticas Extensionistas Integradoras VI
+SAFE STUDENT
+GUIA DE DEFESA PARA BANCA E DEMONSTRAÇÃO DO MVP
+Roteiro de fala • demonstração ao vivo • contingência • perguntas e respostas
+Flavio Gabrig Ferreira — 202323361Richardson Conceição Ferreira — 202323181Gerente do projeto: Richardson Conceição FerreiraProfessor(a): Altemar Sales de Oliveira
+Saquarema/RJ • 2026
+Como usar este guia
+Este documento foi preparado a partir da apresentação final, da especificação de requisitos/UML/DER, do plano e relatório de testes, do relatório de validação acadêmica controlada, do manual do usuário e do código do MVP Safe Student. O objetivo é preparar uma defesa técnica coerente, objetiva e demonstrável, sem transformar a banca em uma leitura de documentos.
+Mensagem central para memorizar O Safe Student registra um evento de entrada ou saída, valida a regra no backend, informa o responsável autorizado e mantém o registro disponível para histórico, relatório e auditoria.
+Use a seção 3 para ensaiar a fala completa dos 10 slides.
+Use a seção 4 para treinar a demonstração do MVP até o fluxo ficar automático.
+Use a seção 6 para treinar perguntas difíceis da banca em voz alta, sem ler a resposta.
+Na véspera, execute o checklist da seção 5 e deixe o plano B pronto.
+No dia, priorize clareza, domínio de escopo e demonstração funcional; não tente recitar o relatório inteiro.
+Sumário de uso
+1. Estratégia geral da defesa
+2. Divisão entre os integrantes e cronômetro de 12 minutos
+3. Fala completa slide a slide
+4. Roteiro detalhado da demonstração do MVP
+5. Checklist e plano de contingência
+6. Simulação de banca — 40 perguntas difíceis e respostas
+7. Treino recomendado e critérios de desempenho
+8. Cartão de emergência — uma página para o dia da banca
+1. Estratégia geral da defesa
+1.1 O que a banca precisa entender
+Problema: processos manuais ou dispersos reduzem rastreabilidade da presença e atrasam a comunicação família-escola.
+Decisão de escopo: o MVP resolve presença, notificação, histórico, relatórios, comunicação e auditoria; não tenta substituir toda a gestão escolar.
+Decisão técnica: QR/token foi priorizado por reduzir custo, hardware e tratamento de dados sensíveis no MVP.
+Qualidade: requisitos são rastreáveis, regras críticas são validadas no backend e existem testes automatizados.
+Limite profissional: o MVP é acadêmico e demonstrável; produção exigiria banco relacional, HTTPS/TLS, backup, monitoramento e governança institucional.
+1.2 Quatro pilares da argumentação
+Pilar | O que provar | Evidência na defesa
+Problema | Existe necessidade clara e delimitada. | Slide 2 + justificativa.
+Engenharia | A solução foi especificada antes de ser demonstrada. | Slides 5 e 6: RF/RNF, UML e DER.
+Gestão e risco | Houve controle de escopo, tempo, comunicação e risco. | Slides 7 e 8.
+Produto | O núcleo do sistema funciona. | Slide 9 + demonstração ao vivo + testes.
+1.3 Regras de comunicação
+Não leia os slides. Use-os como âncoras visuais e explique decisões.
+Responda primeiro a pergunta; só depois dê contexto técnico.
+Quando houver limitação, reconheça e explique a evolução prevista. Isso demonstra maturidade, não fraqueza.
+Não use números da validação acadêmica controlada como prova estatística da população escolar.
+Se a banca interromper, pare a fala, responda objetivamente e retome pelo próximo ponto lógico.
+1.4 O que evitar
+Dizer que o MVP está pronto para produção.
+Prometer aumento de frequência escolar sem baseline causal.
+Apresentar biometria como parte do MVP atual.
+Dizer que JSON local é o banco definitivo.
+Afirmar que a validação acadêmica controlada equivale a um piloto institucional homologado.
+Entrar em detalhes de código antes de explicar o valor da regra de negócio.
+2. Divisão entre os integrantes e cronômetro de 12 minutos
+A divisão abaixo preserva o papel de Richardson na gestão e na narrativa geral e concentra Flavio nos requisitos, modelagem e demonstração técnica. O objetivo é reduzir trocas de apresentador e evitar perda de ritmo.
+Slide | Tema | Apresentador | Tempo | Acumulado | Objetivo
+1 | Abertura | Richardson | 0:35 | 0:35 | Contextualizar equipe e proposta.
+2 | Problema e justificativa | Richardson | 1:00 | 1:35 | Mostrar a dor antes da solução.
+3 | Escopo do MVP | Richardson | 1:00 | 2:35 | Provar controle de escopo.
+4 | Usuários e validação | Richardson | 0:55 | 3:30 | Conectar solução aos perfis.
+5 | Requisitos | Flavio | 0:50 | 4:20 | Mostrar rastreabilidade.
+6 | Modelagem | Flavio | 1:05 | 5:25 | Explicar UML/DER por um fluxo.
+7 | Gerenciamento | Richardson | 0:45 | 6:10 | Evidenciar gestão do projeto.
+8 | Riscos e conformidade | Richardson | 1:00 | 7:10 | Justificar decisões e limites.
+9 | MVP + demo | Flavio | 3:20 | 10:30 | Demonstrar valor ponta a ponta.
+10 | Conclusão | Richardson | 0:45 | 11:15 | Fechar com contribuição e evolução.
+— | Reserva | Ambos | 0:45 | 12:00 | Atraso, troca de tela ou transição.
+Versão de emergência para banca de 10 minutos Reduza o slide 4 para 30 s, o slide 7 para 25 s, o slide 8 para 40 s e limite a demonstração a 2 min 30 s: Portaria registra entrada → Responsável vê notificação → Gestão abre auditoria.
+3. Fala completa slide a slide
+3.1 Slide 1 — SAFE STUDENT — abertura
+Apresentador: Richardson | Tempo-alvo: 35 segundos
+Objetivo: Apresentar a equipe, a disciplina e a proposta em uma frase, sem entrar ainda em detalhes técnicos.
+FALA SUGERIDA “Boa noite. Nós somos Flavio Gabrig Ferreira e Richardson Conceição Ferreira, do curso de Engenharia de Software, na disciplina Práticas Extensionistas Integradoras VI, sob orientação do professor Altemar Sales de Oliveira. Nosso projeto é o Safe Student. A proposta é tornar o registro de presença escolar mais rastreável e melhorar a comunicação entre escola e responsáveis por meio de um fluxo simples de entrada e saída por QR ou token. Nesta apresentação vamos mostrar o problema, as decisões de Engenharia de Software, o gerenciamento do projeto e, principalmente, um MVP funcional.”
+Onde apontar | Aponte apenas para o título e para a identificação dos integrantes.
+Transição | “Começamos pelo problema que orientou todo o escopo.”
+Evitar | Não comece listando tecnologias.
+3.2 Slide 2 — Problema e justificativa
+Apresentador: Richardson | Tempo-alvo: 1 minuto
+Objetivo: Demonstrar que o produto nasceu de uma necessidade concreta e que a solução está proporcional ao problema.
+FALA SUGERIDA “O problema central é a fragmentação do controle de presença e da comunicação em momentos críticos da rotina escolar. Quando entrada e saída dependem de registros manuais, listas ou mensagens dispersas, a escola perde rastreabilidade e o responsável pode receber a informação com atraso. A justificativa do Safe Student é aplicar Engenharia de Software a esse fluxo específico: registrar o evento, validar a operação, informar o responsável autorizado e manter histórico auditável. Por envolver ambiente escolar e dados relacionados a menores, também reduzimos a coleta ao mínimo necessário e excluímos biometria do MVP. O resultado esperado nesta fase é um MVP demonstrável, não um sistema escolar completo.”
+Onde apontar | Destaque visualmente “Problema”, “Justificativa” e os selos QR/token, Sem biometria, LGPD e RBAC.
+Transição | “A partir desse problema, o primeiro trabalho de engenharia foi limitar corretamente o escopo.”
+Evitar | Não afirme que o sistema, sozinho, aumenta a frequência escolar.
+3.3 Slide 3 — Escopo consolidado do MVP
+Apresentador: Richardson | Tempo-alvo: 1 minuto
+Objetivo: Provar que a equipe controla o escopo e entende o conceito de MVP.
+FALA SUGERIDA “O MVP foi reduzido a cinco capacidades centrais. Primeiro, autenticação com perfis distintos. Segundo, registro de entrada e saída por token, com validação da sequência. Terceiro, notificação automática para o responsável vinculado. Quarto, histórico, indicadores e exportação CSV. Quinto, auditoria e comunicação. Essa delimitação foi deliberada. Biometria, NFC, catracas, geolocalização contínua e boletim escolar ficaram fora do MVP porque aumentariam custo, integração e risco sem serem necessários para validar a hipótese principal. Em Engenharia de Software, essa decisão reduz scope creep e permite testar o fluxo de maior valor antes de investir em integrações mais complexas.”
+Onde apontar | Percorra visualmente os cinco blocos e termine em “Fora do MVP”.
+Transição | “Com o escopo controlado, modelamos a solução a partir de três perfis de usuário.”
+Evitar | Não chame NFC ou biometria de funcionalidades “quase prontas”. Elas estão fora do escopo atual.
+3.4 Slide 4 — Pesquisa, usuários e empatia
+Apresentador: Richardson | Tempo-alvo: 55 segundos
+Objetivo: Explicar os três perfis e o uso da validação acadêmica controlada sem transformá-la em generalização estatística.
+FALA SUGERIDA “Organizamos a solução em três perspectivas. O responsável quer confirmação clara e histórico. A portaria precisa registrar presença com poucos passos, principalmente em horários de pico. A gestão precisa consolidar informação em relatórios e auditoria. No relatório de validação acadêmica controlada, foram organizadas 15 participações: 10 responsáveis, 3 perfis de portaria e 2 de gestão, com nota média apresentada de 4,4 em 5. Esses dados foram usados para orientar clareza de notificações, simplicidade do fluxo e filtros de relatório. Essa etapa é de validação acadêmica; uma implantação institucional real é uma evolução posterior e exige autorização e governança apropriadas.”
+Onde apontar | Destaque um perfil por vez e só depois os indicadores 15 participantes e 4,4.
+Transição | “Essas necessidades foram transformadas em requisitos verificáveis.”
+Evitar | Não apresente essa validação como amostra estatisticamente representativa da rede escolar.
+3.5 Slide 5 — Requisitos e rastreabilidade
+Apresentador: Flavio | Tempo-alvo: 50 segundos
+Objetivo: Mostrar que o MVP não foi construído apenas por intuição; há especificação verificável.
+FALA SUGERIDA “A especificação final possui 15 requisitos funcionais e 15 não funcionais. Entre os funcionais estão autenticação, RBAC, cadastro e vínculo, presença, notificações, histórico, relatórios, CSV, comunicação, auditoria e feedback. Entre os não funcionais estão usabilidade, acessibilidade, segurança, privacidade, desempenho, compatibilidade, auditabilidade e testabilidade. O ponto mais importante não é a quantidade. É a rastreabilidade: por exemplo, o requisito de registrar entrada e saída aparece nas regras de negócio, nos casos de uso, no modelo de domínio, na implementação e nos testes. Isso reduz ambiguidade e nos permite defender tecnicamente por que cada comportamento existe.”
+Onde apontar | Aponte para “15 RF” e “15 RNF”; dê apenas um exemplo de rastreabilidade.
+Transição | “A modelagem traduz esses requisitos para estruturas e relacionamentos de software.”
+Evitar | Não leia todos os 30 requisitos.
+3.6 Slide 6 — Modelagem de software
+Apresentador: Flavio | Tempo-alvo: 1 minuto e 5 segundos
+Objetivo: Explicar casos de uso, classes e modelo relacional como visões complementares do mesmo domínio.
+FALA SUGERIDA “Usamos três visões complementares. No diagrama de casos de uso, os atores Responsável, Portaria, Gestão Escolar e Administrador possuem permissões distintas. No diagrama de classes, o núcleo é formado por Usuário, Responsável, Funcionário, Aluno, Turma, Registro de Presença, Notificação, Mensagem e Auditoria. No modelo relacional, essas relações aparecem em tabelas como usuários, alunos, turmas, presenças, notificações, mensagens, auditoria e a associação responsável_aluno. Um exemplo importante é o vínculo responsável-aluno: ele não existe apenas na interface. Ele está na modelagem e é usado para impedir que um responsável consulte estudantes que não estejam vinculados a ele. Isso conecta requisito, autorização e persistência.”
+Onde apontar | Se houver três diagramas no slide, siga a ordem: casos de uso → classes → DER.
+Transição | “Além da modelagem do produto, o projeto foi gerenciado por entregas, tempo, comunicação e risco.”
+Evitar | Não explique cada classe ou cada chave estrangeira; use o vínculo responsável-aluno como fio condutor.
+3.7 Slide 7 — Gerenciamento: tempo, marcos e comunicação
+Apresentador: Richardson | Tempo-alvo: 45 segundos
+Objetivo: Mostrar que os artefatos gerenciais servem para controle, não apenas para preencher template.
+FALA SUGERIDA “O projeto também foi estruturado como projeto de Engenharia de Software. Consolidamos EAP, atividades, cronograma, Gantt, marcos, matriz de comunicação, stakeholders, monitoramento e controle de mudanças. A EAP organiza o trabalho em gestão, extensão, requisitos, projeto técnico, MVP e qualidade. Os marcos indicam entregas decisivas e o controle de mudanças evita que novas ideias entrem no escopo sem avaliar impacto. Na prática, foi esse processo que permitiu retirar funcionalidades de alto custo do MVP e manter uma baseline única para documentação, código, testes e apresentação.”
+Onde apontar | Aponte para a linha do tempo/marcos e para a comunicação.
+Transição | “O mesmo raciocínio foi aplicado aos riscos: identificar antes para tomar decisões melhores.”
+Evitar | Não gastar tempo lendo datas ou todas as atividades.
+3.8 Slide 8 — Riscos e conformidade
+Apresentador: Richardson | Tempo-alvo: 1 minuto
+Objetivo: Converter risco em decisão técnica e demonstrar consciência de privacidade e segurança.
+FALA SUGERIDA “A matriz operacional cobre os riscos R01 a R10, com causa, consequência e resposta. Três merecem destaque: parceiro institucional, expansão indevida do escopo e tratamento de dados pessoais. A mitigação combina controle de mudanças, minimização de dados e manutenção de QR/token como mecanismo do MVP. Em conformidade, usamos LGPD, normas ABNT, WCAG 2.2 para acessibilidade e referências de segurança da OWASP. O MVP não coleta biometria, não usa geolocalização contínua e não depende de hardware externo. Também é importante deixar claro o limite: para produção seriam necessários banco relacional, HTTPS/TLS, backup, retenção, monitoramento, testes de segurança e governança institucional.”
+Onde apontar | Destaque os três riscos críticos e a caixa de limitações/evolução.
+Transição | “Com essas decisões consolidadas, chegamos ao ponto principal da defesa: o MVP em funcionamento.”
+Evitar | Não diga que o uso de referências de segurança equivale a uma certificação de segurança.
+3.9 Slide 9 — MVP web para apresentação
+Apresentador: Flavio | Tempo-alvo: 3 minutos e 20 segundos, incluindo demonstração
+Objetivo: Mostrar um fluxo ponta a ponta e uma regra de negócio sendo realmente aplicada.
+FALA SUGERIDA “O MVP é executável localmente, sem dependências externas obrigatórias, e possui três perfis de demonstração: Responsável, Portaria e Gestão. Em vez de mostrar todas as telas, vamos demonstrar uma história completa: o aluno chega, a portaria registra a entrada, o backend valida a sequência, o responsável recebe a notificação e a gestão consegue auditar o evento. Depois mostraremos uma regra de negócio sendo bloqueada. Isso prova não apenas que a interface existe, mas que o comportamento crítico está implementado no servidor.”
+Onde apontar | Faça a fala inicial em no máximo 25 segundos e passe imediatamente para o navegador.
+Transição | Após a demo: “Esse fluxo resume o valor do MVP e conecta requisitos, regras de negócio, testes e auditoria.”
+Evitar | Não tente demonstrar cadastro, mensagens, feedback, privacidade, CSV e tema na mesma sequência. Deixe-os como reserva para perguntas.
+3.10 Slide 10 — Conclusão
+Apresentador: Richardson | Tempo-alvo: 45 segundos
+Objetivo: Fechar com contribuição, evidências e próximo passo, sem reabrir novos assuntos.
+FALA SUGERIDA “Como resultado, o Safe Student está consolidado como um pacote acadêmico de Engenharia de Software com plano unificado, especificação, UML, DER, artigo, testes, auditoria, documentação de uso e um MVP funcional. A principal contribuição foi transformar uma proposta inicialmente ampla em um fluxo rastreável, testável e demonstrável, com controle de acesso e minimização de dados. O próximo passo não é adicionar funcionalidades aleatoriamente; é executar um piloto institucional autorizado, migrar a infraestrutura para padrões de produção e validar o uso em contexto real. Obrigado. Ficamos à disposição para as perguntas.”
+Onde apontar | Destaque “Valor técnico” e “Próxima evolução”.
+Transição | Encerrar e aguardar a banca.
+Evitar | Não termine com “é só isso”; use a conclusão como síntese profissional.
+4. Roteiro detalhado da demonstração do MVP
+4.1 Preparação técnica antes da banca
+O MVP final foi verificado com Node.js e sua suíte automatizada possui 8 testes, todos aprovados no ambiente de preparação deste guia. Para reduzir risco de apresentação, execute a sequência abaixo antes de entrar na sala.
+npm run reset — restaura a base de apresentação para um estado conhecido.
+npm test — confirma as regras automatizadas antes da defesa.
+npm start — inicia o servidor local.
+http://localhost:3000 — abre o MVP no navegador.
+Configuração recomendada Use dois terminais: Terminal A com npm start ativo; Terminal B reservado para npm test se a banca pedir evidência. O MVP é local, portanto a demonstração não depende de internet.
+4.2 Credenciais e dados de apresentação
+Perfil | E-mail | Senha | Uso na demo
+Portaria | portaria@demo.com | demo123 | Registrar entrada/saída.
+Responsável | responsavel@demo.com | demo123 | Ver notificações e histórico.
+Gestão | gestor@demo.com | demo123 | Relatórios, auditoria e reset.
+Tokens disponíveis: SS-ALU001, SS-ALU002, SS-ALU003 e SS-ALU004. Para o roteiro principal, use SS-ALU001 (Lucas Costa).
+4.3 Demonstração principal — história ponta a ponta
+História que a banca deve enxergar Aluno chega → Portaria registra → Backend valida → Responsável é notificado → Gestão audita.
+Passo 1 — Login da Portaria
+Ação: Na tela inicial, clique no cartão “Portaria”; a aplicação preenche portaria@demo.com e demo123. Clique em “Acessar ambiente”.
+Fala: ““Estou entrando como Portaria. Observem que o menu é reduzido conforme o perfil; isso é RBAC aplicado no servidor e refletido na interface.””
+Passo 2 — Registrar entrada
+Ação: Clique em “Registrar presença”. Digite ou selecione SS-ALU001. Deixe “Entrada” selecionado e clique em “Confirmar registro”.
+Fala: ““O sistema identifica Lucas Costa, valida o token, verifica a sequência do dia, registra a entrada, cria auditoria e gera notificação para o responsável vinculado.””
+Passo 3 — Mostrar a regra de negócio
+Ação: Sem mudar o aluno, tente registrar uma segunda “Entrada” para SS-ALU001.
+Fala: ““Agora vou provocar um erro proposital. O backend bloqueia a segunda entrada e retorna: ‘Já existe entrada pendente para este aluno hoje’. A regra não depende apenas da interface.””
+Passo 4 — Registrar saída válida
+Ação: Selecione “Saída”, informe novamente SS-ALU001 e confirme.
+Fala: ““A saída agora é aceita porque existe uma entrada válida anterior no mesmo dia. Essa é a sequência ENTRADA → SAÍDA definida nas regras de negócio.””
+Passo 5 — Login do Responsável
+Ação: Clique em “Sair”. Na tela de login, escolha o cartão “Responsável” e acesse. Abra “Notificações”.
+Fala: ““O responsável recebe os avisos gerados pelos eventos e só visualiza alunos vinculados ao seu usuário. Aqui demonstramos autorização por perfil mais vínculo de domínio.””
+Passo 6 — Histórico/Relatório do Responsável
+Ação: Abra “Relatórios” ou a visão de histórico disponível para o perfil e destaque Lucas Costa.
+Fala: ““O evento não termina na portaria; ele permanece consultável dentro do escopo autorizado do responsável.””
+Passo 7 — Login da Gestão
+Ação: Saia e entre como gestor@demo.com. Abra “Auditoria”.
+Fala: ““A gestão visualiza a trilha de ações críticas. Isso permite rastreabilidade do evento, do usuário e do momento em que a operação ocorreu.””
+Passo 8 — Encerramento da demo
+Ação: Se houver tempo, abra “Relatórios” e apenas aponte a opção de exportação CSV. Não exporte se o tempo estiver apertado.
+Fala: ““Além do fluxo demonstrado, o MVP possui relatórios, CSV, comunicação, feedback, privacidade, cadastro de dados de apresentação e restauração da demo.””
+4.4 Demonstrações de reserva — somente se a banca perguntar
+Recurso | Como responder demonstrando
+Cadastro e vínculo | Gestão → Alunos → Novo aluno / Vincular responsável. Use apenas dados de apresentação.
+Comunicação | Abra “Comunicação”, selecione destinatário e mostre as mensagens já existentes; não precisa enviar uma nova.
+CSV | Gestão → Relatórios → exportação. Use para responder a pergunta sobre integração/extração de dados.
+Feedback | Abra “Feedback” para mostrar que o MVP registra avaliação da demonstração por perfil.
+Privacidade | Abra “Privacidade” para reforçar decisões de minimização e limitações do MVP.
+Tema/responsividade | Use o botão de tema ou reduza a janela somente se perguntarem sobre interface/acessibilidade.
+4.5 Evidência dos testes
+Não execute os testes durante a fala normal. Deixe o Terminal B pronto e use-o se a banca perguntar como as regras foram verificadas.
+Comando: npm test
+Resultado verificado na preparação 8 testes executados • 8 aprovados • 0 falhas. Cobertura: normalização de token, RBAC de presença, vínculo do responsável, saída sem entrada, segunda entrada, saída após entrada, taxa de apresentação e hash/verificação de senha.
+5. Checklist e plano de contingência
+5.1 Vinte e quatro horas antes
+Abrir a apresentação do início ao fim e confirmar que os 10 slides estão na ordem correta.
+Extrair uma cópia limpa do MVP em uma pasta de fácil acesso.
+Confirmar Node.js 18+ com node --version.
+Executar npm run reset e npm test.
+Abrir o MVP e testar os três logins.
+Executar o fluxo completo de SS-ALU001: entrada → bloqueio de segunda entrada → saída → notificação → auditoria.
+Levar o pacote final em pelo menos dois locais: computador principal e mídia/armazenamento de backup.
+Ensaiar a apresentação uma vez cronometrada sem interrupção e uma vez com perguntas.
+5.2 Trinta minutos antes
+Fechar aplicativos que exibam notificações, mensagens ou atualizações.
+Desativar suspensão automática do computador durante a apresentação.
+Conectar carregador e confirmar saída de vídeo/projetor.
+Abrir a apresentação no slide 1.
+Terminal A: executar npm start e deixar o servidor ativo.
+Navegador: abrir localhost:3000, fazer logout e deixar na tela inicial.
+Terminal B: deixar aberto na pasta do MVP para eventual npm test.
+Manter este guia aberto ou impresso apenas como apoio; não ler a fala durante a banca.
+5.3 Plano B se algo falhar
+Problema | Ação rápida | O que dizer
+localhost não abre | Voltar ao Terminal A, confirmar npm start; reiniciar uma vez. | “O MVP é local. Vou reiniciar o servidor e, se necessário, sigo pela evidência de testes e arquitetura para não consumir o tempo da banca.”
+Porta 3000 ocupada | Encerrar o processo anterior ou reiniciar o terminal/ambiente. | Não depure por vários minutos ao vivo.
+Base alterada | Executar npm run reset e fazer login novamente. | “Vou restaurar a base de apresentação para o estado conhecido.”
+Login falha | Confirmar e-mail e senha demo123; usar os cartões de perfil. | “As credenciais são exclusivas do ambiente de demonstração.”
+Fluxo de presença inesperado | Use outro token, por exemplo SS-ALU002, ou restaure a demo. | “Vou repetir com outro dado de apresentação para isolar o estado anterior.”
+Projetor/navegador ruim | Aumentar zoom e demonstrar apenas fluxo principal. | “Vou priorizar o fluxo funcional para manter a legibilidade.”
+Falha persistente | Interromper a tentativa após ~30–45 s e mostrar npm test/slide 9. | “Para não desperdiçar o tempo da banca, mostro a evidência automatizada e explico o fluxo validado no backend.”
+Regra de contingência Não transforme a banca em sessão de debug. Uma tentativa curta é aceitável; depois, preserve o tempo e demonstre domínio técnico com testes, requisitos e regras de negócio.
+6. Simulação de banca — 40 perguntas difíceis e respostas
+Treinem estas perguntas em voz alta. A resposta ideal começa com uma frase direta e, se necessário, acrescenta evidência. Evitem respostas longas antes de dizer o ponto principal.
+Problema, escopo e usuários
+1. Qual é exatamente o problema que o Safe Student resolve?
+Resposta recomendada: Ele resolve a falta de um fluxo simples e rastreável para registrar entrada/saída e comunicar o responsável autorizado em tempo oportuno. O MVP não tenta resolver toda a gestão escolar.
+Se houver repique: Se pedirem impacto, fale em rastreabilidade, redução de fragmentação e melhor acesso ao histórico — não em aumento garantido de frequência.
+2. Por que esse problema é de Engenharia de Software e não apenas de processo administrativo?
+Resposta recomendada: Porque a solução exige elicitação de requisitos, regras de negócio, autorização por perfil, modelagem de domínio, persistência, auditoria, testes, segurança e evolução arquitetural. O processo administrativo é o contexto; o software implementa controles verificáveis.
+3. Qual é a proposta de valor em uma frase?
+Resposta recomendada: Registrar presença de forma auditável, informar o responsável vinculado e manter histórico e relatórios com um fluxo simples para escola e família.
+4. Por que não desenvolveram um sistema escolar completo?
+Resposta recomendada: Porque isso aumentaria o escopo e dificultaria validar a hipótese central. O MVP foi desenhado para testar presença, comunicação e rastreabilidade antes de incorporar módulos pedagógicos ou integrações complexas.
+5. Por que QR/token e não biometria?
+Resposta recomendada: Porque QR/token valida o fluxo principal sem exigir hardware especializado nem tratamento biométrico no MVP. Isso reduz custo, prazo, integração e risco de privacidade.
+Se houver repique: Biometria só deveria ser reconsiderada com necessidade institucional comprovada, avaliação de impacto e governança adequada.
+6. Por que NFC ficou fora do MVP?
+Resposta recomendada: NFC exige infraestrutura física adicional e não é necessário para comprovar a regra de presença. Pode ser uma evolução depois que o fluxo funcional for validado.
+Requisitos e modelagem
+7. Quais são os atores principais?
+Resposta recomendada: Responsável, Portaria, Gestão Escolar e Administrador na modelagem. A demonstração expõe três perfis centrais: Responsável, Portaria e Gestão.
+8. Qual a diferença entre autenticação e autorização no projeto?
+Resposta recomendada: Autenticação confirma quem é o usuário por e-mail e senha. Autorização decide o que esse usuário pode fazer, por meio do RBAC e, no caso do responsável, também pelo vínculo com o aluno.
+9. O que é RBAC e onde ele é aplicado?
+Resposta recomendada: RBAC é Role-Based Access Control, controle de acesso baseado em papéis. No Safe Student, Responsável, Portaria e Gestão recebem capacidades distintas; o controle é validado no backend e refletido na interface.
+10. Como vocês impedem um responsável de ver outro aluno?
+Resposta recomendada: O perfil Responsável não basta sozinho. O sistema mantém uma relação de vínculo responsável-aluno e filtra os estudantes permitidos. Essa regra também é coberta por teste automatizado.
+11. Qual requisito vocês consideram mais crítico?
+Resposta recomendada: O núcleo combina RF-05/RF-06 de entrada e saída, RF-07 de notificação e RF-12 de auditoria. Juntos, eles implementam o fluxo que diferencia o MVP.
+12. Como os requisitos são rastreáveis?
+Resposta recomendada: Cada necessidade é transformada em requisito e se conecta a regra de negócio, caso de uso, modelo, implementação e teste. Um exemplo é a sequência entrada/saída, presente na especificação e validada automaticamente.
+13. Por que 15 RF e 15 RNF?
+Resposta recomendada: A quantidade surgiu da decomposição do escopo em comportamentos e atributos de qualidade. O objetivo não foi atingir um número, mas cobrir o fluxo central e condições como segurança, privacidade, desempenho, acessibilidade e testabilidade.
+14. Qual a regra de negócio mais importante da presença?
+Resposta recomendada: A sequência: não pode haver segunda entrada pendente para o mesmo aluno e a saída exige uma entrada anterior válida no mesmo dia.
+15. O que o diagrama de casos de uso acrescenta?
+Resposta recomendada: Ele mostra responsabilidades e fronteiras de acesso por ator, ajudando a validar se cada funcionalidade pertence ao perfil correto antes de olhar detalhes de implementação.
+16. O que o diagrama de classes acrescenta?
+Resposta recomendada: Ele representa o domínio e as responsabilidades conceituais, como Usuário, Aluno, RegistroPresença, Notificação, Mensagem e Auditoria, além das relações entre esses elementos.
+17. Por que também existe um modelo relacional se o MVP usa JSON?
+Resposta recomendada: Porque o JSON é uma persistência deliberadamente simples para demonstração. O modelo relacional documenta como a solução deve evoluir para produção com tabelas, chaves, unicidade e integridade referencial.
+18. Quais entidades/tabelas são centrais no DER?
+Resposta recomendada: Usuários, alunos, turmas, presenças, notificações, mensagens, auditoria e a associação responsável_aluno. Essa associação é essencial para autorização de acesso ao histórico.
+Arquitetura, segurança e privacidade
+19. Por que Node.js?
+Resposta recomendada: Ele permitiu construir rapidamente um backend local com autenticação, autorização, regras, relatórios e auditoria em um único ambiente JavaScript. Para o MVP acadêmico, atende à necessidade de simplicidade e demonstração local.
+20. Por que o MVP não usa framework externo?
+Resposta recomendada: Foi uma decisão de simplicidade do ambiente demonstrativo: o projeto roda com Node.js sem dependências externas obrigatórias, reduzindo risco de instalação na banca. Em produção, a escolha de framework seria reavaliada conforme requisitos de manutenção, segurança e escala.
+21. Como as senhas são armazenadas?
+Resposta recomendada: O MVP armazena hash de senha e a suíte testa hash e verificação. O código utiliza scrypt para a demonstração, em vez de armazenar senha em texto puro.
+22. Como funcionam as sessões?
+Resposta recomendada: Após login, o servidor cria uma sessão temporária e o cliente envia o token de sessão nas chamadas. Isso é suficiente para o ambiente acadêmico; produção exigiria gestão robusta de segredo, HTTPS e políticas de sessão.
+23. O sistema é seguro?
+Resposta recomendada: Ele possui controles demonstrativos — hash de senha, sessão temporária, RBAC, cabeçalhos básicos, minimização de dados e auditoria — mas não deve ser apresentado como homologado para produção. Produção exige testes de segurança, HTTPS/TLS, monitoramento, backup e gestão de incidentes.
+24. Vocês seguem OWASP MASVS, mas o MVP é web. Como justificam?
+Resposta recomendada: A referência veio da concepção inicial com possibilidade mobile/PWA e serviu como orientação de controles. Para uma implantação web produtiva, a avaliação de segurança deve ser complementada com critérios específicos de aplicações web, além dos controles já modelados.
+25. Como a LGPD influenciou a arquitetura?
+Resposta recomendada: Influenciou a minimização de dados, a exclusão de biometria e geolocalização contínua, a autorização por perfil, a trilha de auditoria e a decisão de usar dados de apresentação no MVP.
+26. O MVP usa dados reais de estudantes?
+Resposta recomendada: Não. A documentação do MVP determina uso de dados de apresentação. Dados reais só devem ser usados em contexto institucional autorizado e com governança de privacidade adequada.
+MVP e testes
+27. O que aconteceria se a portaria tentar registrar saída sem entrada?
+Resposta recomendada: O backend recusa a operação com a mensagem de que não existe entrada válida para registrar saída. Essa regra é coberta por teste automatizado.
+28. E se tentar registrar entrada duas vezes?
+Resposta recomendada: O backend bloqueia a segunda entrada pendente no mesmo dia. Essa é outra regra coberta pela suíte automatizada e pode ser demonstrada ao vivo.
+29. Quantos testes automatizados existem e o que cobrem?
+Resposta recomendada: A suíte verificada possui 8 testes. Eles cobrem normalização de token, RBAC, vínculo do responsável, bloqueio de saída sem entrada, bloqueio de segunda entrada, saída após entrada, cálculo de indicador e hash/verificação de senha.
+30. Por que só 8 testes se existem 30 requisitos?
+Resposta recomendada: Os 8 são testes automatizados de regras críticas do domínio e segurança; o plano de testes também inclui casos funcionais manuais para login, presença, cadastro, CSV, auditoria e feedback. A cobertura pode ser ampliada em uma etapa de produção.
+31. Qual a diferença entre teste funcional e teste de regra de domínio?
+Resposta recomendada: O funcional verifica o comportamento do sistema pelo fluxo do usuário. O teste de domínio isola uma regra, como impedir saída sem entrada, para confirmar logicamente o comportamento sem depender da interface.
+32. O que significa o indicador de “taxa demo” do relatório?
+Resposta recomendada: É um indicador de apresentação calculado sobre uma referência fixa de dias no ambiente demonstrativo. Não deve ser tratado como indicador oficial de frequência escolar sem dados e calendário reais.
+33. O que acontece se a banca ficar sem internet?
+Resposta recomendada: Nada essencial para o MVP. A aplicação executa localmente e não depende de serviços externos obrigatórios. Isso foi uma decisão para tornar a demonstração reprodutível.
+34. O que falta para produção?
+Resposta recomendada: Banco relacional, HTTPS/TLS, gestão segura de segredos, backups, monitoramento, política de retenção, gestão de incidentes, testes de segurança, observabilidade, infraestrutura institucional e validação jurídica/operacional.
+Gerenciamento, validação e evolução
+35. Como vocês controlaram mudança de escopo?
+Resposta recomendada: O plano prevê solicitação, motivo, impacto, decisão e atualização da baseline. Esse processo sustenta decisões como manter QR/token e retirar biometria, NFC e módulos pedagógicos do MVP.
+36. Qual risco de projeto foi mais relevante?
+Resposta recomendada: O tratamento de dados pessoais é um dos mais críticos porque afeta arquitetura, escopo e viabilidade institucional. O risco de crescimento indevido do escopo também foi central para a consolidação do MVP.
+37. O que é a EAP e como ela ajudou?
+Resposta recomendada: A Estrutura Analítica do Projeto decompõe o trabalho em pacotes: gestão, extensão, requisitos, projeto técnico, MVP e qualidade. Ela ajuda a acompanhar entregas verificáveis em vez de uma lista genérica de tarefas.
+38. Como foi a validação com usuários?
+Resposta recomendada: O relatório apresenta uma validação acadêmica controlada organizada por três perfis, totalizando 15 participações, usada para observar clareza, facilidade de uso e prioridades de melhoria. A etapa seguinte recomendada é um piloto institucional autorizado.
+Se houver repique: Se perguntarem se é pesquisa estatística, responda que não: é validação exploratória do fluxo, não inferência populacional.
+39. Por que 15 participantes são suficientes?
+Resposta recomendada: Para uma validação acadêmica exploratória, o objetivo foi identificar problemas de compreensão e usabilidade por perfil, não produzir estimativas estatísticas da rede. Para decisões de implantação em escala, seria necessária uma amostragem e protocolo de pesquisa mais robustos.
+40. Como vocês chegaram aos mapas de empatia?
+Resposta recomendada: Os mapas organizam necessidades por perfil: responsável busca confirmação e histórico; portaria busca rapidez e menos erro; gestão busca indicadores e auditoria. Eles funcionam como síntese das dores e ganhos usados para priorizar requisitos.
+7. Treino recomendado e critérios de desempenho
+7.1 Três ensaios obrigatórios
+Ensaio 1 — conteúdo: Apresentação completa de 12 minutos, sem interrupções. Meta: terminar entre 10:45 e 11:30, mantendo reserva.
+Ensaio 2 — demonstração: Repetir o fluxo do MVP três vezes: Portaria → regra bloqueada → Saída → Responsável → Gestão. Meta: ≤ 3 min 20 s sem procurar menus.
+Ensaio 3 — banca hostil: Um integrante faz 15 perguntas aleatórias deste guia ao outro, incluindo limitações, segurança e validação. Troquem os papéis.
+7.2 Critérios para considerar a equipe pronta
+Critério | Meta
+Tempo | Apresentação ≤ 12 minutos e demo ≤ 3:20.
+Domínio | Nenhum integrante precisa ler definições de RBAC, requisito, EAP, risco ou regra de entrada/saída.
+Coerência | As respostas não contradizem o escopo: biometria/NFC fora; JSON é demonstrativo; produção exige evolução.
+Demo | Cada integrante sabe recuperar a base, iniciar o servidor e fazer login.
+Perguntas | Resposta inicial direta em até 10 segundos; depois justificativa.
+Postura | Fala audível, transições objetivas, sem competição entre os integrantes por responder.
+7.3 Frases-chave para memorizar
+“O MVP valida presença, comunicação e rastreabilidade; não substitui toda a gestão escolar.”
+“QR/token foi uma decisão de escopo e risco, não uma limitação acidental.”
+“Autenticação identifica o usuário; autorização define o que ele pode acessar.”
+“A regra crítica é ENTRADA → SAÍDA; o backend bloqueia sequências inválidas.”
+“JSON é persistência de demonstração; o DER documenta a evolução relacional para produção.”
+“O MVP possui controles demonstrativos de segurança, mas não é homologado para produção.”
+“A validação apresentada é acadêmica controlada; o próximo passo é piloto institucional autorizado.”
+8. Cartão de emergência — dia da banca
+MENSAGEM CENTRAL Evento de presença → validação no backend → notificação ao responsável vinculado → histórico/relatório → auditoria.
+Comandos | Credenciais
+npm run reset npm test npm start localhost:3000 | Portaria: portaria@demo.com Responsável: responsavel@demo.com Gestão: gestor@demo.com Senha: demo123
+Token principal: SS-ALU001 — Lucas Costa
+Demo em 7 cliques
+Portaria → Registrar presença → SS-ALU001 → Entrada → Confirmar.
+Repetir Entrada → mostrar bloqueio “Já existe entrada pendente...”.
+Selecionar Saída → SS-ALU001 → Confirmar.
+Sair → Responsável → Notificações.
+Mostrar histórico/relatório de Lucas.
+Sair → Gestão → Auditoria.
+Se houver tempo → Relatórios/CSV.
+Cinco respostas que salvam a defesa
+Por que não biometria? Não é necessária para validar o fluxo e aumenta hardware, custo e risco de dado sensível.
+Pronto para produção? Não. É MVP; produção exige banco relacional, HTTPS, backup, monitoramento e governança.
+Como protege acesso? RBAC no backend + vínculo responsável-aluno + sessão temporária.
+Regra principal? Sem segunda entrada pendente; saída exige entrada anterior no mesmo dia.
+Validação real? A apresentada é acadêmica controlada; piloto institucional autorizado é a próxima etapa.
+Se algo falhar Tente recuperar por no máximo 30–45 s. Depois preserve o tempo: mostre npm test, explique a regra e siga a defesa. Não faça debug prolongado na frente da banca.
+Base documental utilizada
+01_Plano_Gerenciamento_Unificado_Safe_Student
+02_Especificacao_Requisitos_UML_DER_Safe_Student
+04_Plano_Relatorio_Testes_Safe_Student
+05_Relatorio_Pesquisa_Campo_Extensionista_Safe_Student
+08_Apresentacao_Final_Safe_Student
+09_Safe_Student_MVP_codigo
+10_Manual_Usuario_Implantacao_Treinamento_Suporte

@@ -1,0 +1,103 @@
+Safe Student - Práticas Extensionistas Integradoras VI
+
+ CURSO DE ENGENHARIA DE SOFTWARE
+
+ PRÁTICAS EXTENSIONISTAS INTEGRADORAS VI
+
+ SAFE STUDENT
+MANUAL DO USUÁRIO, IMPLANTAÇÃO, TREINAMENTO E
+ SUPORTE
+ Orientações para demonstração e uso do MVP Safe Student.
+
+ Flavio Gabrig Ferreira - 202323361; Richardson
+Integrantes
+ Conceição Ferreira - 202323181
+Gerente do projeto Richardson Conceição Ferreira - 202323181
+Professor(a) Altemar Sales de Oliveira
+Versão V1
+Data 12 de agosto de 2026
+
+ Saquarema/RJ
+ 2026
+
+ Prof. Altemar Sales de Oliveira | Gerente: Richardson Conceição Ferreira | V1
+ Safe Student - Práticas Extensionistas Integradoras VI
+
+SUMÁRIO
+ 1. Visão geral
+ 2. Instalação
+ 3. Perfis de acesso
+ 4. Fluxos principais
+ 5. Treinamento
+ 6. Suporte
+ 7. Limitações
+
+ Prof. Altemar Sales de Oliveira | Gerente: Richardson Conceição Ferreira | V1
+ Safe Student - Práticas Extensionistas Integradoras VI
+
+1. VISÃO GERAL
+Este manual orienta a execução e demonstração do MVP Safe Student. O sistema é um site local
+com perfis de responsável, portaria e gestão escolar, destinado a apresentação acadêmica.
+
+2. INSTALAÇÃO
+ Passo Ação
+ 1 Instalar Node.js 18 ou superior.
+ 2 Extrair a pasta Safe_Student_MVP.
+ 3 Abrir terminal na pasta.
+ 4 Executar npm start.
+ 5 Acessar http://localhost:3000 no navegador.
+ 6 Opcional: executar npm test para validar regras críticas.
+
+3. PERFIS DE ACESSO
+ Perfil E-mail Senha Uso
+
+ Consulta alunos vinculados,
+ Responsável responsavel@demo.com demo123 histórico, notificações e
+ mensagens.
+
+ Registra entrada e saída por
+ Portaria portaria@demo.com demo123
+ token.
+
+ Gerencia alunos, relatórios,
+ Gestão gestor@demo.com demo123 mensagens, auditoria e reset da
+ demo.
+
+4. FLUXOS PRINCIPAIS
+ Fluxo Procedimento
+
+ Escolher perfil de apresentação e acessar o
+ Login
+ dashboard.
+ Ir a Registrar presença, informar token SS-ALU001, escolher Entrada
+ Registro de presença
+ ou Saída e confirmar.
+
+ Notificação Após presença, consultar Notificações no perfil responsável.
+
+ Relatório Acessar Relatórios e exportar CSV.
+
+ Mensagem Acessar Comunicação e enviar mensagem.
+
+ Auditoria No perfil Gestão, abrir Auditoria para verificar logs.
+
+ Prof. Altemar Sales de Oliveira | Gerente: Richardson Conceição Ferreira | V1
+ Safe Student - Práticas Extensionistas Integradoras VI
+
+5. TREINAMENTO
+Treinamento sugerido: 10 minutos para apresentação do problema, 15 minutos para
+demonstração dos perfis, 10 minutos para exercícios guiados e 5 minutos para coleta de feedback.
+A portaria deve praticar tokens válidos e inválidos; responsáveis devem consultar histórico e
+notificações; gestão deve gerar relatório e consultar auditoria.
+
+6. SUPORTE
+Para apresentação, o suporte é realizado pela equipe do projeto. Problemas comuns: porta 3000
+ocupada, Node.js ausente, base alterada ou login inválido. Nesses casos, encerrar processos na
+porta, instalar Node.js, executar npm run reset ou verificar credenciais de demonstração.
+
+7. LIMITAÇÕES
+O MVP não é produto final de produção. Não deve receber dados reais sem autorização. Usa
+persistência JSON, sem HTTPS próprio, sem backups, sem integração com sistemas externos e
+sem serviço real de push/SMS.
+
+ Prof. Altemar Sales de Oliveira | Gerente: Richardson Conceição Ferreira | V1

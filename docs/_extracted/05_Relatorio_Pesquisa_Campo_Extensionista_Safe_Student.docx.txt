@@ -1,0 +1,49 @@
+CURSO DE ENGENHARIA DE SOFTWARE
+PRÁTICAS EXTENSIONISTAS INTEGRADORAS VI
+SAFE STUDENT
+RELATÓRIO DE PESQUISA DE CAMPO EXTENSIONISTA
+Instrumentos, perfil dos usuários, mapas de empatia e validação acadêmica controlada.
+Integrantes | Flavio Gabrig Ferreira - 202323361; Richardson Conceição Ferreira - 202323181
+Gerente do projeto | Richardson Conceição Ferreira - 202323181
+Professor(a) | Altemar Sales de Oliveira
+Versão | V1
+Data | 12 de agosto de 2026
+Saquarema/RJ2026
+SUMÁRIO
+1. Objetivo
+2. Procedimentos
+3. Instrumentos
+4. Perfil dos participantes
+5. Resultados da validação acadêmica
+6. Mapas de empatia
+7. Encaminhamentos
+1. OBJETIVO
+O objetivo da pesquisa é compreender necessidades de responsáveis, portaria e gestão escolar em relação ao controle de presença e à comunicação família-escola, apoiando a validação do MVP Safe Student.
+2. PROCEDIMENTOS
+O protocolo combina entrevista semiestruturada, questionário de percepção, observação de tarefas e coleta de feedback após apresentação do MVP. A organização dos dados considera três perfis: responsáveis familiares, colaboradores de portaria e gestão escolar, com foco em clareza da comunicação, rastreabilidade da presença, simplicidade operacional e cuidados de privacidade.
+3. INSTRUMENTOS
+ID | Pergunta
+Q1 | Você costuma receber confirmação clara de entrada/saída do aluno?
+Q2 | Qual canal de comunicação é mais eficiente?
+Q3 | Você compreendeu a notificação do Safe Student?
+Q4 | O registro por QR/token parece simples para a rotina escolar?
+Q5 | Que melhoria priorizaria no MVP?
+4. PERFIL DOS PARTICIPANTES
+Perfil | Quantidade | Objetivo da participação
+Responsáveis | 10 | Avaliar clareza de notificações e histórico.
+Portaria | 3 | Avaliar registro por token e sequência entrada/saída.
+Gestão escolar | 2 | Avaliar relatórios, auditoria e governança.
+5. RESULTADOS DA VALIDAÇÃO ACADÊMICA
+Indicador | Resultado | Interpretação
+Compreensão da proposta | 93% | Usuários entenderam a finalidade central.
+Facilidade de uso | 87% | Fluxo foi considerado simples.
+Confiança na notificação | 80% | Responsáveis consideraram o aviso útil.
+Aderência da portaria | 100% | Operadores concluíram a tarefa de registro.
+Melhoria prioritária | Filtros e mensagens automáticas | Ajustes para próxima versão.
+6. MAPAS DE EMPATIA
+Perfil | Pensa e sente | Vê | Diz e faz | Dores | Ganhos
+Responsável | Quer confirmação rápida e confiável. | Mensagens dispersas e listas manuais. | Pergunta se o aluno chegou. | Incerteza e demora. | Histórico e aviso imediato.
+Portaria | Precisa registrar sem gerar fila. | Fluxo intenso em horários críticos. | Confere nome/token. | Erro manual e retrabalho. | Validação rápida.
+Gestão | Precisa evidências para decisão. | Dados fragmentados. | Solicita relatórios. | Baixa rastreabilidade. | Indicadores e auditoria.
+7. ENCAMINHAMENTOS
+Os resultados indicam que o MVP deve priorizar simplicidade no fluxo de portaria, clareza das notificações, filtros de relatório e transparência sobre dados coletados. A etapa seguinte recomendada é aplicação controlada em escola parceira formalmente autorizada, com termo de ciência e registro das evidências de participação.

@@ -1,0 +1,111 @@
+CURSO DE ENGENHARIA DE SOFTWARE
+PRÁTICAS EXTENSIONISTAS INTEGRADORAS VI
+SAFE STUDENT
+ESPECIFICAÇÃO DE REQUISITOS, UML E MODELO RELACIONAL
+Requisitos funcionais, não funcionais, casos de uso, classes e DER.
+Integrantes | Flavio Gabrig Ferreira - 202323361; Richardson Conceição Ferreira - 202323181
+Gerente do projeto | Richardson Conceição Ferreira - 202323181
+Professor(a) | Altemar Sales de Oliveira
+Versão | V1
+Data | 12 de agosto de 2026
+Saquarema/RJ2026
+SUMÁRIO
+1. Visão geral
+2. Atores
+3. Requisitos funcionais
+4. Requisitos não funcionais
+5. Regras de negócio
+6. Casos de uso
+7. Diagrama de casos de uso
+8. Diagrama de classes
+9. Modelo relacional
+10. Arquitetura
+11. Referências
+1. VISÃO GERAL
+Este documento especifica os requisitos do Safe Student, sistema web demonstrável voltado ao controle de presença escolar e à comunicação entre escola e responsáveis. O objetivo é apresentar uma base rastreável para implementação, testes e manutenção do MVP.
+2. ATORES
+Ator | Descrição | Permissões principais
+Responsável | Familiar vinculado a um ou mais alunos. | Consultar histórico, notificações e enviar mensagens.
+Portaria | Colaborador responsável pela entrada/saída. | Registrar presença por QR/token.
+Gestão Escolar | Perfil gerencial da escola. | Cadastro, vínculos, relatórios, auditoria e comunicação.
+Administrador | Perfil técnico/operacional. | Configurações, privacidade e auditoria.
+3. REQUISITOS FUNCIONAIS
+ID | Descrição | Prioridade | Critério de aceite
+RF-01 | Autenticar usuário por e-mail e senha. | Alta | Login funcional por perfil.
+RF-02 | Autorizar recursos por perfil RBAC. | Alta | Responsável, portaria e gestão visualizam somente permissões autorizadas.
+RF-03 | Cadastrar aluno pela gestão escolar. | Alta | Aluno salvo com matrícula e token únicos.
+RF-04 | Vincular responsável a aluno. | Alta | Responsável passa a visualizar histórico do aluno vinculado.
+RF-05 | Registrar entrada por QR/token. | Alta | Entrada registrada e auditada.
+RF-06 | Registrar saída por QR/token. | Alta | Saída registrada somente se houver entrada válida.
+RF-07 | Gerar notificação automática ao responsável. | Alta | Notificação gerada após registro de presença.
+RF-08 | Consultar histórico de presença. | Alta | Histórico filtrável por aluno e perfil.
+RF-09 | Gerar relatório gerencial. | Média | Relatório por aluno, turma e período.
+RF-10 | Exportar relatório em CSV. | Média | Arquivo CSV gerado sem dados fora do perfil.
+RF-11 | Enviar mensagens escola-família. | Média | Mensagem registrada entre usuários autorizados.
+RF-12 | Registrar trilha de auditoria. | Alta | Ações críticas geram log com usuário, data e evento.
+RF-13 | Permitir restauração da base de demonstração. | Baixa | Gestão reinicia os dados de apresentação.
+RF-14 | Disponibilizar painel de privacidade. | Média | Usuário visualiza premissas de proteção e limitações.
+RF-15 | Coletar feedback da validação acadêmica. | Média | Formulário registra avaliação de usabilidade e aderência.
+4. REQUISITOS NÃO FUNCIONAIS
+ID | Categoria | Descrição
+RNF-01 | Usabilidade | Interface responsiva, menus visíveis e linguagem simples.
+RNF-02 | Acessibilidade | Contraste adequado, navegação por teclado e textos alternativos quando aplicável.
+RNF-03 | Segurança | Senha armazenada por hash e sessão temporária.
+RNF-04 | Privacidade | MVP sem biometria, sem geolocalização contínua e sem dados pessoais de estudantes.
+RNF-05 | Desempenho | Dashboard deve responder em até 2 segundos no ambiente local.
+RNF-06 | Disponibilidade | Execução local para demonstração sem serviços externos obrigatórios.
+RNF-07 | Compatibilidade | Funcionamento em navegador moderno desktop/mobile.
+RNF-08 | Auditabilidade | Ações críticas registradas com data/hora e usuário.
+RNF-09 | Manutenibilidade | Código organizado em servidor, domínio, segurança, dados e interface.
+RNF-10 | Portabilidade | Aplicação executável em Node.js 18+.
+RNF-11 | Confiabilidade | Regras de entrada/saída impedem duplicidades no mesmo fluxo.
+RNF-12 | Integridade | Token e matrícula devem ser únicos.
+RNF-13 | Conformidade | Diretrizes LGPD consideradas na modelagem de dados.
+RNF-14 | Testabilidade | Regras principais cobertas por testes automatizados.
+RNF-15 | Escalabilidade futura | Arquitetura preparada para futura migração para banco relacional e HTTPS.
+5. REGRAS DE NEGÓCIO
+ID | Regra
+RN-01 | Aluno precisa estar ativo para registrar presença.
+RN-02 | Token de aluno deve ser único.
+RN-03 | Responsável só visualiza alunos vinculados.
+RN-04 | Entrada duplicada sem saída prévia deve ser bloqueada.
+RN-05 | Saída exige entrada anterior no mesmo dia.
+RN-06 | Toda presença gera auditoria.
+RN-07 | Toda presença gera notificação para responsáveis vinculados.
+RN-08 | Gestão pode cadastrar alunos e vínculos; portaria não pode.
+RN-09 | Biometria, NFC e geolocalização contínua não pertencem ao MVP.
+RN-10 | Dados reais somente podem ser usados após autorização institucional e análise de privacidade.
+6. CASOS DE USO
+ID | Caso de uso | Ator | Fluxo principal
+UC-01 | Autenticar-se | Todos | Usuário informa credenciais; sistema valida e cria sessão.
+UC-02 | Registrar entrada | Portaria/Gestão | Operador informa token; sistema valida e salva entrada.
+UC-03 | Registrar saída | Portaria/Gestão | Operador informa token; sistema valida sequência e salva saída.
+UC-04 | Consultar histórico | Responsável/Gestão | Usuário consulta registros permitidos por perfil.
+UC-05 | Gerar relatório | Gestão | Sistema consolida frequência de apresentação e exporta CSV.
+UC-06 | Enviar mensagem | Responsável/Gestão/Portaria | Usuário envia mensagem a destinatário autorizado.
+UC-07 | Consultar auditoria | Gestão/Admin | Sistema exibe eventos críticos.
+UC-08 | Registrar feedback | Usuário participante | Usuário avalia a demonstração do MVP.
+7. DIAGRAMA DE CASOS DE USO
+Figura 1 - Diagrama de casos de uso do Safe Student.
+8. DIAGRAMA DE CLASSES
+Figura 2 - Diagrama de classes conceitual.
+9. DIAGRAMA DE MODELO RELACIONAL
+Figura 3 - Modelo relacional proposto para produção.
+10. ARQUITETURA
+Componente | Descrição
+Camada | Responsabilidade
+Interface web | Telas responsivas, navegação, formulários e consumo de API.
+API Node.js | Autenticação, autorização, regras de negócio, relatórios e auditoria.
+Domínio | Validação de presença, permissões e cálculos de apresentação.
+Persistência MVP | Arquivo JSON local para demonstração.
+Persistência futura | Banco relacional PostgreSQL/MySQL com chaves, índices e backups.
+Segurança | Sessão temporária, RBAC, cabeçalhos HTTP, hash de senha e minimização de dados.
+REFERÊNCIAS
+ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. NBR 6023: informação e documentação - referências - elaboração. Rio de Janeiro: ABNT, 2025.
+ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. NBR 10520: informação e documentação - citações em documentos - apresentação. Rio de Janeiro: ABNT, 2023.
+BRASIL. Lei nº 13.709, de 14 de agosto de 2018. Lei Geral de Proteção de Dados Pessoais. Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/L13709compilado.htm. Acesso em: 12 ago. 2026.
+BRASIL. Ministério da Educação. Resolução CNE/CES nº 7, de 18 de dezembro de 2018. Diretrizes para a Extensão na Educação Superior Brasileira. Disponível em: https://www.gov.br/mec/pt-br/cne/resolucoes/resolucoes-cne-ces-2018. Acesso em: 12 ago. 2026.
+OWASP FOUNDATION. OWASP Mobile Application Security Verification Standard - MASVS. Disponível em: https://mas.owasp.org/MASVS/. Acesso em: 12 ago. 2026.
+PREFEITURA DE SAQUAREMA. Saquarema alcança sua maior nota no IDEB nos anos iniciais do índice. Disponível em: https://www.saquarema.rj.gov.br/. Acesso em: 12 ago. 2026.
+QEDU. Dados educacionais de Saquarema. Disponível em: https://qedu.org.br/municipio/3305505-saquarema. Acesso em: 12 ago. 2026.
+WORLD WIDE WEB CONSORTIUM. Web Content Accessibility Guidelines (WCAG) 2.2. Disponível em: https://www.w3.org/TR/WCAG22/. Acesso em: 12 ago. 2026.

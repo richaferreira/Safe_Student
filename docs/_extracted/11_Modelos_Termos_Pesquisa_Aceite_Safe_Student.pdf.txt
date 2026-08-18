@@ -1,0 +1,79 @@
+Safe Student - Práticas Extensionistas Integradoras VI
+
+ CURSO DE ENGENHARIA DE SOFTWARE
+
+ PRÁTICAS EXTENSIONISTAS INTEGRADORAS VI
+
+ SAFE STUDENT
+ MODELOS DE TERMOS, ROTEIROS E INSTRUMENTOS DE
+ PESQUISA
+ Anexos para aplicação controlada da pesquisa extensionista.
+
+ Flavio Gabrig Ferreira - 202323361; Richardson
+Integrantes
+ Conceição Ferreira - 202323181
+Gerente do projeto Richardson Conceição Ferreira - 202323181
+Professor(a) Altemar Sales de Oliveira
+Versão V1
+Data 12 de agosto de 2026
+
+ Saquarema/RJ
+ 2026
+
+ Prof. Altemar Sales de Oliveira | Gerente: Richardson Conceição Ferreira | V1
+ Safe Student - Práticas Extensionistas Integradoras VI
+
+SUMÁRIO
+ 1. Termo de ciência institucional
+ 2. Termo de participação
+ 3. Roteiro de entrevista
+ 4. Questionário
+ 5. Checklist de observação
+
+ Prof. Altemar Sales de Oliveira | Gerente: Richardson Conceição Ferreira | V1
+ Safe Student - Práticas Extensionistas Integradoras VI
+
+1. TERMO DE CIÊNCIA INSTITUCIONAL
+A instituição participante declara ciência da apresentação acadêmica do MVP Safe Student, sem
+coleta de dados pessoais de estudantes na etapa de apresentação acadêmica. Qualquer uso com
+dados reais exigirá autorização formal, definição de controlador, base legal, segurança, retenção e
+responsabilidades.
+
+2. TERMO DE PARTICIPAÇÃO
+O participante declara ciência de que a atividade consiste em teste acadêmico de interface e
+fluxo, podendo responder a perguntas de percepção. Não serão solicitados dados sensíveis ou
+informações reais de estudantes.
+
+3. ROTEIRO DE ENTREVISTA
+ Pergunta
+ Como a presença é registrada atualmente?
+ Quais dificuldades ocorrem na entrada/saída?
+ Como os responsáveis são avisados?
+ Que informação deveria aparecer no histórico?
+ Quais cuidados de privacidade são essenciais?
+
+4. QUESTIONÁRIO
+ Item Escala
+ A proposta é compreensível. 1a5
+ O registro por token parece simples. 1a5
+ A notificação é clara. 1a5
+ O histórico atende à necessidade. 1a5
+ Eu usaria a solução se implantada pela escola. 1a5
+
+5. CHECKLIST DE OBSERVAÇÃO
+ Tarefa Concluiu? Observações
+
+ Login no perfil Sim/Não
+
+ Prof. Altemar Sales de Oliveira | Gerente: Richardson Conceição Ferreira | V1
+ Safe Student - Práticas Extensionistas Integradoras VI
+
+Registrar entrada Sim/Não
+
+Consultar notificação Sim/Não
+
+Gerar relatório Sim/Não
+
+Enviar mensagem Sim/Não
+
+ Prof. Altemar Sales de Oliveira | Gerente: Richardson Conceição Ferreira | V1
