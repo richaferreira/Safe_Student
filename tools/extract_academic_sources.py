@@ -87,7 +87,8 @@ def xlsx_text(path: Path) -> str:
             target = rel_map.get(sheet.attrib.get(r_id, ""), "")
             if not target:
                 continue
-            sheet_path = "xl/" + target.lstrip("/") if not target.startswith("xl/") else target
+            normalized = target.lstrip("/")
+            sheet_path = normalized if normalized.startswith("xl/") else f"xl/{normalized}"
             root = ET.fromstring(z.read(sheet_path))
             lines.append(f"\n=== PLANILHA: {name} ===")
             for row in root.iter(f"{S}row"):
@@ -136,15 +137,19 @@ def main() -> None:
     files = sorted(set(files))
     index = ["# Extração temporária para auditoria", "", "Arquivos originais não foram alterados.", ""]
     for path in files:
+        ok = OUT / f"{path.name}.txt"
+        err = OUT / f"{path.name}.ERROR.txt"
         try:
             text = extract(path)
-            out = OUT / f"{path.name}.txt"
-            out.write_text(text, encoding="utf-8")
-            index.append(f"- `{path.name}` -> `{out.relative_to(ROOT)}`")
+            ok.write_text(text, encoding="utf-8")
+            if err.exists():
+                err.unlink()
+            index.append(f"- `{path.name}` -> `{ok.relative_to(ROOT)}`")
         except Exception as exc:
-            out = OUT / f"{path.name}.ERROR.txt"
-            out.write_text(f"{type(exc).__name__}: {exc}\n", encoding="utf-8")
-            index.append(f"- ERRO `{path.name}` -> `{out.relative_to(ROOT)}`")
+            if ok.exists():
+                ok.unlink()
+            err.write_text(f"{type(exc).__name__}: {exc}\n", encoding="utf-8")
+            index.append(f"- ERRO `{path.name}` -> `{err.relative_to(ROOT)}`")
     (OUT / "README.md").write_text("\n".join(index) + "\n", encoding="utf-8")
 
 
