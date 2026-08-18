@@ -4,8 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Safe Student MVP acadêmico - controle de presença escolar e comunicação com responsáveis." />
-  <title>Safe Student | MVP V1</title>
+  <title>Safe Student | MVP V1.1</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles-academic.css" />
 </head>
 <body>
 <a class="skip-link" href="#mainContent">Pular para o conteúdo</a>
@@ -17,11 +18,11 @@
 <main id="mainContent">
   <section id="loginView" class="login-shell">
     <div class="login-copy">
-      <span class="pill">Projeto extensionista • Engenharia de Software • V1</span>
+      <span class="pill">Projeto extensionista • Engenharia de Software • MVP V1.1</span>
       <h1>Presença escolar clara para a escola. Informação rápida para a família.</h1>
-      <p>Ambiente de apresentação com dados de teste. O MVP valida autenticação por perfil, vínculo aluno-responsável, entrada/saída por QR/token, notificações, histórico, relatórios, comunicação e auditoria.</p>
+      <p>Ambiente de apresentação com dados de teste. O MVP valida autenticação por perfil, vínculo aluno-responsável, entrada/saída por QR/token, notificações, histórico, relatórios, comunicação, auditoria e coleta estruturada de feedback.</p>
       <div class="feature-strip">
-        <article><b>01</b><span>Registro rastreável</span></article><article><b>02</b><span>RBAC por perfil</span></article><article><b>03</b><span>Dados de apresentação</span></article>
+        <article><b>01</b><span>Registro rastreável</span></article><article><b>02</b><span>RBAC por perfil</span></article><article><b>03</b><span>Validação mensurável</span></article>
       </div>
       <div class="privacy-note"><strong>Privacidade por padrão</strong><span>Biometria, geolocalização contínua e dados sensíveis desnecessários ficam fora do MVP.</span></div>
     </div>
@@ -64,13 +65,13 @@
           <article class="panel"><div class="section-title"><div><span class="eyebrow">Movimentação</span><h2>Últimos registros</h2></div><button class="text-btn" data-go="reports">Ver relatório</button></div><div id="recentAttendance" class="timeline"></div></article>
           <article class="panel"><div class="section-title"><div><span class="eyebrow">Família</span><h2>Notificações recentes</h2></div></div><div id="recentNotifications" class="stack-list"></div></article>
         </div>
-        <article class="panel"><div class="section-title"><div><span class="eyebrow">Escopo acadêmico</span><h2>O que este MVP demonstra</h2></div></div><div class="capability-grid"><div><b>RBAC</b><span>Dados variam conforme o perfil.</span></div><div><b>QR/token</b><span>Entrada e saída sem biometria.</span></div><div><b>Auditoria</b><span>Ações críticas deixam trilha.</span></div><div><b>Relatórios</b><span>Exportação CSV para apresentação.</span></div></div></article>
+        <article class="panel"><div class="section-title"><div><span class="eyebrow">Escopo acadêmico</span><h2>As 5 funcionalidades essenciais do MVP</h2></div></div><div class="capability-grid five"><div><b>1. RBAC</b><span>Autenticação e acesso conforme o perfil.</span></div><div><b>2. Vínculo</b><span>Aluno associado ao responsável.</span></div><div><b>3. Entrada/saída</b><span>Registro por QR/token simulado.</span></div><div><b>4. Notificação</b><span>Aviso automático ao responsável.</span></div><div><b>5. Rastreabilidade</b><span>Histórico, relatório e auditoria.</span></div></div><p class="hint">Dashboard, CSV, mensagens, tema, reset e módulo de feedback são recursos complementares de apoio à demonstração e validação.</p></article>
       </section>
 
       <section id="view-presence" class="view-section hidden">
         <div class="content-grid equal">
           <article class="panel scan-panel"><span class="eyebrow">Portaria</span><h2>Simular leitura de QR/token</h2><p>Digite um token ou selecione um aluno de apresentação. O backend valida a sequência entrada → saída e gera notificação ao responsável.</p><label>Token do aluno<input id="studentToken" placeholder="Ex.: SS-ALU001" /></label><div class="quick-tokens" id="quickTokens"></div><div class="segmented"><button class="seg active" data-type="ENTRADA">Entrada</button><button class="seg" data-type="SAIDA">Saída</button></div><button id="registerBtn" class="btn primary full">Confirmar registro</button><div id="registerFeedback" class="feedback" role="status"></div></article>
-          <article class="panel"><span class="eyebrow">Validação</span><h2>Regras do fluxo</h2><ol class="rules"><li>Somente Portaria/Gestão registra presença.</li><li>O token precisa corresponder a aluno ativo.</li><li>Não é permitida segunda entrada sem saída.</li><li>Saída exige uma entrada anterior no mesmo dia.</li><li>Responsável vinculado recebe notificação.</li><li>A operação gera registro de auditoria.</li></ol><div class="mock-device"><div class="mock-screen"><span>SAFE STUDENT</span><b id="deviceToken">SS-ALU001</b><div class="fake-qr" aria-label="Representação visual de QR Code, não escaneável"></div><small>QR ilustrativo • apresentação</small></div></div></article>
+          <article class="panel"><span class="eyebrow">Validação</span><h2>Regras do fluxo</h2><ol class="rules"><li>Somente Portaria/Gestão registra presença.</li><li>O token precisa corresponder a aluno ativo.</li><li>Não é permitida segunda entrada sem saída.</li><li>Saída exige uma entrada anterior no mesmo dia escolar.</li><li>Responsável vinculado recebe notificação.</li><li>A operação gera registro de auditoria.</li></ol><div class="mock-device"><div class="mock-screen"><span>SAFE STUDENT</span><b id="deviceToken">SS-ALU001</b><div class="fake-qr" aria-label="Representação visual de QR Code, não escaneável"></div><small>QR ilustrativo • apresentação</small></div></div></article>
         </div>
       </section>
 
@@ -84,28 +85,27 @@
 
       <section id="view-reports" class="view-section hidden">
         <div class="metric-grid" id="reportMetrics"></div>
-        <article class="panel"><div class="section-title"><div><span class="eyebrow">Indicadores</span><h2>Resumo por aluno</h2></div><a class="btn secondary" href="/api/reports.csv" id="csvLink">Exportar CSV</a></div><p class="hint">As taxas são calculadas sobre 20 dias letivos de referência para apresentação.</p><div id="reportsTable" class="table-wrap"></div></article>
+        <article class="panel"><div class="section-title"><div><span class="eyebrow">Indicadores</span><h2>Resumo por aluno</h2></div><button class="btn secondary" type="button" id="csvBtn">Exportar CSV</button></div><p class="hint">As taxas são calculadas sobre 20 dias letivos de referência para apresentação. A exportação é autenticada e respeita o escopo do perfil.</p><div id="reportsTable" class="table-wrap"></div></article>
       </section>
 
-      <section id="view-messages" class="view-section hidden"><div class="content-grid equal"><article class="panel"><span class="eyebrow">Canal escola-família</span><h2>Mensagens</h2><div id="messagesList" class="chat-list"></div></article><article class="panel"><h2>Nova mensagem</h2><label>Destinatário<select id="messageTo"></select></label><label>Mensagem<textarea id="messageText" rows="6" maxlength="500" placeholder="Digite uma mensagem de apresentação..."></textarea></label><button id="sendMessageBtn" class="btn primary">Enviar</button><p class="hint">Em produção, este canal exigirá política de retenção, moderação e registro adequado.</p></article></div></section>
+      <section id="view-messages" class="view-section hidden"><div class="content-grid equal"><article class="panel"><span class="eyebrow">Canal escola-família</span><h2>Mensagens</h2><div id="messagesList" class="chat-list"></div></article><article class="panel"><h2>Nova mensagem</h2><label>Destinatário<select id="messageTo"></select></label><label>Mensagem<textarea id="messageText" rows="6" maxlength="500" placeholder="Digite uma mensagem de apresentação..."></textarea></label><button id="sendMessageBtn" class="btn primary">Enviar</button><p class="hint">A regra de destinatários é validada no servidor; ocultar opções na interface não é tratado como controle de segurança.</p></article></div></section>
 
       <section id="view-audit" class="view-section hidden"><article class="panel"><div class="section-title"><div><span class="eyebrow">Rastreabilidade</span><h2>Trilha de auditoria</h2></div></div><div id="auditTable" class="table-wrap"></div></article></section>
 
-
       <section id="view-feedback" class="view-section hidden">
         <div class="content-grid equal">
-          <article class="panel"><span class="eyebrow">Validação acadêmica</span><h2>Registrar feedback</h2><p class="hint">Use esta área para simular a coleta de percepção após a apresentação do MVP.</p><label>Perfil avaliado<select id="feedbackProfile"><option>Responsável</option><option>Portaria</option><option>Gestão</option></select></label><label>Nota<select id="feedbackScore"><option value="5">5 - Muito adequado</option><option value="4">4 - Adequado</option><option value="3">3 - Regular</option><option value="2">2 - Fraco</option><option value="1">1 - Inadequado</option></select></label><label>Comentário<textarea id="feedbackComment" rows="5" maxlength="300" placeholder="Ex.: fluxo claro, melhoria desejada, dúvida operacional..."></textarea></label><button id="saveFeedbackBtn" class="btn primary">Registrar avaliação</button></article>
-          <article class="panel"><span class="eyebrow">Indicadores</span><h2>Resultados da validação</h2><div id="feedbackMetrics" class="metric-grid compact"></div><div id="feedbackList" class="stack-list"></div></article>
+          <article class="panel"><span class="eyebrow">Validação acadêmica</span><h2>Registrar evidência de teste</h2><p class="hint">Não informe nome, matrícula ou dado pessoal do participante. Registre apenas perfil, cenário, sucesso, tempo e percepção.</p><label>Perfil avaliado<select id="feedbackProfile"><option>Responsável</option><option>Portaria</option><option>Gestão</option></select></label><label>Cenário/tarefa<select id="feedbackScenario"><option>Responsável consulta entrada/saída do aluno</option><option>Portaria registra entrada e saída</option><option>Gestão consulta relatório e auditoria</option><option>Outro fluxo do MVP</option></select></label><div class="form-grid validation-grid"><label>Tarefa concluída?<select id="feedbackSuccess"><option value="SIM">Sim</option><option value="NAO">Não</option></select></label><label>Tempo aproximado (s)<input id="feedbackTime" type="number" min="1" max="3600" placeholder="Ex.: 25" /></label><label>Nota<select id="feedbackScore"><option value="5">5 - Muito adequado</option><option value="4">4 - Adequado</option><option value="3">3 - Regular</option><option value="2">2 - Fraco</option><option value="1">1 - Inadequado</option></select></label></div><label>Comentário<textarea id="feedbackComment" rows="5" maxlength="300" placeholder="Ex.: fluxo claro; dificuldade encontrada; melhoria desejada..."></textarea></label><button id="saveFeedbackBtn" class="btn primary">Registrar avaliação</button></article>
+          <article class="panel"><div class="section-title"><div><span class="eyebrow">Indicadores</span><h2>Resultados da validação</h2></div><button id="feedbackCsvBtn" class="btn secondary role-manager" type="button">Exportar validação</button></div><p id="feedbackDisclaimer" class="evidence-warning"></p><div id="feedbackMetrics" class="metric-grid compact"></div><div id="feedbackList" class="stack-list"></div></article>
         </div>
       </section>
 
       <section id="view-privacy" class="view-section hidden">
-        <div class="content-grid equal"><article class="panel"><span class="eyebrow">Privacy by design</span><h2>Controles previstos</h2><div class="check-list"><div>✓ Dados de apresentação no MVP acadêmico</div><div>✓ Acesso baseado em perfil</div><div>✓ Responsável vê somente aluno vinculado</div><div>✓ Trilha de auditoria em ações críticas</div><div>✓ Biometria fora do MVP</div><div>✓ HTTPS obrigatório em produção</div></div></article><article class="panel"><span class="eyebrow">Limitações</span><h2>O que não deve ser inferido</h2><p>Este MVP não é uma solução pronta para produção. Antes de usar dados reais, a instituição deve definir governança, base legal, retenção, resposta a incidentes, responsáveis pelo tratamento, infraestrutura segura e avaliação de impacto quando aplicável.</p><div class="warning-card">A apresentação não substitui validação jurídica, segurança operacional nem autorização institucional.</div></article></div>
+        <div class="content-grid equal"><article class="panel"><span class="eyebrow">Privacy by design</span><h2>Controles implementados no MVP</h2><div class="check-list"><div>✓ Dados de apresentação no MVP acadêmico</div><div>✓ Acesso baseado em perfil no servidor</div><div>✓ Responsável vê somente aluno vinculado</div><div>✓ Trilha de auditoria em ações críticas</div><div>✓ Biometria e geolocalização fora do MVP</div><div>✓ Cabeçalhos básicos de segurança</div><div>✓ Sessão de apresentação limitada ao navegador/aba</div></div></article><article class="panel"><span class="eyebrow">Limitações</span><h2>O que não deve ser inferido</h2><p>Este MVP não é uma solução pronta para produção. Antes de usar dados reais, a instituição deve definir governança, base legal, retenção, resposta a incidentes, responsáveis pelo tratamento, infraestrutura segura, HTTPS/TLS, banco transacional, backup e avaliação de impacto quando aplicável.</p><div class="warning-card">A apresentação não substitui validação jurídica, segurança operacional nem autorização institucional.</div></article></div>
       </section>
     </section>
   </section>
 </main>
-<footer class="site-footer"><span>Safe Student V1 • MVP acadêmico demonstrável</span><span>Flavio Gabrig Ferreira • Richardson Conceição Ferreira</span></footer>
+<footer class="site-footer"><span>Safe Student V1.1 • MVP acadêmico demonstrável</span><span>Flavio Gabrig Ferreira • Richardson Conceição Ferreira</span></footer>
 <script src="app.js"></script>
 </body>
 </html>
