@@ -1,0 +1,68 @@
+=== PLANILHA: Checklist ===
+Checklist de Conformidade - Safe Student | | | | 
+Critério | Fonte/Template | Status | Evidência | Observação
+Project Canvas | Template 2023-1/2024-2 | Atendido | Plano, seção 7
+Gerenciamento do escopo | Template 2023-1/2024-2 | Atendido | Plano, seção 8
+Objetivos SMART | Template 2023-1/2024-2 | Atendido | Plano, seção 8.1
+Produto e entregas | Template 2023-1/2024-2 | Atendido | Plano, seção 8.2
+Matriz de rastreabilidade | Template 2023-1/2024-2 | Atendido | Plano e Especificação
+Premissas e restrições | Template 2023-1/2024-2 | Atendido | Plano, seções 8.4 e 8.5
+EAP e principais atividades | Template 2023-1/2024-2 | Atendido | Plano, seções 8.6 e 8.7
+Gantt e gráfico de marcos | Template 2023-1/2024-2 | Atendido | Plano, seções 9.2 e 9.3
+Comunicações e relatórios | Template 2023-1/2024-2 | Atendido | Plano, seção 11
+Partes interessadas e mapa | Template 2023-1/2024-2 | Atendido | Plano, seção 12
+Riscos completos R01-R10 | Template 2023-1/2024-2 | Atendido | Plano, seção 13
+Pesquisa de campo | Template 2024-2 | Atendido com validação acadêmica controlada | Relatório de Pesquisa | Substituir por dados reais se houver aplicação institucional.
+Mapa de empatia | Template 2024-2 | Atendido | Plano e Relatório de Pesquisa
+RF/RNF | Critério adicional | Atendido | Especificação | 15 RF e 15 RNF
+Casos de uso | Critério adicional | Atendido | Especificação | Tabela e diagrama
+Classes | Critério adicional | Atendido | Especificação | Diagrama conceitual
+Modelo relacional | Critério adicional | Atendido | Especificação | DER
+Artigo ABNT | Critério adicional | Atendido | Artigo
+MVP completo | Critério adicional | Atendido | MVP web | Site para apresentação
+Disciplina correta | Correção solicitada | Atendido | Todos os documentos | Práticas Extensionistas Integradoras VI
+
+=== PLANILHA: Riscos ===
+Matriz de Riscos R01-R10 | | | | | | | | | | 
+ID | Risco | Causa | Consequência | P | I | Nível | Classe | Responsável | Prevenção | Gatilho | Contingência | Status
+R01 | Ausência de parceiro escolar formal | Demora na anuência institucional | Validação real não executada | 4 | 5 | 20 | Crítico | Gerente | Confirmar agenda com a escola, manter termo de ciência preparado e prever ambiente acadêmico controlado. | Ausência de resposta institucional até a data de marco. | Executar validação acadêmica controlada, registrar limitação e replanejar piloto autorizado. | Monitorado
+R02 | Expansão indevida do escopo | Inclusão de biometria, NFC ou notas no MVP | Atraso e aumento de complexidade | 4 | 4 | 16 | Crítico | Gerente | Congelar escopo do MVP em QR/token, registrar itens fora do escopo e submeter mudanças ao gerente. | Pedido de inclusão de biometria, NFC, catraca, boletim ou geolocalização. | Aplicar controle de mudanças e postergar a função para evolução futura. | Monitorado
+R03 | Tratamento inadequado de dados | Governança de dados insuficiente | Risco jurídico e reputacional | 3 | 5 | 15 | Crítico | Gerente | Aplicar minimização de dados, evitar dados sensíveis e usar somente dados de demonstração no MVP. | Solicitação de cadastro de dados reais sem autorização formal. | Bloquear coleta real, revisar termo de privacidade e consultar orientação institucional. | Monitorado
+R04 | Baixa adesão dos usuários | Falta de treinamento ou percepção de valor | Feedback insuficiente | 3 | 4 | 12 | Alto | Equipe | Treinar participantes com roteiro curto, linguagem simples e tarefas guiadas. | Participante não conclui tarefa ou relata baixa compreensão. | Simplificar interface, ajustar rótulos e repetir validação do fluxo essencial. | Monitorado
+R05 | Inconsistência documental | Documentos antigos com dados divergentes | Perda de coerência da entrega | 3 | 4 | 12 | Alto | Gerente | Manter documento mestre único, checklist de conformidade e controle de alterações. | Divergência entre plano, artigo, slides ou MVP. | Atualizar documento de referência e republicar pacote consolidado. | Monitorado
+R06 | Requisitos ambíguos | Elicitação incompleta | MVP desalinhado ao problema | 3 | 4 | 12 | Alto | Equipe | Revisar RF/RNF com critérios de aceite, ator, regra de negócio e teste associado. | Requisito sem ator, prioridade, exceção ou critério verificável. | Reescrever requisito e atualizar rastreabilidade e casos de teste. | Monitorado
+R07 | Falha técnica no MVP | Defeito de código ou ambiente | Apresentação interrompida | 3 | 4 | 12 | Alto | Equipe | Testar instalação local, manter base de dados resetável e validar npm test antes da apresentação. | Erro de inicialização, porta ocupada ou falha em teste crítico. | Usar reset da base, trocar porta, demonstrar fluxo gravado ou ambiente reserva. | Monitorado
+R08 | Atraso de atividades | Dependência de agenda e retrabalho | Entrega incompleta | 3 | 3 | 9 | Moderado | Gerente | Acompanhar Gantt, marcos e pendências semanalmente, priorizando entregáveis avaliativos. | Atraso superior a uma semana ou dependência externa não resolvida. | Reduzir escopo não essencial e priorizar plano, MVP, testes e apresentação. | Monitorado
+R09 | Cobertura insuficiente de testes | Tempo limitado para QA | Defeitos não detectados | 3 | 4 | 12 | Alto | Equipe | Manter suíte automatizada, checklist funcional e testes manuais por perfil. | Fluxo essencial sem caso de teste ou evidência de execução. | Criar teste adicional, registrar evidência e repetir validação do cenário. | Monitorado
+R10 | Não conformidade ABNT/template | Formatação ou seções ausentes | Perda de pontuação documental | 2 | 4 | 8 | Moderado | Gerente | Aplicar revisão ABNT, sumário, referências atualizadas e checklist dos templates 2023-1/2024-2. | Citação fora do padrão, referência desatualizada ou seção faltante. | Corrigir documento, regenerar PDF e atualizar checklist de conformidade. | Monitorado
+
+=== PLANILHA: Rastreabilidade ===
+Matriz de Rastreabilidade dos Requisitos | | | | | 
+Requisito | Descrição resumida | Caso de uso | MVP | Teste | Status
+RF-01 | Autenticação | UC-01 | Login | CT-01/CT-02 | Atendido
+RF-02 | RBAC | UC-01 | Perfis | CT-03 | Atendido
+RF-03 | Cadastro aluno | UC-05 | Alunos | CT-07 | Atendido
+RF-04 | Vínculo responsável | UC-04 | Alunos | CT-03 | Atendido
+RF-05 | Entrada | UC-02 | Presença | CT-04 | Atendido
+RF-06 | Saída | UC-03 | Presença | CT-06 | Atendido
+RF-07 | Notificação | UC-04 | Notificações | CT-04 | Atendido
+RF-08 | Histórico | UC-04 | Relatórios | CT-08 | Atendido
+RF-09 | Relatório gerencial | UC-05 | Relatórios | CT-08 | Atendido
+RF-10 | CSV | UC-05 | Relatórios | CT-08 | Atendido
+RF-11 | Mensagens | UC-06 | Comunicação | CT-10 | Atendido
+RF-12 | Auditoria | UC-07 | Auditoria | CT-09 | Atendido
+RF-13 | Reset demo | UC-07 | Admin/demo | Teste manual | Atendido
+RF-14 | Privacidade | UC-08 | Privacidade | Inspeção | Atendido
+RF-15 | Feedback | UC-08 | Pesquisa/Feedback | CT-10 | Atendido
+
+=== PLANILHA: Cronograma ===
+Cronograma e Marcos | | | | 
+Marco | Data | Entrega | Status | Evidência
+M1 | 03/03/2026 | Escopo aprovado | Concluído | Plano
+M2 | 17/03/2026 | Pesquisa/diagnóstico | Concluído | Relatório
+M3 | 31/03/2026 | Requisitos congelados | Concluído | Especificação
+M4 | 14/04/2026 | Protótipo 1 testado | Concluído | Plano
+M5 | 05/05/2026 | Protótipo 2 validado | Concluído | MVP
+M6 | 02/06/2026 | MVP funcional | Concluído | Código
+M7 | 23/06/2026 | Testes concluídos | Concluído | Relatório
+M8 | 08/07/2026 | Entrega final | Concluído | Pacote
