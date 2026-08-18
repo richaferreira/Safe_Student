@@ -459,6 +459,78 @@
       "timestamp": "2026-08-11T17:39:45Z",
       "registeredBy": "u_port_1",
       "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "7bcd1110-2d3c-4b9b-85dc-56929f5193eb",
+      "studentId": "s1",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-18T23:14:43.406Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "40b244db-914d-449d-8374-3ea47bca915b",
+      "studentId": "s2",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-18T23:14:46.118Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "8937971c-9eaf-4e3d-9b04-88d4d06bf394",
+      "studentId": "s3",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-18T23:14:48.763Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "cdf08dae-ded1-4112-a195-8b48d6e1f676",
+      "studentId": "s4",
+      "type": "ENTRADA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-18T23:14:51.259Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "09b16376-2254-42fe-84ef-bd4e20ea3539",
+      "studentId": "s2",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-18T23:14:55.409Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "3fd5fa3a-fd1e-49e5-a28e-027b973e7394",
+      "studentId": "s4",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-18T23:14:59.846Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "557c781d-93f3-4452-befe-2e16acdc54a9",
+      "studentId": "s3",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-18T23:15:02.203Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
+    },
+    {
+      "id": "6f603a1d-7d85-45cd-bc6b-86a4e6b54156",
+      "studentId": "s1",
+      "type": "SAIDA",
+      "method": "QR_TOKEN",
+      "timestamp": "2026-08-18T23:15:04.734Z",
+      "registeredBy": "u_port_1",
+      "origin": "PORTARIA_DEMO"
     }
   ],
   "notifications": [
@@ -489,6 +561,66 @@
       "title": "Entrada registrada",
       "message": "Miguel Almeida teve entrada registrada no ambiente de apresentação.",
       "createdAt": "2026-08-12T13:28:45Z",
+      "read": false,
+      "severity": "INFO"
+    },
+    {
+      "id": "22ff81cf-88cf-4a08-baa7-7baf736ef104",
+      "userId": "u_resp_1",
+      "studentId": "s1",
+      "title": "Entrada registrada",
+      "message": "Lucas Costa: entrada registrada no Safe Student em 18/08/2026, 20:14.",
+      "createdAt": "2026-08-18T23:14:43.406Z",
+      "read": false,
+      "severity": "INFO"
+    },
+    {
+      "id": "d7320137-4cd3-4b17-96bc-80a4d6242af7",
+      "userId": "u_resp_1",
+      "studentId": "s2",
+      "title": "Entrada registrada",
+      "message": "Beatriz Costa: entrada registrada no Safe Student em 18/08/2026, 20:14.",
+      "createdAt": "2026-08-18T23:14:46.118Z",
+      "read": false,
+      "severity": "INFO"
+    },
+    {
+      "id": "ac1584c8-bd78-4980-b280-6e8f3215083f",
+      "userId": "u_resp_2",
+      "studentId": "s3",
+      "title": "Entrada registrada",
+      "message": "Miguel Almeida: entrada registrada no Safe Student em 18/08/2026, 20:14.",
+      "createdAt": "2026-08-18T23:14:48.763Z",
+      "read": false,
+      "severity": "INFO"
+    },
+    {
+      "id": "24706ed0-12d0-4afe-8508-e26d84a2fb61",
+      "userId": "u_resp_1",
+      "studentId": "s2",
+      "title": "Saída registrada",
+      "message": "Beatriz Costa: saida registrada no Safe Student em 18/08/2026, 20:14.",
+      "createdAt": "2026-08-18T23:14:55.409Z",
+      "read": false,
+      "severity": "INFO"
+    },
+    {
+      "id": "6931c2d0-f3e5-4e57-b340-cf7f84cbae60",
+      "userId": "u_resp_2",
+      "studentId": "s3",
+      "title": "Saída registrada",
+      "message": "Miguel Almeida: saida registrada no Safe Student em 18/08/2026, 20:15.",
+      "createdAt": "2026-08-18T23:15:02.203Z",
+      "read": false,
+      "severity": "INFO"
+    },
+    {
+      "id": "d0bfe9fb-5ba0-493c-9f7f-46cdb8934790",
+      "userId": "u_resp_1",
+      "studentId": "s1",
+      "title": "Saída registrada",
+      "message": "Lucas Costa: saida registrada no Safe Student em 18/08/2026, 20:15.",
+      "createdAt": "2026-08-18T23:15:04.734Z",
       "read": false,
       "severity": "INFO"
     }
@@ -617,6 +749,159 @@
       "entityId": "",
       "details": "Perfil PORTARIA",
       "createdAt": "2026-08-18T21:58:48.145Z"
+    },
+    {
+      "id": "0b74ff27-301f-49a1-b0e2-5580c2715252",
+      "userId": "u_gest_1",
+      "action": "LOGIN",
+      "entity": "sessao",
+      "entityId": "",
+      "details": "Perfil GESTAO",
+      "createdAt": "2026-08-18T23:14:04.456Z"
+    },
+    {
+      "id": "0d19fe31-5db1-4c31-9b81-8530b1344abe",
+      "userId": "u_gest_1",
+      "action": "LOGOUT",
+      "entity": "",
+      "entityId": "",
+      "details": "",
+      "createdAt": "2026-08-18T23:14:23.030Z"
+    },
+    {
+      "id": "ae352914-7f67-4e31-924a-fee1863685da",
+      "userId": "u_resp_1",
+      "action": "LOGIN",
+      "entity": "sessao",
+      "entityId": "",
+      "details": "Perfil RESPONSAVEL",
+      "createdAt": "2026-08-18T23:14:25.786Z"
+    },
+    {
+      "id": "f0da15be-2d22-41a8-a091-17c72d450b86",
+      "userId": "u_resp_1",
+      "action": "LOGOUT",
+      "entity": "",
+      "entityId": "",
+      "details": "",
+      "createdAt": "2026-08-18T23:14:29.485Z"
+    },
+    {
+      "id": "c3a1290e-5aa4-4285-98b6-8875ba3a9d40",
+      "userId": "u_port_1",
+      "action": "LOGIN",
+      "entity": "sessao",
+      "entityId": "",
+      "details": "Perfil PORTARIA",
+      "createdAt": "2026-08-18T23:14:32.432Z"
+    },
+    {
+      "id": "a4ad8d0e-4b5d-45b6-8e9d-b2769538921c",
+      "userId": "u_port_1",
+      "action": "REGISTRAR_ENTRADA",
+      "entity": "presenca",
+      "entityId": "7bcd1110-2d3c-4b9b-85dc-56929f5193eb",
+      "details": "Lucas Costa",
+      "createdAt": "2026-08-18T23:14:43.450Z"
+    },
+    {
+      "id": "05f7cd83-6080-41ad-9764-5e0f94e1e12a",
+      "userId": "u_port_1",
+      "action": "REGISTRAR_ENTRADA",
+      "entity": "presenca",
+      "entityId": "40b244db-914d-449d-8374-3ea47bca915b",
+      "details": "Beatriz Costa",
+      "createdAt": "2026-08-18T23:14:46.118Z"
+    },
+    {
+      "id": "77111a5d-04ed-4466-af8d-e658ecfe1852",
+      "userId": "u_port_1",
+      "action": "REGISTRAR_ENTRADA",
+      "entity": "presenca",
+      "entityId": "8937971c-9eaf-4e3d-9b04-88d4d06bf394",
+      "details": "Miguel Almeida",
+      "createdAt": "2026-08-18T23:14:48.763Z"
+    },
+    {
+      "id": "1b943855-66dd-4966-99b5-0d120e5f5bef",
+      "userId": "u_port_1",
+      "action": "REGISTRAR_ENTRADA",
+      "entity": "presenca",
+      "entityId": "cdf08dae-ded1-4112-a195-8b48d6e1f676",
+      "details": "Sofia Nunes",
+      "createdAt": "2026-08-18T23:14:51.259Z"
+    },
+    {
+      "id": "4e42114c-084a-4ee0-bc0a-e981546a115a",
+      "userId": "u_port_1",
+      "action": "REGISTRAR_SAIDA",
+      "entity": "presenca",
+      "entityId": "09b16376-2254-42fe-84ef-bd4e20ea3539",
+      "details": "Beatriz Costa",
+      "createdAt": "2026-08-18T23:14:55.409Z"
+    },
+    {
+      "id": "cb13bc23-f118-405a-9450-8156727ab030",
+      "userId": "u_port_1",
+      "action": "REGISTRAR_SAIDA",
+      "entity": "presenca",
+      "entityId": "3fd5fa3a-fd1e-49e5-a28e-027b973e7394",
+      "details": "Sofia Nunes",
+      "createdAt": "2026-08-18T23:14:59.846Z"
+    },
+    {
+      "id": "3a7a2ff6-4e2a-40e6-b723-dcebf87d19fb",
+      "userId": "u_port_1",
+      "action": "REGISTRAR_SAIDA",
+      "entity": "presenca",
+      "entityId": "557c781d-93f3-4452-befe-2e16acdc54a9",
+      "details": "Miguel Almeida",
+      "createdAt": "2026-08-18T23:15:02.204Z"
+    },
+    {
+      "id": "7d5dbb65-407f-4027-a5f1-9c8d2dada748",
+      "userId": "u_port_1",
+      "action": "REGISTRAR_SAIDA",
+      "entity": "presenca",
+      "entityId": "6f603a1d-7d85-45cd-bc6b-86a4e6b54156",
+      "details": "Lucas Costa",
+      "createdAt": "2026-08-18T23:15:04.735Z"
+    },
+    {
+      "id": "50427a85-ad2d-41bf-ab57-44a230bf6336",
+      "userId": "u_port_1",
+      "action": "LOGOUT",
+      "entity": "",
+      "entityId": "",
+      "details": "",
+      "createdAt": "2026-08-18T23:15:14.809Z"
+    },
+    {
+      "id": "eb569087-2b4f-4c83-a534-dc449d105ddc",
+      "userId": "u_gest_1",
+      "action": "LOGIN",
+      "entity": "sessao",
+      "entityId": "",
+      "details": "Perfil GESTAO",
+      "createdAt": "2026-08-18T23:15:17.328Z"
+    },
+    {
+      "id": "98bfb32c-0065-4979-a787-b0370b0eaf13",
+      "userId": "u_gest_1",
+      "action": "VINCULAR_RESPONSAVEL",
+      "entity": "aluno",
+      "entityId": "s1",
+      "details": "Mariana Costa",
+      "createdAt": "2026-08-18T23:15:59.210Z"
+    },
+    {
+      "id": "9c02a20c-8b96-4b54-89d5-d95ebade4bdf",
+      "userId": "u_gest_1",
+      "action": "LOGOUT",
+      "entity": "",
+      "entityId": "",
+      "details": "",
+      "createdAt": "2026-08-18T23:16:17.213Z"
     }
   ],
   "feedback": [
