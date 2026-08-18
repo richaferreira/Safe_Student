@@ -1,0 +1,35 @@
+name: Safe Student CI
+
+on:
+  push:
+    branches: [main, finalizacao-academica-2026]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }} - testes
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20, 22]
+    defaults:
+      run:
+        working-directory: Safe_Student_MVP
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Verificar sintaxe do servidor
+        run: node --check server.js
+      - name: Verificar sintaxe do frontend
+        run: node --check public/app.js
+      - name: Executar suíte de testes
+        run: npm test
