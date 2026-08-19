@@ -39,10 +39,11 @@ test('permite saída depois de entrada', () => {
   assert.equal(validateAttendanceSequence([{ type: 'ENTRADA', timestamp: '2026-08-12T10:00:00Z' }], 'SAIDA').ok, true);
 });
 
-test('taxa de apresentação', () => {
+test('taxa de apresentação usa a função do dia escolar fornecida pelo servidor', () => {
   const rows = [
-    { type: 'ENTRADA', timestamp: '2026-08-01T10:00:00Z' },
-    { type: 'ENTRADA', timestamp: '2026-08-02T10:00:00Z' },
+    { type: 'ENTRADA', timestamp: '2026-08-01T01:30:00Z' },
+    { type: 'ENTRADA', timestamp: '2026-08-01T23:00:00Z' },
   ];
-  assert.equal(attendanceRate(rows, 20), 10);
+  const fakeSchoolDay = (timestamp) => (timestamp.includes('01:30') ? '2026-07-31' : '2026-08-01');
+  assert.equal(attendanceRate(rows, 20, fakeSchoolDay), 10);
 });
