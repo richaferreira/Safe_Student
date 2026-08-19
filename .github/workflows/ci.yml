@@ -2,7 +2,7 @@ name: Safe Student CI
 
 on:
   push:
-    branches: [main, finalizacao-academica-2026]
+    branches: [main, finalizacao-academica-2026, revisao-senior-uml-requisitos]
   pull_request:
     branches: [main]
 
