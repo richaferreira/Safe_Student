@@ -1,106 +1,109 @@
 # 🛡️ Safe Student
 
-> **Sistema Integrado de Gestão, Acesso e Segurança Escolar — MVP acadêmico de Engenharia de Software**
+> **MVP acadêmico de Engenharia de Software para presença escolar rastreável e comunicação família–escola**
 
 [![Safe Student CI](https://github.com/richaferreira/Safe_Student/actions/workflows/ci.yml/badge.svg)](https://github.com/richaferreira/Safe_Student/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Sobre o projeto
+## Situação técnica
 
-O **Safe Student** é um projeto acadêmico/extensionista voltado à rastreabilidade de entrada e saída de estudantes e à comunicação entre instituição e responsáveis. O repositório reúne documentação de gerenciamento, requisitos, UML/DER, artigo acadêmico, testes, pesquisa de campo, auditoria, planilhas de rastreabilidade, apresentação e um MVP web demonstrável.
+O Safe Student é um **MVP acadêmico/extensionista**, não um produto homologado para produção. A revisão V2 foi feita com foco em coerência entre requisitos, diagramas, código, testes e evidências.
 
-O software existente neste repositório é **um MVP acadêmico**, executado com dados de demonstração. Ele não deve ser apresentado como solução pronta para produção nem como sistema juridicamente certificado em conformidade com a LGPD.
+A referência técnica atual é:
+
+- [`docs/ESPECIFICACAO_REQUISITOS_V2.md`](docs/ESPECIFICACAO_REQUISITOS_V2.md) — requisitos, regras, casos de uso e rastreabilidade;
+- [`docs/diagramas/`](docs/diagramas/) — UML/DER V2 com notação revisada;
+- [`docs/AUDITORIA_SENIOR_V2.md`](docs/AUDITORIA_SENIOR_V2.md) — achados e correções da auditoria;
+- [`ACADEMIC_COMPLIANCE.md`](ACADEMIC_COMPLIANCE.md) — conformidade acadêmica e pendências reais.
 
 ## Problema e proposta de valor
 
-O projeto busca reduzir três dificuldades observadas no contexto escolar:
+O projeto busca reduzir três dificuldades comuns no acompanhamento da movimentação escolar:
 
-- baixa visibilidade dos responsáveis sobre horários de entrada e saída;
-- registros de presença e movimentação sujeitos a processos manuais;
+- baixa visibilidade dos responsáveis sobre entrada e saída;
+- registros sujeitos a processos manuais e retrabalho;
 - comunicação fragmentada entre família, portaria e gestão.
 
-A hipótese central do MVP é que **um fluxo simples de identificação do estudante, registro rastreável e notificação rápida ao responsável pode tornar o acompanhamento da movimentação escolar mais claro e operacionalmente verificável**.
+A hipótese do MVP é que um fluxo simples de identificação, registro rastreável e notificação rápida pode tornar a movimentação escolar mais clara e verificável.
 
-## As 5 funcionalidades essenciais do MVP
+## Cinco funcionalidades essenciais
 
-Em atendimento ao escopo acadêmico, as funcionalidades essenciais foram separadas dos recursos complementares:
+1. **Autenticação e autorização por perfil.**
+2. **Cadastro/vínculo aluno–responsável.**
+3. **Registro de entrada e saída por QR/token simulado.**
+4. **Notificação automática ao responsável vinculado.**
+5. **Rastreabilidade por histórico, relatório e auditoria.**
 
-1. **Autenticação e autorização por perfil (RBAC)** — Responsável, Portaria e Gestão possuem permissões diferentes.
-2. **Cadastro/vínculo aluno–responsável** — o responsável acessa apenas os estudantes vinculados.
-3. **Registro de entrada e saída por QR/token simulado** — com validação de sequência entrada → saída.
-4. **Notificação automática ao responsável** — gerada após o registro da movimentação.
-5. **Rastreabilidade** — histórico, relatório e trilha de auditoria das operações relevantes.
+Mensagens, exportações CSV, tema, restauração da demo e feedback são recursos complementares.
 
-Dashboard, exportação CSV, mensagens, tema claro/escuro, reset da base e módulo estruturado de feedback são **recursos complementares de apoio à demonstração e validação**.
+## Arquitetura implementada
 
-## Arquitetura atual do MVP
+A implementação em `Safe_Student_MVP/` usa:
 
-A implementação real presente em `Safe_Student_MVP/` utiliza:
+- **backend:** Node.js 18+ com módulos nativos (`http`, `fs`, `crypto`);
+- **frontend:** HTML, CSS e JavaScript sem framework;
+- **domínio:** `lib/domain.js`;
+- **segurança:** `lib/security.js`;
+- **seed sintética:** `data/db.seed.json`;
+- **base mutável local:** `data/db.runtime.json`, criada automaticamente e ignorada pelo Git;
+- **sessões:** memória do processo com expiração;
+- **senhas:** `scrypt` + `timingSafeEqual`;
+- **testes:** `node:test` para domínio, segurança, API e regressões de privacidade.
 
-- **Backend:** Node.js 18+ com módulos nativos (`http`, `fs`, `crypto`);
-- **Frontend:** HTML, CSS e JavaScript sem framework;
-- **Persistência:** JSON local, exclusivamente para demonstração;
-- **Autenticação:** sessão temporária em memória e token aleatório;
-- **Senhas:** hash com `scrypt` e comparação `timingSafeEqual`;
-- **Autorização:** RBAC validado no servidor;
-- **Testes:** `node:test`, cobrindo domínio, segurança e API;
-- **CI:** GitHub Actions em Node 18, 20 e 22.
+O diagrama correspondente está em [`docs/diagramas/09_arquitetura_componentes.svg`](docs/diagramas/09_arquitetura_componentes.svg).
 
-Essa é a **arquitetura implementada**, não uma arquitetura corporativa de produção.
+## Correções relevantes da V2
 
-## Controles implementados no MVP
+A auditoria sênior corrigiu, entre outros pontos:
 
-- autorização por perfil no backend;
-- limitação de tentativas de login;
-- sessão com expiração;
-- escrita local com troca atômica de arquivo;
-- validação de sequência de presença;
-- escopo de dados por responsável;
-- autorização de destinatários de mensagens no servidor;
-- exportação CSV autenticada;
-- tratamento explícito do fuso `America/Sao_Paulo` por padrão;
-- `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` e `Permissions-Policy`;
-- trilha de auditoria;
-- dados ilustrativos de feedback separados das evidências coletadas durante apresentação/teste.
+- mensagens privadas deixaram de ser visíveis para usuários que não participam da conversa;
+- notificações são entregues somente ao destinatário;
+- diretório de comunicação expõe apenas dados mínimos;
+- responsáveis retornados em consultas administrativas foram minimizados;
+- token de novo aluno passou a ter verificação explícita de colisão;
+- cálculo da taxa demonstrativa passou a usar a mesma definição de dia escolar/fuso do servidor;
+- CSV de validação deixou de exportar linhas `DEMO_SEED`;
+- restauração da demonstração passou a gerar evento de auditoria;
+- arquivo mutável de execução deixou de ser versionado;
+- workflows que dependiam de scripts já excluídos foram removidos;
+- UML e DER foram refeitos para não misturar associações, setas de processo, chaves estrangeiras e conceitos de diagrama diferentes.
 
-## Validação acadêmica do MVP
+## Diagramas V2
 
-O módulo **Feedback** foi estruturado para registrar, sem identificar o participante:
+- [Casos de uso — Responsável](docs/diagramas/01_uc_responsavel.svg)
+- [Casos de uso — Portaria](docs/diagramas/02_uc_portaria.svg)
+- [Casos de uso — Gestão](docs/diagramas/03_uc_gestao.svg)
+- [Classes — núcleo](docs/diagramas/04_classes_nucleo.svg)
+- [Classes — suporte](docs/diagramas/05_classes_suporte.svg)
+- [DER — núcleo](docs/diagramas/06_der_nucleo.svg)
+- [DER — suporte](docs/diagramas/07_der_suporte.svg)
+- [Sequência — presença](docs/diagramas/08_sequencia_presenca.svg)
+- [Componentes — arquitetura](docs/diagramas/09_arquitetura_componentes.svg)
 
-- perfil avaliado;
-- cenário/tarefa executada;
-- conclusão ou não da tarefa;
-- tempo aproximado;
-- nota de 1 a 5;
-- comentário qualitativo.
+Em casos de uso e classes, associações não são representadas como setas de fluxo. No DER, cada FK tem relacionamento correspondente. Setas aparecem no diagrama de sequência e nas dependências de componentes porque nesses contextos a direção possui significado formal.
 
-Os registros preexistentes na base são tratados como **dados ilustrativos (`DEMO_SEED`)** e não contam como evidência de pesquisa de campo. Apenas avaliações efetivamente registradas durante a apresentação/teste entram nos indicadores de validação.
-
-Consulte [`VALIDACAO_MVP.md`](VALIDACAO_MVP.md) para o protocolo de coleta e [`ACADEMIC_COMPLIANCE.md`](ACADEMIC_COMPLIANCE.md) para a matriz de conformidade acadêmica.
-
-## Executar o MVP
-
-```bash
-cd Safe_Student_MVP
-node server.js
-```
-
-ou:
+## Executar
 
 ```bash
 cd Safe_Student_MVP
 npm start
 ```
 
-Acesse `http://localhost:3000`.
+Depois acesse `http://localhost:3000`.
 
-Perfis de demonstração:
+### Perfis de demonstração
 
 | Perfil | E-mail | Senha |
 |---|---|---|
 | Responsável | `responsavel@demo.com` | `demo123` |
 | Portaria | `portaria@demo.com` | `demo123` |
 | Gestão | `gestor@demo.com` | `demo123` |
+
+A base mutável `db.runtime.json` é criada a partir da seed na primeira execução. Para restaurá-la pelo terminal:
+
+```bash
+npm run reset
+```
 
 ## Testes
 
@@ -109,54 +112,56 @@ cd Safe_Student_MVP
 npm test
 ```
 
-A suíte cobre regras de domínio, hashing de senha, autenticação, autorização, presença, mensagens, CSV e validação do MVP.
+Na revisão V2, a suíte foi executada localmente em Node.js 22 com **24 testes aprovados e 0 falhas**. O CI permanece configurado para Node 18, 20 e 22; o estado do CI deve ser confirmado antes da integração final na `main`.
 
-## Estrutura acadêmica do repositório
+## Validação acadêmica
 
-| Arquivo | Finalidade |
+O módulo Feedback registra, sem nome do participante:
+
+- perfil avaliado;
+- cenário/tarefa;
+- conclusão ou não;
+- tempo aproximado;
+- nota de 1 a 5;
+- comentário.
+
+`DEMO_SEED` é apenas dado ilustrativo. Somente registros `APRESENTACAO` entram como coleta realizada e são exportados no CSV de validação.
+
+**Importante:** os resultados históricos de pesquisa declarados em versão anterior não possuem, no repositório, evidência primária suficiente para reprodução. Portanto quantidade de participantes, percentuais e médias históricas não devem ser apresentados como resultados auditados até anexar a comprovação ou executar nova coleta real.
+
+## Artefatos acadêmicos
+
+| Artefato | Finalidade |
 |---|---|
-| `01_Plano_Gerenciamento_Unificado_Safe_Student.*` | Plano de gerenciamento do projeto |
-| `02_Especificacao_Requisitos_UML_DER_Safe_Student.*` | Requisitos, UML e DER |
-| `03_Artigo_Safe_Student_ABNT.*` | Artigo acadêmico |
-| `04_Plano_Relatorio_Testes_Safe_Student.*` | Plano/relatório de testes |
-| `05_Relatorio_Pesquisa_Campo_Extensionista_Safe_Student.*` | Pesquisa de campo |
-| `06_Relatorio_Auditoria_Conformidade_Safe_Student.*` | Auditoria de conformidade |
-| `07_Checklist_Riscos_Rastreabilidade_Safe_Student.xlsx` | Checklist, riscos e rastreabilidade |
-| `08_Apresentacao_Final_Safe_Student.pptx` | Apresentação final |
-| `09_Safe_Student_MVP_codigo.zip` | Pacote do MVP |
-| `10_Manual_Usuario_Implantacao_Treinamento_Suporte.*` | Manual e implantação |
-| `11_Modelos_Termos_Pesquisa_Aceite_Safe_Student.*` | Termos, pesquisa e aceite |
-| `12_Auditoria_Competitiva_Safe_Student.xlsx` | Auditoria competitiva |
+| `01_Plano_Gerenciamento_Unificado_Safe_Student.*` | plano de gerenciamento |
+| `02_Especificacao_Requisitos_UML_DER_Safe_Student.*` | documento formal de requisitos/modelagem |
+| `docs/ESPECIFICACAO_REQUISITOS_V2.md` | versão textual auditável da especificação V2 |
+| `docs/diagramas/` | diagramas V2 |
+| `03_Artigo_Safe_Student_ABNT.*` | artigo acadêmico |
+| `04_Plano_Relatorio_Testes_Safe_Student.*` | plano e relatório de testes |
+| `05_Relatorio_Pesquisa_Campo_Extensionista_Safe_Student.*` | pesquisa/validação |
+| `06_Relatorio_Auditoria_Conformidade_Safe_Student.*` | auditoria de conformidade |
+| `07_Checklist_Riscos_Rastreabilidade_Safe_Student.xlsx` | checklist, riscos e rastreabilidade |
+| `08_Apresentacao_Final_Safe_Student.pptx` | apresentação |
+| `Safe_Student_MVP/` | código-fonte canônico do MVP |
+| `10_Manual_Usuario_Implantacao_Treinamento_Suporte.*` | manual |
+| `11_Modelos_Termos_Pesquisa_Aceite_Safe_Student.*` | instrumentos/termos |
+| `12_Auditoria_Competitiva_Safe_Student.xlsx` | análise competitiva |
 
-## Evolução prevista para produção
+## Produção é outro estágio
 
-Uma versão real exigiria, entre outras medidas:
-
-- HTTPS/TLS obrigatório;
-- banco transacional como PostgreSQL/MySQL;
-- gestão segura de segredos e sessões;
-- backups e recuperação;
-- observabilidade e monitoramento;
-- testes de segurança e carga;
-- política institucional de retenção e descarte;
-- gestão de incidentes;
-- validação institucional e jurídica;
-- RIPD/DPIA quando aplicável;
-- integração real de notificações;
-- eventual integração com hardware somente após análise de necessidade, privacidade e segurança.
-
-Tecnologias como Redis, OAuth2/SSO, Docker, CI/CD ampliado, QR físico, NFC/RFID ou outros componentes são **possibilidades de evolução**, não funcionalidades atualmente implementadas.
+Uma implantação real ainda exigiria HTTPS/TLS, banco transacional, gestão de segredos e sessões, backup, observabilidade, resposta a incidentes, política de retenção, testes de carga/segurança, validação institucional/jurídica e integração real de notificações. Esses itens **não são apresentados como implementados** no MVP.
 
 ## Privacidade e LGPD
 
-O projeto adota princípios de minimização de dados e separa explicitamente o ambiente acadêmico de uma implantação real. A expressão adequada é **“projeto com controles e princípios de privacidade alinhados à LGPD”**, e não “sistema certificado em conformidade com a LGPD”. Qualquer operação com dados reais depende de base legal, governança, segurança, documentação e validação institucional/jurídica.
+O projeto usa princípios de minimização e separa demonstração acadêmica de uso real. A formulação apropriada é **“MVP com controles e princípios de privacidade alinhados à LGPD”**, e não “sistema certificado em conformidade com a LGPD”.
 
 ## Autores
 
 - **Richardson Conceição Ferreira — 202323181**
 - **Flavio Gabrig Ferreira — 202323361**
 
-Disciplina indicada no pacote acadêmico: **Práticas Extensionistas Integradoras VI**.
+Disciplina: **Práticas Extensionistas Integradoras VI**.
 
 ## Licença
 
