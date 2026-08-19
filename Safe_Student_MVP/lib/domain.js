@@ -45,8 +45,13 @@ function validateAttendanceSequence(records, type) {
   return { ok: true };
 }
 
-function attendanceRate(records, schoolDays = 20) {
-  const uniqueDays = new Set(records.filter((r) => r.type === 'ENTRADA').map((r) => r.timestamp.slice(0, 10)));
+function attendanceRate(records, schoolDays = 20, dayKey = (value) => String(value || '').slice(0, 10)) {
+  const uniqueDays = new Set(
+    records
+      .filter((r) => r.type === 'ENTRADA')
+      .map((r) => dayKey(r.timestamp))
+      .filter(Boolean),
+  );
   return schoolDays > 0 ? Math.min(100, Math.round((uniqueDays.size / schoolDays) * 100)) : 0;
 }
 
