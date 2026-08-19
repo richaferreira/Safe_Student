@@ -1,138 +1,151 @@
-# Safe Student MVP V1.1
+# Safe Student MVP V2.0
 
-MVP acadêmico demonstrável do projeto Safe Student. A aplicação foi construída para apresentar e validar os fluxos centrais sem utilizar dados reais de estudantes.
+MVP acadêmico demonstrável do Safe Student. A aplicação valida os fluxos centrais do projeto com **dados sintéticos**, sem assumir que o ambiente local é uma solução pronta para produção.
 
-## Objetivo do MVP
+## Objetivo
 
 Validar a hipótese de que um fluxo simples de identificação do estudante, registro de entrada/saída e comunicação rastreável pode melhorar a visibilidade da movimentação escolar para família, portaria e gestão.
 
-### 5 funcionalidades essenciais
+## Cinco funcionalidades essenciais
 
-1. autenticação e RBAC por perfil;
+1. autenticação e autorização por perfil;
 2. cadastro/vínculo aluno–responsável;
 3. entrada/saída por QR/token simulado;
-4. notificação automática ao responsável;
-5. rastreabilidade por histórico, relatórios e auditoria.
+4. notificação interna ao responsável vinculado;
+5. rastreabilidade por histórico, relatório e auditoria.
 
-Os demais recursos são complementares para demonstração e validação.
+Mensagens, CSV, reset da demonstração, tema e feedback são recursos complementares.
 
 ## Execução
 
 1. Instale Node.js 18 ou superior.
-2. Abra um terminal nesta pasta.
+2. Abra o terminal nesta pasta.
 3. Execute `npm start`.
 4. Acesse `http://localhost:3000`.
 
-Não há dependências externas e não é necessário executar `npm install`.
+Não há dependências externas e o MVP usa somente módulos nativos do Node.js.
+
+### Persistência da demonstração
+
+- `data/db.seed.json` — estado inicial sintético, versionado;
+- `data/db.runtime.json` — estado mutável da execução, criado automaticamente e **ignorado pelo Git**.
+
+Para restaurar a base local:
+
+```bash
+npm run reset
+```
 
 Variáveis opcionais:
 
-- `PORT`: porta HTTP, padrão `3000`;
-- `SS_DB_PATH`: caminho da base JSON;
-- `SS_TIME_ZONE`: fuso escolar, padrão `America/Sao_Paulo`;
-- `SS_SESSION_TTL_MS`: duração da sessão em milissegundos.
+- `PORT` — padrão `3000`;
+- `SS_DB_PATH` — permite substituir o caminho da base mutável;
+- `SS_TIME_ZONE` — padrão `America/Sao_Paulo`;
+- `SS_SESSION_TTL_MS` — duração da sessão em milissegundos.
 
 ## Perfis de apresentação
 
-| Perfil | E-mail | Senha | Principais capacidades |
+| Perfil | E-mail | Senha | Capacidades principais |
 |---|---|---|---|
-| Responsável | `responsavel@demo.com` | `demo123` | alunos vinculados, notificações, histórico, relatórios, mensagens e feedback |
-| Portaria | `portaria@demo.com` | `demo123` | registro de entrada/saída, consulta operacional e comunicação permitida |
-| Gestão | `gestor@demo.com` | `demo123` | cadastros, vínculos, presença, relatórios, auditoria, validação e reset da demo |
+| Responsável | `responsavel@demo.com` | `demo123` | alunos vinculados, notificações, histórico, relatório, mensagens e feedback |
+| Portaria | `portaria@demo.com` | `demo123` | entrada/saída e comunicação autorizada |
+| Gestão | `gestor@demo.com` | `demo123` | cadastros, vínculos, presença, relatórios, auditoria, validação e reset |
 
-Tokens de apresentação: `SS-ALU001`, `SS-ALU002`, `SS-ALU003`, `SS-ALU004`.
+Tokens de apresentação: `SS-ALU001` a `SS-ALU004`.
 
 ## Funcionalidades implementadas
 
-- autenticação com sessão temporária e senha armazenada por hash;
-- autorização por perfil (RBAC) no servidor;
-- cadastro de aluno de apresentação e vínculo com responsável;
-- registro de entrada/saída por QR/token simulado;
-- validação de sequência entrada → saída por dia escolar;
-- notificações automáticas ao responsável;
-- histórico e relatório por aluno;
+- autenticação com sessão temporária;
+- senha armazenada por hash `scrypt`;
+- autorização por perfil no servidor;
+- cadastro de aluno com validação de matrícula e token único;
+- vínculo aluno–responsável;
+- entrada/saída com validação de sequência por **dia escolar**;
+- notificação interna ao responsável vinculado;
+- histórico e relatório por escopo do usuário;
 - exportação CSV autenticada;
-- comunicação com autorização de destinatários também no backend;
-- trilha de auditoria para gestão;
-- módulo de validação com cenário, sucesso, tempo, nota e comentário;
-- exportação CSV da validação para gestão;
-- separação entre dados ilustrativos e evidências coletadas;
-- reset da base de apresentação;
-- layout responsivo, navegação por teclado e tema claro/escuro;
+- comunicação com matriz de destinatários validada no backend;
+- mensagens visíveis somente aos participantes;
+- diretório de comunicação com projeção mínima de dados;
+- trilha de auditoria para Gestão/Admin;
+- feedback com cenário, sucesso, tempo, nota e comentário;
+- exportação de validação contendo apenas registros `APRESENTACAO`;
+- restauração da demo auditada;
 - cabeçalhos básicos de segurança;
 - tratamento explícito do fuso escolar.
 
-## Segurança acadêmica implementada
+## Privacidade e autorização
+
+A interface pode esconder opções conforme o perfil, mas isso é apenas experiência de uso. **O controle real está no backend.**
+
+Na V2:
+
+- Gestão não recebe notificações privadas destinadas aos responsáveis;
+- Gestão não lê conversas privadas de terceiros;
+- diretório de mensagens não retorna e-mail nem vínculos desnecessários;
+- responsáveis retornados em consultas administrativas são minimizados;
+- `DEMO_SEED` não pode ser exportado como evidência de pesquisa.
+
+## Segurança acadêmica
 
 O MVP inclui controles proporcionais a uma demonstração:
 
-- `scrypt` para hash de senha;
-- comparação com `timingSafeEqual`;
+- `scrypt`;
+- `timingSafeEqual`;
 - tokens de sessão aleatórios;
 - expiração de sessão;
 - limitação de tentativas de login;
-- RBAC no backend;
-- escopo de estudantes por responsável;
-- autorização de mensagens no servidor;
-- CSP, proteção contra frame, MIME sniffing, política de referência e permissões de navegador;
-- escrita local por arquivo temporário + rename para reduzir risco de corrupção parcial.
+- RBAC no servidor;
+- escopo por responsável;
+- CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` e `Permissions-Policy`;
+- gravação da base por arquivo temporário + `rename`.
 
-Esses controles **não transformam o MVP em solução pronta para produção**.
-
-## Validação acadêmica
-
-O menu **Feedback** registra evidências de teste sem solicitar identificação do participante. Cada avaliação nova recebe `source: APRESENTACAO`.
-
-Os registros que já vêm no `db.seed.json` não possuem essa marca e são tratados como `DEMO_SEED`. Eles servem apenas para ilustrar a interface e **não entram nos indicadores de evidência coletada**.
-
-Indicadores disponíveis:
-
-- quantidade de avaliações coletadas;
-- nota média;
-- taxa de conclusão das tarefas;
-- tempo médio informado;
-- comentários qualitativos.
-
-A gestão pode exportar `safe-student-validacao-mvp.csv` para consolidar a pesquisa.
+Esses controles **não são uma certificação de segurança nem tornam o MVP pronto para produção**.
 
 ## Testes
-
-Execute:
 
 ```bash
 npm test
 ```
 
-A suíte usa `node:test` e cobre:
+A suíte V2 cobre domínio, segurança, API e regressões de privacidade. Na revisão sênior ela foi executada localmente em Node.js 22 com **24 testes aprovados e 0 falhas**.
+
+Entre os cenários verificados estão:
 
 - normalização de token;
-- RBAC de presença;
-- RBAC de mensagens;
-- isolamento dos estudantes do responsável;
-- regras entrada → saída;
-- cálculo de taxa demonstrativa;
-- hash/verificação de senha;
-- robustez contra hash inválido;
-- geração de token;
-- health check;
-- login inválido;
-- bloqueio de presença para responsável;
-- registro de presença pela portaria;
-- bloqueio de destinatário indevido pela API;
-- autenticação da exportação CSV;
-- separação de `DEMO_SEED` e evidência coletada;
-- autorização para exportação da validação.
+- RBAC de presença e mensagens;
+- isolamento de alunos vinculados;
+- entrada/saída válida e inválida;
+- cálculo da taxa pela chave do dia escolar;
+- hash e comparação de senha;
+- geração aleatória de token;
+- autenticação e autorização de API;
+- CSV autenticado;
+- bloqueio de destinatário manipulado;
+- diretório com dados mínimos;
+- isolamento de mensagens privadas;
+- isolamento de notificações;
+- separação entre `DEMO_SEED` e `APRESENTACAO`;
+- CSV de validação sem seed ilustrativa;
+- auditoria da restauração da demo.
 
-O repositório também possui GitHub Actions para executar a suíte em Node 18, 20 e 22.
+O workflow `ci.yml` está configurado para Node 18, 20 e 22. O CI deve ser conferido antes de integrar a revisão na `main`.
+
+## Validação acadêmica
+
+Cada feedback novo recebe `source: APRESENTACAO`. Registros ilustrativos da seed são `DEMO_SEED` e não entram nos indicadores de coleta efetiva nem na exportação de validação.
+
+A aplicação não solicita nome do participante no módulo Feedback. A evidência primária de pesquisa continua dependendo de coleta real, termos aplicáveis e anexação do CSV/formulários anonimizados.
 
 ## Limitações deliberadas
 
-Este é um MVP acadêmico, não uma aplicação pronta para produção. Usa arquivo JSON como persistência local; não possui HTTPS próprio, banco relacional, serviço real de push/SMS, SSO, observabilidade corporativa ou rotina de backup. Biometria, NFC, catracas e geolocalização contínua ficam fora do escopo do MVP.
+O MVP usa JSON local e sessão em memória. Não possui HTTPS próprio, banco relacional, serviço real de push/SMS, SSO, observabilidade corporativa, backup, biometria, NFC, catraca ou geolocalização contínua.
 
-A sessão fica em memória no servidor e o token é mantido em `sessionStorage` no navegador, o que é aceitável para a demonstração, mas deve ser substituído por uma estratégia corporativa em produção.
+Antes de qualquer uso real, seria necessário tratar infraestrutura segura, banco transacional, segredos, retenção, backup, monitoramento, incidentes, testes de carga/segurança e validação institucional/jurídica.
 
-## Requisitos antes de uso real
+## Modelagem técnica
 
-Antes de qualquer uso com dados reais, migrar a persistência para banco transacional, usar HTTPS/TLS, segredo de sessão externo, política de retenção, monitoramento, backups, testes de segurança, gestão de incidentes, RIPD/DPIA quando aplicável e validação institucional/jurídica.
+A especificação e os diagramas V2 estão em:
 
-A documentação acadêmica deve tratar o sistema como **alinhado a princípios de privacidade**, sem declarar certificação legal ou conformidade automática com a LGPD.
+- [`../docs/ESPECIFICACAO_REQUISITOS_V2.md`](../docs/ESPECIFICACAO_REQUISITOS_V2.md)
+- [`../docs/diagramas/`](../docs/diagramas/)
