@@ -1,21 +1,42 @@
-SAFE STUDENT - PACOTE FINAL DEFINITIVO
+SAFE STUDENT - PACOTE FINAL REVISADO V2
 Disciplina: Práticas Extensionistas Integradoras VI
 Professor(a): Altemar Sales de Oliveira
 Gerente do projeto: Richardson Conceição Ferreira - 202323181
 Integrantes: Flavio Gabrig Ferreira - 202323361; Richardson Conceição Ferreira - 202323181
 
-Conteúdo:
+ESTADO DESTA ENTREGA
+- Requisitos e critérios de aceite revisados a partir do comportamento real do MVP.
+- UML e DER reconstruídos com notação coerente e diagramas separados para melhorar leitura.
+- Casos de uso: associações simples entre ator e caso, sem setas de fluxo indevidas.
+- Classes: associações e multiplicidades; perfis não foram inventados como subclasses quando o código usa atributo de perfil.
+- DER: PK, FK, UQ e cardinalidades explícitas; relacionamentos não são representados como fluxo.
+- Diagrama de sequência: setas permanecem somente porque representam mensagens dirigidas.
+- Código, privacidade, autorização, testes e documentação foram confrontados entre si.
+- MVP executável: versão 2.1.0. Especificação acadêmica/modelagem: revisão V2.0.
+
+CONTEÚDO
 01 Plano de Gerenciamento Unificado - DOCX/PDF
-02 Especificação de Requisitos, UML e DER - DOCX/PDF
+02 Especificação de Requisitos, UML e DER V2 - DOCX/PDF
 03 Artigo acadêmico ABNT - DOCX/PDF
-04 Plano e Relatório de Testes - DOCX/PDF
+04 Plano e Relatório de Testes V2 - DOCX/PDF
 05 Relatório de Pesquisa de Campo Extensionista - DOCX/PDF
-06 Relatório de Auditoria de Conformidade - DOCX/PDF
+06 Relatório de Auditoria de Conformidade V2 - DOCX/PDF
 07 Checklist, Riscos e Rastreabilidade - XLSX
-08 Apresentação final - PPTX
-09 MVP web completo - ZIP
-10 Manual de Usuário, Implantação, Treinamento e Suporte - DOCX/PDF
+08 Apresentação final revisada - PPTX
+09 MVP web atualizado - ZIP
+10 Manual de Usuário, Implantação, Treinamento e Suporte V2 - DOCX/PDF
 11 Modelos de Termos, Pesquisa e Aceite - DOCX/PDF
 12 Auditoria Competitiva - XLSX
 
-Observação técnica: o MVP utiliza dados de apresentação. Para aplicação real com dados de estudantes, manter autorização institucional, governança de privacidade, termos de ciência, retenção adequada e segurança operacional.
+FONTES TÉCNICAS DE CONFERÊNCIA
+- docs/ESPECIFICACAO_REQUISITOS_V2.md
+- docs/AUDITORIA_SENIOR_V2.md
+- docs/diagramas/
+- docs/BUILD_STATUS_V2.md
+- ACADEMIC_COMPLIANCE.md
+- Safe_Student_MVP/
+
+OBSERVAÇÃO ACADÊMICA IMPORTANTE
+O MVP utiliza dados sintéticos de apresentação. A pesquisa de campo deve permanecer classificada como PARCIAL enquanto não houver evidência primária verificável (por exemplo, formulários/termos aplicáveis, respostas anonimizadas ou CSV de validação real). Não apresentar números históricos sem comprovação como resultado auditado.
+
+Para eventual aplicação real com dados de estudantes, são necessárias autorização institucional, base legal/governança de privacidade, retenção adequada, infraestrutura segura, controles operacionais e validação institucional/jurídica. O MVP acadêmico não representa certificação LGPD nem homologação de produção.
