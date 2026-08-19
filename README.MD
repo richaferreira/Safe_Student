@@ -7,13 +7,16 @@
 
 ## Situação técnica
 
-O Safe Student é um **MVP acadêmico/extensionista**, não um produto homologado para produção. A revisão V2 foi feita com foco em coerência entre requisitos, diagramas, código, testes e evidências.
+O Safe Student é um **MVP acadêmico/extensionista**, não um produto homologado para produção. A revisão sênior V2 foi concluída com foco em coerência entre requisitos, diagramas, código, testes, documentos e evidências.
+
+A versão executável atual do MVP é **2.1.0**. A especificação acadêmica/modelagem permanece identificada como **V2.0**, pois representa a revisão formal dos requisitos e diagramas.
 
 A referência técnica atual é:
 
 - [`docs/ESPECIFICACAO_REQUISITOS_V2.md`](docs/ESPECIFICACAO_REQUISITOS_V2.md) — requisitos, regras, casos de uso e rastreabilidade;
 - [`docs/diagramas/`](docs/diagramas/) — UML/DER V2 com notação revisada;
 - [`docs/AUDITORIA_SENIOR_V2.md`](docs/AUDITORIA_SENIOR_V2.md) — achados e correções da auditoria;
+- [`docs/BUILD_STATUS_V2.md`](docs/BUILD_STATUS_V2.md) — registro da publicação final dos binários;
 - [`ACADEMIC_COMPLIANCE.md`](ACADEMIC_COMPLIANCE.md) — conformidade acadêmica e pendências reais.
 
 ## Problema e proposta de valor
@@ -52,21 +55,24 @@ A implementação em `Safe_Student_MVP/` usa:
 
 O diagrama correspondente está em [`docs/diagramas/09_arquitetura_componentes.svg`](docs/diagramas/09_arquitetura_componentes.svg).
 
-## Correções relevantes da V2
+## Correções relevantes da revisão sênior
 
-A auditoria sênior corrigiu, entre outros pontos:
+A auditoria corrigiu, entre outros pontos:
 
 - mensagens privadas deixaram de ser visíveis para usuários que não participam da conversa;
 - notificações são entregues somente ao destinatário;
 - diretório de comunicação expõe apenas dados mínimos;
 - responsáveis retornados em consultas administrativas foram minimizados;
+- tokens de aluno não são expostos a perfis que não precisam operá-los;
+- feedback acadêmico passou a ser tratado sem identidade do participante na coleta nova;
 - token de novo aluno passou a ter verificação explícita de colisão;
 - cálculo da taxa demonstrativa passou a usar a mesma definição de dia escolar/fuso do servidor;
 - CSV de validação deixou de exportar linhas `DEMO_SEED`;
 - restauração da demonstração passou a gerar evento de auditoria;
 - arquivo mutável de execução deixou de ser versionado;
-- workflows que dependiam de scripts já excluídos foram removidos;
-- UML e DER foram refeitos para não misturar associações, setas de processo, chaves estrangeiras e conceitos de diagrama diferentes.
+- workflows que dependiam de scripts excluídos foram removidos;
+- UML e DER foram refeitos para não misturar associações, setas de processo, chaves estrangeiras e conceitos de diagramas diferentes;
+- documentos Office/PDF, apresentação e ZIP do MVP foram regenerados a partir da revisão final.
 
 ## Diagramas V2
 
@@ -80,7 +86,7 @@ A auditoria sênior corrigiu, entre outros pontos:
 - [Sequência — presença](docs/diagramas/08_sequencia_presenca.svg)
 - [Componentes — arquitetura](docs/diagramas/09_arquitetura_componentes.svg)
 
-Em casos de uso e classes, associações não são representadas como setas de fluxo. No DER, cada FK tem relacionamento correspondente. Setas aparecem no diagrama de sequência e nas dependências de componentes porque nesses contextos a direção possui significado formal.
+Em casos de uso e classes, associações não são representadas como setas de fluxo. No DER, cada FK possui relacionamento correspondente e cardinalidade explícita. Setas aparecem no diagrama de sequência e nas dependências de componentes porque nesses contextos a direção possui significado.
 
 ## Executar
 
@@ -112,7 +118,7 @@ cd Safe_Student_MVP
 npm test
 ```
 
-Na revisão V2, a suíte foi executada localmente em Node.js 22 com **24 testes aprovados e 0 falhas**. O CI permanece configurado para Node 18, 20 e 22; o estado do CI deve ser confirmado antes da integração final na `main`.
+Na revisão sênior, a suíte foi executada com **24 testes aprovados e 0 falhas**. O workflow de publicação dos documentos V2 também executa a suíte antes de permitir o commit dos binários. O CI continua configurado para Node 18, 20 e 22.
 
 ## Validação acadêmica
 
@@ -134,17 +140,18 @@ O módulo Feedback registra, sem nome do participante:
 | Artefato | Finalidade |
 |---|---|
 | `01_Plano_Gerenciamento_Unificado_Safe_Student.*` | plano de gerenciamento |
-| `02_Especificacao_Requisitos_UML_DER_Safe_Student.*` | documento formal de requisitos/modelagem |
+| `02_Especificacao_Requisitos_UML_DER_Safe_Student.*` | documento formal de requisitos/modelagem V2 |
 | `docs/ESPECIFICACAO_REQUISITOS_V2.md` | versão textual auditável da especificação V2 |
 | `docs/diagramas/` | diagramas V2 |
 | `03_Artigo_Safe_Student_ABNT.*` | artigo acadêmico |
-| `04_Plano_Relatorio_Testes_Safe_Student.*` | plano e relatório de testes |
+| `04_Plano_Relatorio_Testes_Safe_Student.*` | plano e relatório de testes V2 |
 | `05_Relatorio_Pesquisa_Campo_Extensionista_Safe_Student.*` | pesquisa/validação |
-| `06_Relatorio_Auditoria_Conformidade_Safe_Student.*` | auditoria de conformidade |
+| `06_Relatorio_Auditoria_Conformidade_Safe_Student.*` | auditoria de conformidade V2 |
 | `07_Checklist_Riscos_Rastreabilidade_Safe_Student.xlsx` | checklist, riscos e rastreabilidade |
-| `08_Apresentacao_Final_Safe_Student.pptx` | apresentação |
+| `08_Apresentacao_Final_Safe_Student.pptx` | apresentação revisada |
+| `09_Safe_Student_MVP_codigo.zip` | pacote atualizado do código do MVP |
 | `Safe_Student_MVP/` | código-fonte canônico do MVP |
-| `10_Manual_Usuario_Implantacao_Treinamento_Suporte.*` | manual |
+| `10_Manual_Usuario_Implantacao_Treinamento_Suporte.*` | manual V2 |
 | `11_Modelos_Termos_Pesquisa_Aceite_Safe_Student.*` | instrumentos/termos |
 | `12_Auditoria_Competitiva_Safe_Student.xlsx` | análise competitiva |
 
