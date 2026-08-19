@@ -1,6 +1,8 @@
-# Safe Student MVP V2.0
+# Safe Student MVP V2.1.0
 
 MVP acadêmico demonstrável do Safe Student. A aplicação valida os fluxos centrais do projeto com **dados sintéticos**, sem assumir que o ambiente local é uma solução pronta para produção.
+
+> **Controle de versão:** o executável está na versão **2.1.0**, incorporando as correções finais de privacidade e minimização. A especificação acadêmica/modelagem permanece identificada como **V2.0**, pois representa a revisão formal dos requisitos e diagramas.
 
 ## Objetivo
 
@@ -129,7 +131,7 @@ Entre os cenários verificados estão:
 - CSV de validação sem seed ilustrativa;
 - auditoria da restauração da demo.
 
-O workflow `ci.yml` está configurado para Node 18, 20 e 22. O CI deve ser conferido antes de integrar a revisão na `main`.
+O workflow `ci.yml` está configurado para Node 18, 20 e 22. O CI deve ser conferido antes de cada entrega da `main`.
 
 ## Validação acadêmica
 
