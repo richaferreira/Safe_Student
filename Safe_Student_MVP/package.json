@@ -1,8 +1,8 @@
 {
   "name": "safe-student-mvp",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "MVP acadêmico demonstrável do Safe Student: presença escolar, notificações, relatórios, comunicação, validação e auditoria, com dados de teste.",
+  "description": "MVP acadêmico demonstrável do Safe Student: presença escolar, notificações, relatórios, comunicação, validação e auditoria, com dados sintéticos de teste.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
