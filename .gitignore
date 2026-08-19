@@ -1,0 +1,6 @@
+# Dados mutáveis gerados durante a execução local do MVP
+Safe_Student_MVP/data/db.runtime.json
+
+# Artefatos temporários de execução/teste
+Safe_Student_MVP/*.log
+Safe_Student_MVP/.tmp/
