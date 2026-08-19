@@ -102,6 +102,31 @@ function directoryUser(user) {
   return { id: user.id, name: user.name, role: user.role, status: user.status };
 }
 
+function studentView(user, db, student, { includeGuardians = false } = {}) {
+  const view = {
+    id: student.id,
+    name: student.name,
+    enrollment: student.enrollment,
+    classId: student.classId,
+    className: className(db, student.classId),
+    status: student.status,
+  };
+  if (canRegisterAttendance(user.role)) view.token = student.token;
+  if (includeGuardians) {
+    view.guardians = canManageSchool(user.role)
+      ? db.users
+        .filter((u) => u.role === 'RESPONSAVEL' && (u.studentIds || []).includes(student.id))
+        .map((u) => ({ id: u.id, name: u.name }))
+      : [];
+  }
+  return view;
+}
+
+function feedbackView(feedback) {
+  const { userId: _legacyUserId, ...anonymous } = feedback;
+  return anonymous;
+}
+
 function uniqueStudentToken(db) {
   for (let i = 0; i < 32; i += 1) {
     const token = `SS-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
@@ -272,7 +297,7 @@ async function handler(req, res) {
     if (req.method === 'GET' && url.pathname === '/api/health') {
       return json(res, 200, {
         ok: true,
-        version: '2.0.0',
+        version: '2.1.0',
         mode: 'academic-demo',
         timeZone: TIME_ZONE,
       });
@@ -314,7 +339,7 @@ async function handler(req, res) {
     if (req.method === 'GET' && url.pathname === '/api/dashboard') {
       const ids = allowedStudentIds(user, db);
       const allowed = new Set(ids);
-      const students = scopedStudents(user, db).map((s) => ({ ...s, className: className(db, s.classId) }));
+      const students = scopedStudents(user, db).map((s) => studentView(user, db, s));
       const attendance = db.attendance
         .filter((r) => allowed.has(r.studentId))
         .map((r) => ({ ...r, student: studentById(db, r.studentId)?.name || 'Aluno' }))
@@ -340,15 +365,7 @@ async function handler(req, res) {
     }
 
     if (req.method === 'GET' && url.pathname === '/api/students') {
-      const result = scopedStudents(user, db).map((s) => ({
-        ...s,
-        className: className(db, s.classId),
-        guardians: canManageSchool(user.role)
-          ? db.users
-            .filter((u) => u.role === 'RESPONSAVEL' && (u.studentIds || []).includes(s.id))
-            .map((u) => ({ id: u.id, name: u.name }))
-          : [],
-      }));
+      const result = scopedStudents(user, db).map((s) => studentView(user, db, s, { includeGuardians: true }));
       return json(res, 200, { students: result });
     }
 
@@ -375,7 +392,7 @@ async function handler(req, res) {
       db.students.push(student);
       audit(db, user.id, 'CADASTRAR_ALUNO', 'aluno', student.id, name);
       writeDb(db);
-      return json(res, 201, { student: { ...student, className: className(db, classId) } });
+      return json(res, 201, { student: studentView(user, db, student) });
     }
 
     if (req.method === 'POST' && url.pathname === '/api/links') {
@@ -428,7 +445,7 @@ async function handler(req, res) {
       }));
       audit(db, user.id, `REGISTRAR_${type}`, 'presenca', record.id, student.name);
       writeDb(db);
-      return json(res, 201, { record, student, notified: guardians.length });
+      return json(res, 201, { record, student: studentView(user, db, student), notified: guardians.length });
     }
 
     if (req.method === 'PATCH' && url.pathname.startsWith('/api/notifications/')) {
@@ -521,10 +538,7 @@ async function handler(req, res) {
     if (req.method === 'GET' && url.pathname === '/api/feedback') {
       const all = (db.feedback || []).slice().reverse();
       const manager = canManageSchool(user.role);
-      const rows = (manager ? all : all.filter((f) => f.userId === user.id)).map((f) => ({
-        ...f,
-        userName: userById(db, f.userId)?.name || 'Participante',
-      }));
+      const rows = (manager ? all : []).map(feedbackView);
       const measured = all.filter((f) => f.source === 'APRESENTACAO');
       const avg = measured.length
         ? Math.round((measured.reduce((sum, item) => sum + Number(item.score || 0), 0) / measured.length) * 10) / 10
@@ -542,7 +556,7 @@ async function handler(req, res) {
         successRate,
         avgTimeSeconds,
         demoSeedCount: all.length - measured.length,
-        disclaimer: 'Registros marcados como DEMO_SEED são ilustrativos e não contam como evidência de pesquisa de campo.',
+        disclaimer: 'Registros marcados como DEMO_SEED são ilustrativos e não contam como evidência de pesquisa de campo. O feedback coletado não armazena a identidade do participante.',
       });
     }
 
@@ -561,7 +575,6 @@ async function handler(req, res) {
       db.feedback = db.feedback || [];
       const feedback = {
         id: crypto.randomUUID(),
-        userId: user.id,
         profile,
         scenario,
         success,
@@ -572,7 +585,7 @@ async function handler(req, res) {
         createdAt: new Date().toISOString(),
       };
       db.feedback.push(feedback);
-      audit(db, user.id, 'REGISTRAR_FEEDBACK', 'feedback', feedback.id, `Cenário ${scenario}; nota ${score}`);
+      audit(db, '', 'REGISTRAR_FEEDBACK', 'feedback', feedback.id, 'Avaliação acadêmica registrada sem identificação do participante.');
       writeDb(db);
       return json(res, 201, { feedback });
     }
@@ -599,7 +612,7 @@ async function handler(req, res) {
       if (!canViewAudit(user.role)) return json(res, 403, { error: 'Perfil sem permissão para auditoria.' });
       const rows = (db.audit || []).slice(-120).reverse().map((event) => ({
         ...event,
-        userName: userById(db, event.userId)?.name || 'Sistema',
+        userName: event.userId ? (userById(db, event.userId)?.name || 'Sistema') : 'Sistema',
       }));
       return json(res, 200, { rows });
     }
