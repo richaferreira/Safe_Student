@@ -1,15 +1,15 @@
-name: Revisao senior - requisitos e diagramas
+name: Publicar pacote acadêmico V2
 
 on:
   push:
-    branches: [revisao-senior-uml-requisitos]
+    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
-  rebuild:
-    if: contains(github.event.head_commit.message, '[senior-rebuild]')
+  publish:
+    if: contains(github.event.head_commit.message, '[publish-v2-binaries]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,104 +17,83 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Python
+      - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Dependencias de documentos e diagramas
+      - name: Instalar dependências
         run: |
           python -m pip install --upgrade pip
           python -m pip install python-docx python-pptx cairosvg
           sudo apt-get update
           sudo apt-get install -y libreoffice-writer libreoffice-impress zip
 
-      - name: Reconstruir documentos V2 e registrar diagnostico
+      - name: Renderizar SVGs em PNG para os documentos
         run: |
-          set +e
-          mkdir -p docs/build-logs /tmp/safe-student-v2-pdf /tmp/safe-student-slides-qa
-          : > docs/build-logs/rebuild-v2-status.txt
+          python - <<'PY'
+          from pathlib import Path
+          import cairosvg
+          for svg in Path('docs/diagramas').glob('*.svg'):
+              cairosvg.svg2png(url=str(svg), write_to=str(svg.with_suffix('.png')), output_width=1800)
+          PY
 
-          run_step() {
-            name="$1"
-            shift
-            echo "===== $name =====" >> docs/build-logs/rebuild-v2-status.txt
-            "$@" >> docs/build-logs/rebuild-v2-status.txt 2>&1
-            code=$?
-            echo "STATUS=$code" >> docs/build-logs/rebuild-v2-status.txt
-            echo >> docs/build-logs/rebuild-v2-status.txt
-            return 0
-          }
+      - name: Gerar documentos V2
+        run: |
+          python tools/patch_plan_v2.py
+          python tools/build_spec_v2.py
+          python tools/build_test_report_v2.py
+          python tools/build_audit_manual_v2.py
+          python tools/build_presentation_v2.py
 
-          run_step diagramas python tools/build_diagrams_v2.py
-          run_step especificacao python tools/build_spec_v2.py
-          run_step documentos python tools/patch_academic_v2.py
-
-          echo "===== pdfs =====" >> docs/build-logs/rebuild-v2-status.txt
+      - name: Gerar PDFs finais
+        run: |
+          mkdir -p /tmp/safe-student-v2-pdf
           libreoffice --headless --convert-to pdf --outdir /tmp/safe-student-v2-pdf \
             01_Plano_Gerenciamento_Unificado_Safe_Student.docx \
             02_Especificacao_Requisitos_UML_DER_Safe_Student.docx \
             04_Plano_Relatorio_Testes_Safe_Student.docx \
             06_Relatorio_Auditoria_Conformidade_Safe_Student.docx \
-            10_Manual_Usuario_Implantacao_Treinamento_Suporte.docx \
-            >> docs/build-logs/rebuild-v2-status.txt 2>&1
-          echo "STATUS=$?" >> docs/build-logs/rebuild-v2-status.txt
-          cp /tmp/safe-student-v2-pdf/*.pdf . 2>> docs/build-logs/rebuild-v2-status.txt || true
+            10_Manual_Usuario_Implantacao_Treinamento_Suporte.docx
+          cp /tmp/safe-student-v2-pdf/*.pdf .
 
-          echo "===== slides-pdf =====" >> docs/build-logs/rebuild-v2-status.txt
-          libreoffice --headless --convert-to pdf --outdir /tmp/safe-student-slides-qa \
-            08_Apresentacao_Final_Safe_Student.pptx \
-            >> docs/build-logs/rebuild-v2-status.txt 2>&1
-          echo "STATUS=$?" >> docs/build-logs/rebuild-v2-status.txt
+      - name: Validar código e testes
+        working-directory: Safe_Student_MVP
+        run: |
+          node --check server.js
+          node --check public/app.js
+          npm test
 
-          echo "===== sintaxe-servidor =====" >> docs/build-logs/rebuild-v2-status.txt
-          (cd Safe_Student_MVP && node --check server.js) >> docs/build-logs/rebuild-v2-status.txt 2>&1
-          echo "STATUS=$?" >> docs/build-logs/rebuild-v2-status.txt
-
-          echo "===== sintaxe-frontend =====" >> docs/build-logs/rebuild-v2-status.txt
-          (cd Safe_Student_MVP && node --check public/app.js) >> docs/build-logs/rebuild-v2-status.txt 2>&1
-          echo "STATUS=$?" >> docs/build-logs/rebuild-v2-status.txt
-
-          echo "===== testes =====" >> docs/build-logs/rebuild-v2-status.txt
-          (cd Safe_Student_MVP && npm test) >> docs/build-logs/rebuild-v2-status.txt 2>&1
-          echo "STATUS=$?" >> docs/build-logs/rebuild-v2-status.txt
-
-          echo "===== zip =====" >> docs/build-logs/rebuild-v2-status.txt
+      - name: Regenerar pacote ZIP do MVP
+        run: |
           rm -f 09_Safe_Student_MVP_codigo.zip
           zip -rq 09_Safe_Student_MVP_codigo.zip Safe_Student_MVP \
             -x 'Safe_Student_MVP/data/db.runtime.json' \
-               'Safe_Student_MVP/.tmp/*' \
-            >> docs/build-logs/rebuild-v2-status.txt 2>&1
-          echo "STATUS=$?" >> docs/build-logs/rebuild-v2-status.txt
+               'Safe_Student_MVP/.tmp/*'
 
-          cp /tmp/safe-student-slides-qa/08_Apresentacao_Final_Safe_Student.pdf docs/build-logs/08_Apresentacao_Final_Safe_Student_QA.pdf 2>/dev/null || true
-          cat docs/build-logs/rebuild-v2-status.txt
-          exit 0
+      - name: Remover PNGs intermediários dos diagramas
+        run: rm -f docs/diagramas/*.png
 
-      - name: Commitar resultados e diagnostico V2
+      - name: Commitar binários V2
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          if git diff --cached --quiet; then
-            echo 'Nenhuma alteração gerada.'
-          else
-            git commit -m 'refactor: revisao senior V2 de requisitos, UML, DER e documentacao'
-            git push origin HEAD:revisao-senior-uml-requisitos
-          fi
-
-      - name: Publicar artefatos de QA
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: qa-revisao-senior-v2
-          if-no-files-found: warn
-          path: |
-            01_Plano_Gerenciamento_Unificado_Safe_Student.pdf
-            02_Especificacao_Requisitos_UML_DER_Safe_Student.pdf
-            04_Plano_Relatorio_Testes_Safe_Student.pdf
-            06_Relatorio_Auditoria_Conformidade_Safe_Student.pdf
-            08_Apresentacao_Final_Safe_Student.pptx
+          git add \
+            01_Plano_Gerenciamento_Unificado_Safe_Student.docx \
+            01_Plano_Gerenciamento_Unificado_Safe_Student.pdf \
+            02_Especificacao_Requisitos_UML_DER_Safe_Student.docx \
+            02_Especificacao_Requisitos_UML_DER_Safe_Student.pdf \
+            04_Plano_Relatorio_Testes_Safe_Student.docx \
+            04_Plano_Relatorio_Testes_Safe_Student.pdf \
+            06_Relatorio_Auditoria_Conformidade_Safe_Student.docx \
+            06_Relatorio_Auditoria_Conformidade_Safe_Student.pdf \
+            08_Apresentacao_Final_Safe_Student.pptx \
+            09_Safe_Student_MVP_codigo.zip \
+            10_Manual_Usuario_Implantacao_Treinamento_Suporte.docx \
             10_Manual_Usuario_Implantacao_Treinamento_Suporte.pdf
-            docs/diagramas/*.png
-            docs/build-logs/*
+          if git diff --cached --quiet; then
+            echo 'Nenhuma alteração binária necessária.'
+          else
+            git commit -m 'docs: publica pacote acadêmico V2 revisado'
+            git push origin HEAD:main
+          fi
