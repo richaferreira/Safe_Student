@@ -15,14 +15,21 @@ const {
 } = require('./lib/domain');
 
 const PORT = Number(process.env.PORT || 3000);
-const DB_PATH = process.env.SS_DB_PATH || path.join(__dirname, 'data', 'db.json');
+const SEED_DB_PATH = path.join(__dirname, 'data', 'db.seed.json');
+const DB_PATH = process.env.SS_DB_PATH || path.join(__dirname, 'data', 'db.runtime.json');
 const PUBLIC = path.join(__dirname, 'public');
 const TIME_ZONE = process.env.SS_TIME_ZONE || 'America/Sao_Paulo';
 const SESSION_TTL_MS = Number(process.env.SS_SESSION_TTL_MS || 2 * 60 * 60 * 1000);
+const MAX_BODY_BYTES = 1_000_000;
 const sessions = new Map();
 const loginAttempts = new Map();
 
+function ensureDb() {
+  if (!fs.existsSync(DB_PATH)) fs.copyFileSync(SEED_DB_PATH, DB_PATH);
+}
+
 function readDb() {
+  ensureDb();
   return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
 }
 
@@ -53,27 +60,34 @@ function csv(res, filename, rows) {
 
 function parseBody(req) {
   return new Promise((resolve, reject) => {
-    let data = '';
-    let done = false;
+    const chunks = [];
+    let bytes = 0;
+    let settled = false;
+
     req.on('data', (chunk) => {
-      if (done) return;
-      data += chunk;
-      if (Buffer.byteLength(data, 'utf8') > 1_000_000) {
-        done = true;
+      if (settled) return;
+      bytes += chunk.length;
+      if (bytes > MAX_BODY_BYTES) {
+        settled = true;
         reject(new Error('Corpo da requisição excede 1 MB.'));
         req.destroy();
+        return;
       }
+      chunks.push(chunk);
     });
+
     req.on('end', () => {
-      if (done) return;
+      if (settled) return;
       try {
-        resolve(data ? JSON.parse(data) : {});
+        const raw = Buffer.concat(chunks).toString('utf8');
+        resolve(raw ? JSON.parse(raw) : {});
       } catch {
         reject(new Error('JSON inválido.'));
       }
     });
+
     req.on('error', (err) => {
-      if (!done) reject(err);
+      if (!settled) reject(err);
     });
   });
 }
@@ -82,6 +96,18 @@ function safeUser(user) {
   const u = { ...user };
   delete u.passwordHash;
   return u;
+}
+
+function directoryUser(user) {
+  return { id: user.id, name: user.name, role: user.role, status: user.status };
+}
+
+function uniqueStudentToken(db) {
+  for (let i = 0; i < 32; i += 1) {
+    const token = `SS-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+    if (!db.students.some((s) => s.token === token)) return token;
+  }
+  throw new Error('Não foi possível gerar token único para o aluno.');
 }
 
 function audit(db, userId, action, entity = '', entityId = '', details = '') {
@@ -103,14 +129,14 @@ function bearerToken(req) {
 
 function userFromReq(req) {
   const token = bearerToken(req);
-  const s = sessions.get(token);
-  if (!s) return null;
-  if (Date.now() > s.expiresAt) {
+  const session = sessions.get(token);
+  if (!session) return null;
+  if (Date.now() > session.expiresAt) {
     sessions.delete(token);
     return null;
   }
-  s.expiresAt = Date.now() + SESSION_TTL_MS;
-  return s.user;
+  session.expiresAt = Date.now() + SESSION_TTL_MS;
+  return session.user;
 }
 
 function roleNameForServer(role) {
@@ -123,8 +149,8 @@ function roleNameForServer(role) {
 }
 
 function className(db, classId) {
-  const c = db.classes.find((x) => x.id === classId);
-  return c ? `${c.name} - ${c.shift}` : 'Sem turma';
+  const item = db.classes.find((c) => c.id === classId);
+  return item ? `${item.name} - ${item.shift}` : 'Sem turma';
 }
 
 function studentById(db, id) {
@@ -186,8 +212,7 @@ function serveStatic(req, res) {
   fs.readFile(filePath, (err, data) => {
     if (err) {
       res.writeHead(404);
-      res.end('Not found');
-      return;
+      return res.end('Not found');
     }
     const ext = path.extname(filePath);
     const types = {
@@ -208,15 +233,15 @@ function serveStatic(req, res) {
 
 function rateLimited(ip) {
   const now = Date.now();
-  const arr = (loginAttempts.get(ip) || []).filter((t) => now - t < 60_000);
-  loginAttempts.set(ip, arr);
-  return arr.length >= 10;
+  const attempts = (loginAttempts.get(ip) || []).filter((time) => now - time < 60_000);
+  loginAttempts.set(ip, attempts);
+  return attempts.length >= 10;
 }
 
 function recordLoginAttempt(ip) {
-  const arr = loginAttempts.get(ip) || [];
-  arr.push(Date.now());
-  loginAttempts.set(ip, arr);
+  const attempts = loginAttempts.get(ip) || [];
+  attempts.push(Date.now());
+  loginAttempts.set(ip, attempts);
 }
 
 function clearLoginAttempts(ip) {
@@ -229,7 +254,12 @@ function canMessageUser(from, to) {
 }
 
 function visibleDirectory(user, db) {
-  return db.users.filter((u) => canMessageUser(user, u)).map(safeUser);
+  return db.users.filter((u) => canMessageUser(user, u)).map(directoryUser);
+}
+
+function scopedStudents(user, db) {
+  const ids = new Set(allowedStudentIds(user, db));
+  return db.students.filter((s) => ids.has(s.id));
 }
 
 async function handler(req, res) {
@@ -242,7 +272,7 @@ async function handler(req, res) {
     if (req.method === 'GET' && url.pathname === '/api/health') {
       return json(res, 200, {
         ok: true,
-        version: '1.1.0',
+        version: '2.0.0',
         mode: 'academic-demo',
         timeZone: TIME_ZONE,
       });
@@ -260,11 +290,11 @@ async function handler(req, res) {
       }
       clearLoginAttempts(ip);
       const token = randomToken();
-      const su = safeUser(user);
-      sessions.set(token, { user: su, expiresAt: Date.now() + SESSION_TTL_MS });
+      const sanitized = safeUser(user);
+      sessions.set(token, { user: sanitized, expiresAt: Date.now() + SESSION_TTL_MS });
       audit(db, user.id, 'LOGIN', 'sessao', '', `Perfil ${user.role}`);
       writeDb(db);
-      return json(res, 200, { token, user: su, expiresInSeconds: SESSION_TTL_MS / 1000 });
+      return json(res, 200, { token, user: sanitized, expiresInSeconds: SESSION_TTL_MS / 1000 });
     }
 
     const user = userFromReq(req);
@@ -276,66 +306,72 @@ async function handler(req, res) {
       writeDb(db);
       return json(res, 200, { ok: true });
     }
-    if (req.method === 'GET' && url.pathname === '/api/me') return json(res, 200, { user });
+
+    if (req.method === 'GET' && url.pathname === '/api/me') {
+      return json(res, 200, { user });
+    }
 
     if (req.method === 'GET' && url.pathname === '/api/dashboard') {
       const ids = allowedStudentIds(user, db);
-      const students = db.students
-        .filter((s) => ids.includes(s.id))
-        .map((s) => ({ ...s, className: className(db, s.classId) }));
+      const allowed = new Set(ids);
+      const students = scopedStudents(user, db).map((s) => ({ ...s, className: className(db, s.classId) }));
       const attendance = db.attendance
-        .filter((r) => ids.includes(r.studentId))
+        .filter((r) => allowed.has(r.studentId))
         .map((r) => ({ ...r, student: studentById(db, r.studentId)?.name || 'Aluno' }))
         .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
       const notifications = (db.notifications || [])
-        .filter((n) => n.userId === user.id || ['GESTAO', 'ADMIN'].includes(user.role))
+        .filter((n) => n.userId === user.id)
         .map((n) => ({ ...n, student: studentById(db, n.studentId)?.name || 'Aluno' }))
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       const today = dateKey();
-      const todayAtt = db.attendance.filter((r) => dateKey(r.timestamp) === today);
-      const metrics = {
-        students: students.length,
-        entradasHoje: todayAtt.filter((r) => r.type === 'ENTRADA' && ids.includes(r.studentId)).length,
-        saidasHoje: todayAtt.filter((r) => r.type === 'SAIDA' && ids.includes(r.studentId)).length,
-        notificacoesNaoLidas: notifications.filter((n) => !n.read).length,
-      };
+      const todayAtt = db.attendance.filter((r) => dateKey(r.timestamp) === today && allowed.has(r.studentId));
       return json(res, 200, {
         school: { ...db.school, timeZone: db.school?.timeZone || TIME_ZONE },
         students,
         attendance: attendance.slice(0, 60),
         notifications: notifications.slice(0, 30),
-        metrics,
+        metrics: {
+          students: students.length,
+          entradasHoje: todayAtt.filter((r) => r.type === 'ENTRADA').length,
+          saidasHoje: todayAtt.filter((r) => r.type === 'SAIDA').length,
+          notificacoesNaoLidas: notifications.filter((n) => !n.read).length,
+        },
       });
     }
 
     if (req.method === 'GET' && url.pathname === '/api/students') {
-      const ids = allowedStudentIds(user, db);
-      const result = db.students
-        .filter((s) => ids.includes(s.id))
-        .map((s) => ({
-          ...s,
-          className: className(db, s.classId),
-          guardians: db.users
-            .filter((u) => (u.studentIds || []).includes(s.id))
-            .map((u) => ({ id: u.id, name: u.name, email: u.email })),
-        }));
+      const result = scopedStudents(user, db).map((s) => ({
+        ...s,
+        className: className(db, s.classId),
+        guardians: canManageSchool(user.role)
+          ? db.users
+            .filter((u) => u.role === 'RESPONSAVEL' && (u.studentIds || []).includes(s.id))
+            .map((u) => ({ id: u.id, name: u.name }))
+          : [],
+      }));
       return json(res, 200, { students: result });
     }
 
     if (req.method === 'POST' && url.pathname === '/api/students') {
       if (!canManageSchool(user.role)) return json(res, 403, { error: 'Perfil sem permissão para cadastrar aluno.' });
-      const b = await parseBody(req);
-      const name = String(b.name || '').trim();
-      const enrollment = String(b.enrollment || '').trim();
-      const classId = String(b.classId || '').trim();
+      const body = await parseBody(req);
+      const name = String(body.name || '').trim();
+      const enrollment = String(body.enrollment || '').trim();
+      const classId = String(body.classId || '').trim();
       if (name.length < 3 || enrollment.length < 3 || !db.classes.some((c) => c.id === classId)) {
         return json(res, 400, { error: 'Nome, matrícula e turma válidos são obrigatórios.' });
       }
       if (db.students.some((s) => s.enrollment === enrollment)) {
         return json(res, 409, { error: 'Matrícula já cadastrada.' });
       }
-      const token = `SS-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
-      const student = { id: crypto.randomUUID(), name, enrollment, classId, token, status: 'ATIVO' };
+      const student = {
+        id: crypto.randomUUID(),
+        name,
+        enrollment,
+        classId,
+        token: uniqueStudentToken(db),
+        status: 'ATIVO',
+      };
       db.students.push(student);
       audit(db, user.id, 'CADASTRAR_ALUNO', 'aluno', student.id, name);
       writeDb(db);
@@ -344,9 +380,9 @@ async function handler(req, res) {
 
     if (req.method === 'POST' && url.pathname === '/api/links') {
       if (!canManageSchool(user.role)) return json(res, 403, { error: 'Perfil sem permissão para vincular responsável.' });
-      const b = await parseBody(req);
-      const guardian = db.users.find((u) => u.id === b.guardianId && u.role === 'RESPONSAVEL' && u.status === 'ATIVO');
-      const student = db.students.find((s) => s.id === b.studentId && s.status === 'ATIVO');
+      const body = await parseBody(req);
+      const guardian = db.users.find((u) => u.id === body.guardianId && u.role === 'RESPONSAVEL' && u.status === 'ATIVO');
+      const student = db.students.find((s) => s.id === body.studentId && s.status === 'ATIVO');
       if (!guardian || !student) return json(res, 404, { error: 'Responsável ou aluno ativo não encontrado.' });
       guardian.studentIds = Array.from(new Set([...(guardian.studentIds || []), student.id]));
       audit(db, user.id, 'VINCULAR_RESPONSAVEL', 'aluno', student.id, guardian.name);
@@ -356,18 +392,19 @@ async function handler(req, res) {
 
     if (req.method === 'POST' && url.pathname === '/api/attendance') {
       if (!canRegisterAttendance(user.role)) return json(res, 403, { error: 'Perfil sem permissão para registrar presença.' });
-      const b = await parseBody(req);
-      const type = String(b.type || '').toUpperCase();
-      const tokenCode = normalizeToken(b.token);
+      const body = await parseBody(req);
+      const type = String(body.type || '').toUpperCase();
+      const tokenCode = normalizeToken(body.token);
       if (!['ENTRADA', 'SAIDA'].includes(type)) return json(res, 400, { error: 'Tipo de registro inválido.' });
       const student = db.students.find((s) => s.token === tokenCode && s.status === 'ATIVO');
       if (!student) return json(res, 404, { error: 'Token não encontrado ou aluno inativo.' });
       const today = dateKey();
       const todayRecords = db.attendance.filter((r) => r.studentId === student.id && dateKey(r.timestamp) === today);
-      const seq = validateAttendanceSequence(todayRecords, type);
-      if (!seq.ok) return json(res, 409, { error: seq.error });
+      const sequence = validateAttendanceSequence(todayRecords, type);
+      if (!sequence.ok) return json(res, 409, { error: sequence.error });
+
       const now = new Date();
-      const rec = {
+      const record = {
         id: crypto.randomUUID(),
         studentId: student.id,
         type,
@@ -376,12 +413,12 @@ async function handler(req, res) {
         registeredBy: user.id,
         origin: 'PORTARIA_DEMO',
       };
-      db.attendance.push(rec);
+      db.attendance.push(record);
       db.notifications = db.notifications || [];
-      const guardians = db.users.filter((u) => u.role === 'RESPONSAVEL' && (u.studentIds || []).includes(student.id));
-      guardians.forEach((g) => db.notifications.push({
+      const guardians = db.users.filter((u) => u.role === 'RESPONSAVEL' && u.status === 'ATIVO' && (u.studentIds || []).includes(student.id));
+      guardians.forEach((guardian) => db.notifications.push({
         id: crypto.randomUUID(),
-        userId: g.id,
+        userId: guardian.id,
         studentId: student.id,
         title: `${type === 'ENTRADA' ? 'Entrada' : 'Saída'} registrada`,
         message: `${student.name}: ${type.toLowerCase()} registrada no Safe Student em ${formatSchoolDateTime(now)}.`,
@@ -389,36 +426,34 @@ async function handler(req, res) {
         read: false,
         severity: 'INFO',
       }));
-      audit(db, user.id, `REGISTRAR_${type}`, 'presenca', rec.id, student.name);
+      audit(db, user.id, `REGISTRAR_${type}`, 'presenca', record.id, student.name);
       writeDb(db);
-      return json(res, 201, { record: rec, student, notified: guardians.length });
+      return json(res, 201, { record, student, notified: guardians.length });
     }
 
     if (req.method === 'PATCH' && url.pathname.startsWith('/api/notifications/')) {
       const id = url.pathname.split('/').pop();
-      const n = (db.notifications || []).find((x) => x.id === id && x.userId === user.id);
-      if (!n) return json(res, 404, { error: 'Notificação não encontrada.' });
-      n.read = true;
-      audit(db, user.id, 'LER_NOTIFICACAO', 'notificacao', n.id);
+      const notification = (db.notifications || []).find((n) => n.id === id && n.userId === user.id);
+      if (!notification) return json(res, 404, { error: 'Notificação não encontrada.' });
+      notification.read = true;
+      audit(db, user.id, 'LER_NOTIFICACAO', 'notificacao', notification.id);
       writeDb(db);
-      return json(res, 200, { notification: n });
+      return json(res, 200, { notification });
     }
 
     if (req.method === 'GET' && url.pathname === '/api/reports') {
-      const ids = allowedStudentIds(user, db);
-      const rows = db.students.filter((s) => ids.includes(s.id)).map((s) => {
-        const rec = db.attendance.filter((r) => r.studentId === s.id);
-        const entradas = rec.filter((r) => r.type === 'ENTRADA').length;
-        const saidas = rec.filter((r) => r.type === 'SAIDA').length;
+      const ids = new Set(allowedStudentIds(user, db));
+      const rows = db.students.filter((s) => ids.has(s.id)).map((s) => {
+        const records = db.attendance.filter((r) => r.studentId === s.id);
         return {
           studentId: s.id,
           name: s.name,
           enrollment: s.enrollment,
           className: className(db, s.classId),
-          entradas,
-          saidas,
-          taxaDemo: attendanceRate(rec, 20),
-          ultimoRegistro: [...rec].sort((a, b) => b.timestamp.localeCompare(a.timestamp))[0]?.timestamp || null,
+          entradas: records.filter((r) => r.type === 'ENTRADA').length,
+          saidas: records.filter((r) => r.type === 'SAIDA').length,
+          taxaDemo: attendanceRate(records, 20, dateKey),
+          ultimoRegistro: [...records].sort((a, b) => b.timestamp.localeCompare(a.timestamp))[0]?.timestamp || null,
         };
       });
       return json(res, 200, {
@@ -428,17 +463,17 @@ async function handler(req, res) {
     }
 
     if (req.method === 'GET' && url.pathname === '/api/reports.csv') {
-      const ids = allowedStudentIds(user, db);
+      const ids = new Set(allowedStudentIds(user, db));
       const rows = [['Aluno', 'Matrícula', 'Turma', 'Tipo', 'Data/Hora', 'Método']];
       db.attendance
-        .filter((r) => ids.includes(r.studentId))
+        .filter((r) => ids.has(r.studentId))
         .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
         .forEach((r) => {
-          const s = studentById(db, r.studentId);
+          const student = studentById(db, r.studentId);
           rows.push([
-            s?.name,
-            s?.enrollment,
-            className(db, s?.classId),
+            student?.name,
+            student?.enrollment,
+            className(db, student?.classId),
             r.type,
             formatSchoolDateTime(r.timestamp),
             r.method,
@@ -449,7 +484,7 @@ async function handler(req, res) {
 
     if (req.method === 'GET' && url.pathname === '/api/messages') {
       const visible = (db.messages || [])
-        .filter((m) => m.fromUserId === user.id || m.toUserId === user.id || ['GESTAO', 'ADMIN'].includes(user.role))
+        .filter((m) => m.fromUserId === user.id || m.toUserId === user.id)
         .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
         .map((m) => ({
           ...m,
@@ -460,23 +495,23 @@ async function handler(req, res) {
     }
 
     if (req.method === 'POST' && url.pathname === '/api/messages') {
-      const b = await parseBody(req);
-      const text = String(b.text || '').trim().slice(0, 500);
-      const to = db.users.find((u) => u.id === b.toUserId);
+      const body = await parseBody(req);
+      const text = String(body.text || '').trim().slice(0, 500);
+      const to = db.users.find((u) => u.id === body.toUserId);
       if (!text || !to) return json(res, 400, { error: 'Destinatário e mensagem são obrigatórios.' });
       if (!canMessageUser(user, to)) return json(res, 403, { error: 'Destinatário não permitido para este perfil.' });
       db.messages = db.messages || [];
-      const msg = {
+      const message = {
         id: crypto.randomUUID(),
         fromUserId: user.id,
         toUserId: to.id,
         text,
         createdAt: new Date().toISOString(),
       };
-      db.messages.push(msg);
-      audit(db, user.id, 'ENVIAR_MENSAGEM', 'mensagem', msg.id, `Para ${to.name}`);
+      db.messages.push(message);
+      audit(db, user.id, 'ENVIAR_MENSAGEM', 'mensagem', message.id, `Para ${to.name}`);
       writeDb(db);
-      return json(res, 201, { message: msg });
+      return json(res, 201, { message });
     }
 
     if (req.method === 'GET' && url.pathname === '/api/directory') {
@@ -485,20 +520,20 @@ async function handler(req, res) {
 
     if (req.method === 'GET' && url.pathname === '/api/feedback') {
       const all = (db.feedback || []).slice().reverse();
-      const manager = ['GESTAO', 'ADMIN'].includes(user.role);
+      const manager = canManageSchool(user.role);
       const rows = (manager ? all : all.filter((f) => f.userId === user.id)).map((f) => ({
         ...f,
         userName: userById(db, f.userId)?.name || 'Participante',
       }));
       const measured = all.filter((f) => f.source === 'APRESENTACAO');
       const avg = measured.length
-        ? Math.round((measured.reduce((a, b) => a + Number(b.score || 0), 0) / measured.length) * 10) / 10
+        ? Math.round((measured.reduce((sum, item) => sum + Number(item.score || 0), 0) / measured.length) * 10) / 10
         : 0;
       const successRows = measured.filter((f) => typeof f.success === 'boolean');
       const successRate = successRows.length
         ? Math.round((successRows.filter((f) => f.success).length / successRows.length) * 100)
         : 0;
-      const timed = measured.map((f) => Number(f.timeSeconds)).filter((v) => Number.isFinite(v) && v > 0);
+      const timed = measured.map((f) => Number(f.timeSeconds)).filter((value) => Number.isFinite(value) && value > 0);
       const avgTimeSeconds = timed.length ? Math.round(timed.reduce((a, b) => a + b, 0) / timed.length) : 0;
       return json(res, 200, {
         rows,
@@ -512,19 +547,19 @@ async function handler(req, res) {
     }
 
     if (req.method === 'POST' && url.pathname === '/api/feedback') {
-      const b = await parseBody(req);
-      const score = Number(b.score);
-      const profile = String(b.profile || roleNameForServer(user.role)).trim().slice(0, 60);
-      const scenario = String(b.scenario || '').trim().slice(0, 120);
-      const comment = String(b.comment || '').trim().slice(0, 300);
-      const success = b.success === true || b.success === 'true' || b.success === 'SIM';
-      const timeRaw = Number(b.timeSeconds);
+      const body = await parseBody(req);
+      const score = Number(body.score);
+      const profile = String(body.profile || roleNameForServer(user.role)).trim().slice(0, 60);
+      const scenario = String(body.scenario || '').trim().slice(0, 120);
+      const comment = String(body.comment || '').trim().slice(0, 300);
+      const success = body.success === true || body.success === 'true' || body.success === 'SIM';
+      const timeRaw = Number(body.timeSeconds);
       const timeSeconds = Number.isFinite(timeRaw) && timeRaw > 0 && timeRaw <= 3600 ? Math.round(timeRaw) : null;
       if (!Number.isInteger(score) || score < 1 || score > 5 || !comment || !scenario) {
         return json(res, 400, { error: 'Cenário, nota de 1 a 5 e comentário são obrigatórios.' });
       }
       db.feedback = db.feedback || [];
-      const row = {
+      const feedback = {
         id: crypto.randomUUID(),
         userId: user.id,
         profile,
@@ -536,62 +571,69 @@ async function handler(req, res) {
         source: 'APRESENTACAO',
         createdAt: new Date().toISOString(),
       };
-      db.feedback.push(row);
-      audit(db, user.id, 'REGISTRAR_FEEDBACK', 'feedback', row.id, `Cenário ${scenario}; nota ${score}`);
+      db.feedback.push(feedback);
+      audit(db, user.id, 'REGISTRAR_FEEDBACK', 'feedback', feedback.id, `Cenário ${scenario}; nota ${score}`);
       writeDb(db);
-      return json(res, 201, { feedback: row });
+      return json(res, 201, { feedback });
     }
 
     if (req.method === 'GET' && url.pathname === '/api/feedback.csv') {
       if (!canManageSchool(user.role)) return json(res, 403, { error: 'Somente gestão pode exportar validação.' });
       const rows = [['Data/Hora', 'Perfil', 'Cenário', 'Sucesso', 'Tempo (s)', 'Nota', 'Comentário', 'Fonte']];
-      (db.feedback || []).forEach((f) => rows.push([
-        formatSchoolDateTime(f.createdAt),
-        f.profile,
-        f.scenario || '',
-        f.success === true ? 'SIM' : f.success === false ? 'NÃO' : '',
-        f.timeSeconds || '',
-        f.score,
-        f.comment,
-        f.source || 'DEMO_SEED',
-      ]));
+      (db.feedback || [])
+        .filter((f) => f.source === 'APRESENTACAO')
+        .forEach((f) => rows.push([
+          formatSchoolDateTime(f.createdAt),
+          f.profile,
+          f.scenario || '',
+          f.success === true ? 'SIM' : f.success === false ? 'NÃO' : '',
+          f.timeSeconds || '',
+          f.score,
+          f.comment,
+          f.source,
+        ]));
       return csv(res, 'safe-student-validacao-mvp.csv', rows);
     }
 
     if (req.method === 'GET' && url.pathname === '/api/audit') {
       if (!canViewAudit(user.role)) return json(res, 403, { error: 'Perfil sem permissão para auditoria.' });
-      const rows = (db.audit || []).slice(-120).reverse().map((a) => ({
-        ...a,
-        userName: userById(db, a.userId)?.name || 'Sistema',
+      const rows = (db.audit || []).slice(-120).reverse().map((event) => ({
+        ...event,
+        userName: userById(db, event.userId)?.name || 'Sistema',
       }));
       return json(res, 200, { rows });
     }
 
-    if (req.method === 'GET' && url.pathname === '/api/classes') return json(res, 200, { classes: db.classes });
+    if (req.method === 'GET' && url.pathname === '/api/classes') {
+      if (!canManageSchool(user.role)) return json(res, 403, { error: 'Perfil sem permissão.' });
+      return json(res, 200, { classes: db.classes });
+    }
 
     if (req.method === 'GET' && url.pathname === '/api/guardians') {
       if (!canManageSchool(user.role)) return json(res, 403, { error: 'Perfil sem permissão.' });
       return json(res, 200, {
-        guardians: db.users.filter((u) => u.role === 'RESPONSAVEL' && u.status === 'ATIVO').map(safeUser),
+        guardians: db.users
+          .filter((u) => u.role === 'RESPONSAVEL' && u.status === 'ATIVO')
+          .map((u) => ({ id: u.id, name: u.name })),
       });
     }
 
     if (req.method === 'POST' && url.pathname === '/api/demo/reset') {
-      if (!['GESTAO', 'ADMIN'].includes(user.role)) {
-        return json(res, 403, { error: 'Somente gestão pode reiniciar a apresentação.' });
-      }
-      const original = path.join(__dirname, 'data', 'db.seed.json');
-      fs.copyFileSync(original, DB_PATH);
+      if (!canManageSchool(user.role)) return json(res, 403, { error: 'Somente gestão pode reiniciar a apresentação.' });
+      fs.copyFileSync(SEED_DB_PATH, DB_PATH);
+      const resetDb = readDb();
+      audit(resetDb, user.id, 'RESTAURAR_DEMO', 'base_demo', '', 'Base restaurada para o estado inicial.');
+      writeDb(resetDb);
       sessions.clear();
       return json(res, 200, { ok: true, message: 'Demonstração restaurada.' });
     }
 
     return json(res, 404, { error: 'Rota não encontrada.' });
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     return json(res, 500, {
       error: 'Erro interno no MVP.',
-      detail: process.env.NODE_ENV === 'test' ? e.message : undefined,
+      detail: process.env.NODE_ENV === 'test' ? error.message : undefined,
     });
   }
 }
