@@ -29,7 +29,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libreoffice-writer libreoffice-impress zip
 
-      - name: Reconstruir V2 e registrar diagnostico
+      - name: Reconstruir documentos V2 e registrar diagnostico
         run: |
           set +e
           mkdir -p docs/build-logs /tmp/safe-student-v2-pdf /tmp/safe-student-slides-qa
@@ -47,8 +47,6 @@ jobs:
           }
 
           run_step diagramas python tools/build_diagrams_v2.py
-          run_step backend python tools/apply_senior_refactor.py
-          git rm -f Safe_Student_MVP/data/db.json >> docs/build-logs/rebuild-v2-status.txt 2>&1 || true
           run_step especificacao python tools/build_spec_v2.py
           run_step documentos python tools/patch_academic_v2.py
 
@@ -101,7 +99,7 @@ jobs:
           if git diff --cached --quiet; then
             echo 'Nenhuma alteração gerada.'
           else
-            git commit -m 'refactor: revisao senior V2 de requisitos, UML, DER e privacidade'
+            git commit -m 'refactor: revisao senior V2 de requisitos, UML, DER e documentacao'
             git push origin HEAD:revisao-senior-uml-requisitos
           fi
 
