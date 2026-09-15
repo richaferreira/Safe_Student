@@ -11,13 +11,6 @@ O Safe Student é um **MVP acadêmico/extensionista**, não um produto homologad
 
 A versão executável atual do MVP é **2.0**. A especificação acadêmica/modelagem permanece identificada como **V2.0**, pois representa a revisão formal dos requisitos e diagramas.
 
-A referência técnica atual é:
-
-- [`docs/ESPECIFICACAO_REQUISITOS_V2.md`](docs/ESPECIFICACAO_REQUISITOS_V2.md) — requisitos, regras, casos de uso e rastreabilidade;
-- [`docs/diagramas/`](docs/diagramas/) — UML/DER V2 com notação revisada;
-- [`docs/AUDITORIA_SENIOR_V2.md`](docs/AUDITORIA_SENIOR_V2.md) — achados e correções da auditoria;
-- [`docs/BUILD_STATUS_V2.md`](docs/BUILD_STATUS_V2.md) — registro da publicação final dos binários;
-- [`ACADEMIC_COMPLIANCE.md`](ACADEMIC_COMPLIANCE.md) — conformidade acadêmica e pendências reais.
 
 ## Problema e proposta de valor
 
@@ -53,7 +46,6 @@ A implementação em `Safe_Student_MVP/` usa:
 - **senhas:** `scrypt` + `timingSafeEqual`;
 - **testes:** `node:test` para domínio, segurança, API e regressões de privacidade.
 
-O diagrama correspondente está em [`docs/diagramas/09_arquitetura_componentes.svg`](docs/diagramas/09_arquitetura_componentes.svg).
 
 ## Correções relevantes da revisão sênior
 
