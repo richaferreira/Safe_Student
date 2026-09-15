@@ -113,25 +113,6 @@ O módulo Feedback registra, sem nome do participante:
 
 **Importante:** os resultados históricos de pesquisa declarados em versão anterior não possuem, no repositório, evidência primária suficiente para reprodução. Portanto quantidade de participantes, percentuais e médias históricas não devem ser apresentados como resultados auditados até anexar a comprovação ou executar nova coleta real.
 
-## Artefatos acadêmicos
-
-| Artefato | Finalidade |
-|---|---|
-| `01_Plano_Gerenciamento_Unificado_Safe_Student.*` | plano de gerenciamento |
-| `02_Especificacao_Requisitos_UML_DER_Safe_Student.*` | documento formal de requisitos/modelagem V2 |
-| `docs/ESPECIFICACAO_REQUISITOS_V2.md` | versão textual auditável da especificação V2 |
-| `docs/diagramas/` | diagramas V2 |
-| `03_Artigo_Safe_Student_ABNT.*` | artigo acadêmico |
-| `04_Plano_Relatorio_Testes_Safe_Student.*` | plano e relatório de testes V2 |
-| `05_Relatorio_Pesquisa_Campo_Extensionista_Safe_Student.*` | pesquisa/validação |
-| `06_Relatorio_Auditoria_Conformidade_Safe_Student.*` | auditoria de conformidade V2 |
-| `07_Checklist_Riscos_Rastreabilidade_Safe_Student.xlsx` | checklist, riscos e rastreabilidade |
-| `08_Apresentacao_Final_Safe_Student.pptx` | apresentação revisada |
-| `09_Safe_Student_MVP_codigo.zip` | pacote atualizado do código do MVP |
-| `Safe_Student_MVP/` | código-fonte canônico do MVP |
-| `10_Manual_Usuario_Implantacao_Treinamento_Suporte.*` | manual V2 |
-| `11_Modelos_Termos_Pesquisa_Aceite_Safe_Student.*` | instrumentos/termos |
-| `12_Auditoria_Competitiva_Safe_Student.xlsx` | análise competitiva |
 
 ## Produção é outro estágio
 
