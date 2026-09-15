@@ -74,20 +74,6 @@ A auditoria corrigiu, entre outros pontos:
 - UML e DER foram refeitos para não misturar associações, setas de processo, chaves estrangeiras e conceitos de diagramas diferentes;
 - documentos Office/PDF, apresentação e ZIP do MVP foram regenerados a partir da revisão final.
 
-## Diagramas V2
-
-- [Casos de uso — Responsável](docs/diagramas/01_uc_responsavel.svg)
-- [Casos de uso — Portaria](docs/diagramas/02_uc_portaria.svg)
-- [Casos de uso — Gestão](docs/diagramas/03_uc_gestao.svg)
-- [Classes — núcleo](docs/diagramas/04_classes_nucleo.svg)
-- [Classes — suporte](docs/diagramas/05_classes_suporte.svg)
-- [DER — núcleo](docs/diagramas/06_der_nucleo.svg)
-- [DER — suporte](docs/diagramas/07_der_suporte.svg)
-- [Sequência — presença](docs/diagramas/08_sequencia_presenca.svg)
-- [Componentes — arquitetura](docs/diagramas/09_arquitetura_componentes.svg)
-
-Em casos de uso e classes, associações não são representadas como setas de fluxo. No DER, cada FK possui relacionamento correspondente e cardinalidade explícita. Setas aparecem no diagrama de sequência e nas dependências de componentes porque nesses contextos a direção possui significado.
-
 ## Executar
 
 ```bash
