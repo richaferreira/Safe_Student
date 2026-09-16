@@ -26,7 +26,7 @@ function canMessageRole(fromRole, toRole) {
 
 function allowedStudentIds(user, db) {
   if (!user) return [];
-  if (user.role === 'RESPONSAVEL') return user.studentIds || [];
+  if (user.role === 'RESPONSAVEL') return (user.studentIds || []).filter(id => db.students.some(s => s.id === id && s.status === 'ATIVO'));
   if (['PORTARIA', 'GESTAO', 'ADMIN'].includes(user.role)) {
     return db.students.filter((s) => s.status === 'ATIVO').map((s) => s.id);
   }

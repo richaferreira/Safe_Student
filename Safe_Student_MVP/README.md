@@ -1,153 +1,63 @@
-# Safe Student MVP V2.1.0
+# Safe Student — MVP integrado
 
-MVP acadêmico demonstrável do Safe Student. A aplicação valida os fluxos centrais do projeto com **dados sintéticos**, sem assumir que o ambiente local é uma solução pronta para produção.
+Projeto demonstrativo de gestão de movimentações escolares, comunicação e acesso familiar. Esta entrega evolui o projeto existente, mantém a identidade visual aprovada e integra gestão, portaria e responsáveis. **Use exclusivamente dados fictícios. O MVP não está homologado para produção.**
 
-> **Controle de versão:** o executável está na versão **2.1.0**, incorporando as correções finais de privacidade e minimização. A especificação acadêmica/modelagem permanece identificada como **V2.0**, pois representa a revisão formal dos requisitos e diagramas.
+## Iniciar no Windows / PowerShell
 
-## Objetivo
+Abra a pasta que contém `package.json` e execute:
 
-Validar a hipótese de que um fluxo simples de identificação do estudante, registro de entrada/saída e comunicação rastreável pode melhorar a visibilidade da movimentação escolar para família, portaria e gestão.
-
-## Cinco funcionalidades essenciais
-
-1. autenticação e autorização por perfil;
-2. cadastro/vínculo aluno–responsável;
-3. entrada/saída por QR/token simulado;
-4. notificação interna ao responsável vinculado;
-5. rastreabilidade por histórico, relatório e auditoria.
-
-Mensagens, CSV, reset da demonstração, tema e feedback são recursos complementares.
-
-## Execução
-
-1. Instale Node.js 18 ou superior.
-2. Abra o terminal nesta pasta.
-3. Execute `npm start`.
-4. Acesse `http://localhost:3000`.
-
-Não há dependências externas e o MVP usa somente módulos nativos do Node.js.
-
-### Persistência da demonstração
-
-- `data/db.seed.json` — estado inicial sintético, versionado;
-- `data/db.runtime.json` — estado mutável da execução, criado automaticamente e **ignorado pelo Git**.
-
-Para restaurar a base local:
-
-```bash
-npm run reset
-```
-
-Variáveis opcionais:
-
-- `PORT` — padrão `3000`;
-- `SS_DB_PATH` — permite substituir o caminho da base mutável;
-- `SS_TIME_ZONE` — padrão `America/Sao_Paulo`;
-- `SS_SESSION_TTL_MS` — duração da sessão em milissegundos.
-
-## Perfis de apresentação
-
-| Perfil | E-mail | Senha | Capacidades principais |
-|---|---|---|---|
-| Responsável | `responsavel@demo.com` | `demo123` | alunos vinculados, notificações, histórico, relatório, mensagens e feedback |
-| Portaria | `portaria@demo.com` | `demo123` | entrada/saída e comunicação autorizada |
-| Gestão | `gestor@demo.com` | `demo123` | cadastros, vínculos, presença, relatórios, auditoria, validação e reset |
-
-Tokens de apresentação: `SS-ALU001` a `SS-ALU004`.
-
-## Funcionalidades implementadas
-
-- autenticação com sessão temporária;
-- senha armazenada por hash `scrypt`;
-- autorização por perfil no servidor;
-- cadastro de aluno com validação de matrícula e token único;
-- vínculo aluno–responsável;
-- entrada/saída com validação de sequência por **dia escolar**;
-- notificação interna ao responsável vinculado;
-- histórico e relatório por escopo do usuário;
-- exportação CSV autenticada;
-- comunicação com matriz de destinatários validada no backend;
-- mensagens visíveis somente aos participantes;
-- diretório de comunicação com projeção mínima de dados;
-- trilha de auditoria para Gestão/Admin;
-- feedback com cenário, sucesso, tempo, nota e comentário;
-- exportação de validação contendo apenas registros `APRESENTACAO`;
-- restauração da demo auditada;
-- cabeçalhos básicos de segurança;
-- tratamento explícito do fuso escolar.
-
-## Privacidade e autorização
-
-A interface pode esconder opções conforme o perfil, mas isso é apenas experiência de uso. **O controle real está no backend.**
-
-Na V2:
-
-- Gestão não recebe notificações privadas destinadas aos responsáveis;
-- Gestão não lê conversas privadas de terceiros;
-- diretório de mensagens não retorna e-mail nem vínculos desnecessários;
-- responsáveis retornados em consultas administrativas são minimizados;
-- `DEMO_SEED` não pode ser exportado como evidência de pesquisa.
-
-## Segurança acadêmica
-
-O MVP inclui controles proporcionais a uma demonstração:
-
-- `scrypt`;
-- `timingSafeEqual`;
-- tokens de sessão aleatórios;
-- expiração de sessão;
-- limitação de tentativas de login;
-- RBAC no servidor;
-- escopo por responsável;
-- CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` e `Permissions-Policy`;
-- gravação da base por arquivo temporário + `rename`.
-
-Esses controles **não são uma certificação de segurança nem tornam o MVP pronto para produção**.
-
-## Testes
-
-```bash
+```powershell
 npm test
+npm start
 ```
 
-A suíte V2 cobre domínio, segurança, API e regressões de privacidade. Na revisão sênior ela foi executada localmente em Node.js 22 com **24 testes aprovados e 0 falhas**.
+Acesse `http://localhost:3000`. Requer Node.js 18 ou posterior. Não precisa instalar dependências externas.
 
-Entre os cenários verificados estão:
+Se a porta estiver ocupada, utilize `$env:PORT="3001"; npm start` e acesse `http://localhost:3001`.
 
-- normalização de token;
-- RBAC de presença e mensagens;
-- isolamento de alunos vinculados;
-- entrada/saída válida e inválida;
-- cálculo da taxa pela chave do dia escolar;
-- hash e comparação de senha;
-- geração aleatória de token;
-- autenticação e autorização de API;
-- CSV autenticado;
-- bloqueio de destinatário manipulado;
-- diretório com dados mínimos;
-- isolamento de mensagens privadas;
-- isolamento de notificações;
-- separação entre `DEMO_SEED` e `APRESENTACAO`;
-- CSV de validação sem seed ilustrativa;
-- auditoria da restauração da demo.
+## Contas de demonstração
 
-O workflow `ci.yml` está configurado para Node 18, 20 e 22. O CI deve ser conferido antes de cada entrega da `main`.
+| Perfil | E-mail | Senha |
+|---|---|---|
+| Gestão | gestor@demo.com | demo123 |
+| Portaria | portaria@demo.com | demo123 |
+| Responsável | responsavel@demo.com | demo123 |
 
-## Validação acadêmica
+Estas credenciais servem **somente** à base fictícia. O login oferece um seletor de contas de demonstração.
 
-Cada feedback novo recebe `source: APRESENTACAO`. Registros ilustrativos da seed são `DEMO_SEED` e não entram nos indicadores de coleta efetiva nem na exportação de validação.
+## Cadastro integrado — fluxo principal
 
-A aplicação não solicita nome do participante no módulo Feedback. A evidência primária de pesquisa continua dependendo de coleta real, termos aplicáveis e anexação do CSV/formulários anonimizados.
+1. Gestão → Alunos → Novo aluno: preencha nome, matrícula, turma **e responsável** na mesma tela. A API rejeita cadastros sem responsável.
+2. Se o responsável já tem conta, selecione-o na opção "Selecionar responsável já ativo", ou forneça seus dados já conferidos pela escola. O estudante é vinculado ao usuário autorizado na mesma gravação.
+3. Se não tem conta, informe nome, e-mail, telefone e vínculo. A escola recebe um **código de convite de uso único**, com validade de 30 dias. O código só é exibido na criação ou renovação e é armazenado como hash, nunca em texto puro.
+4. A escola deve entregar o convite à pessoa correta por canal institucional conferido. **Não existe envio automático por e-mail** nesta implementação.
+5. No login, a pessoa escolhe "Recebeu um convite da escola? Ative sua conta", informa o e-mail, código e cria uma senha. Após a ativação, a sessão é aberta e os filhos vinculados aparecem no painel.
+6. Outros estudantes cadastrados pela gestão para a mesma conta aprovada aparecem imediatamente, mesmo em uma sessão já aberta. Novos convites pendentes para o mesmo e-mail são unificados com os vínculos aprovados na ativação.
 
-## Limitações deliberadas
+Se a escola já possui um aluno sem vínculo, use Alunos → Vincular responsável → pessoa existente ou novo convite. Gestão → Responsáveis e convites permite consultar acessos, remover vínculo, renovar ou revogar convites. Um código renovado invalida o anterior.
 
-O MVP usa JSON local e sessão em memória. Não possui HTTPS próprio, banco relacional, serviço real de push/SMS, SSO, observabilidade corporativa, backup, biometria, NFC, catraca ou geolocalização contínua.
+## O que está operacional
 
-Antes de qualquer uso real, seria necessário tratar infraestrutura segura, banco transacional, segredos, retenção, backup, monitoramento, incidentes, testes de carga/segurança e validação institucional/jurídica.
+**Gestão:** consultar e pesquisar alunos, matricular com responsável obrigatório, vincular outros responsáveis, editar matrícula/nome/turma, desativar e reativar aluno, consultar contas e convites, renovar/revogar convite, consultar movimentações, registrar entrada/saída, visualizar notificações próprias, trocar mensagens com destinatários permitidos, aplicar filtros de data e turma nos relatórios, exportar CSV filtrado, consultar auditoria e executar validações acadêmicas.
 
-## Modelagem técnica
+**Portaria:** buscar/selecionar códigos de alunos ativos, registrar entrada/saída, bloquear entradas duplicadas e saídas sem entrada, consultar estudantes e histórico autorizados, consultar relatórios dentro do escopo, comunicar-se apenas com perfis permitidos. A operação envia notificação **interna** aos responsáveis ativos vinculados.
 
-A especificação e os diagramas V2 estão em:
+**Responsável:** ativar conta mediante convite previamente criado pela escola, visualizar somente filhos ativos associados à sua conta, consultar último registro e histórico, acessar notificações e marcá-las como lidas, enviar mensagens e consultar relatórios limitados aos seus filhos. Códigos de portaria e dados de outras famílias não são enviados a esse perfil.
 
-- [`../docs/ESPECIFICACAO_REQUISITOS_V2.md`](../docs/ESPECIFICACAO_REQUISITOS_V2.md)
-- [`../docs/diagramas/`](../docs/diagramas/)
+**Visão geral:** indicadores, gráfico de movimentações, turmas, histórico recente, mensagens e notificações são alimentados pela API. Entrada/saída de portaria **não comprova frequência em sala ou localização em tempo real**. A interface não fabrica agenda, estatísticas de aprovação nem taxas de presença escolar.
+
+## Persistência e migração
+
+A aplicação inicia copiando `data/db.seed.json` para `data/db.runtime.json` se a base mutável ainda não existe. O arquivo de runtime é ignorado no Git. **Para atualizar uma instalação existente, faça backup da sua `data/db.runtime.json` e preserve esse arquivo: não o substitua pelo seed.** O novo código usa `guardianInvitations` quando disponível e inicializa essa coleção se faltar na base antiga. Cadastros antigos sem vínculo devem ser revisados pela gestão.
+
+Opções de ambiente: `PORT` (3000), `SS_DB_PATH` (caminho da base), `SS_TIME_ZONE` (`America/Sao_Paulo`), `SS_SESSION_TTL_MS` (tempo da sessão). `npm run reset` **apaga os dados locais de demonstração**. Não use esse comando sem backup.
+
+## Testes executados
+
+`npm test`: **44 testes aprovados, zero falhas** no ambiente desta entrega. A suíte abrange domínio, autenticação, autorização, cadastro obrigatório com responsável, múltiplos filhos, ativação e renovação/revogação de convite, sessão atualizada, edição e desativação, notificações, restrição por perfil, filtros de relatório, exportação CSV e regressões de privacidade. Um roteiro adicional automatizado em Chromium com requisições ao back-end verificou os fluxos das três áreas, cadastro/ativação, mensagem, entrada/saída, marcação de notificação, CSV e visualização móvel. Capturas em `previas/`.
+
+## Limites antes de uma implantação real
+
+Este projeto utiliza armazenamento JSON, sessões em memória e convite entregue manualmente. Ainda são necessários banco transacional e migrations, concorrência entre instâncias, HTTPS/TLS, controle de infraestrutura, backup/restauração testados, envio e verificação de e-mail, recuperação de senha, validação documental do vínculo responsável-aluno, consentimento e governança institucional, políticas de retenção e LGPD, testes de carga, revisão de segurança e homologação com a escola. A aprovação da gestão no MVP é uma **simulação do processo de verificação de vínculo**; ter o e-mail ou o convite sozinho não substitui essa conferência operacional.
+
+Os protótipos de imagem são referências visuais; os dados e botões deste projeto são os efetivamente suportados pelo servidor, sem números inventados. Leia `REVISAO_FUNCIONAL.md` para detalhes e pendências.

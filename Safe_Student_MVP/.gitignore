@@ -1,0 +1,6 @@
+# Gerado localmente com dados fictícios de demonstração.
+data/db.runtime.json
+node_modules/
+*.log
+.env
+.DS_Store

@@ -119,3 +119,176 @@ test('somente gestão exporta CSV de validação', async () => {
   const allowed = await request('/api/feedback.csv', { headers: auth(gest) });
   assert.equal(allowed.res.status, 200); assert.match(allowed.body, /Cenário/);
 });
+
+test('painel do responsável limita estudantes e não expõe tokens', async () => {
+  const token = await login('responsavel@demo.com');
+  const { res, body } = await request('/api/dashboard', { headers: auth(token) });
+  assert.equal(res.status, 200);
+  assert.deepEqual(body.students.map((s) => s.id), ['s1']);
+  assert.deepEqual(body.studentStatuses.map((s) => s.id), ['s1']);
+  assert.equal(body.students[0].token, undefined);
+  assert.equal(body.studentStatuses[0].lastType, null);
+});
+
+test('painel apresenta apenas última movimentação do dia e escopo correto', async () => {
+  const portaria = await login('portaria@demo.com');
+  const record = async (type) => request('/api/attendance', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...auth(portaria) },
+    body: JSON.stringify({ token: 'SS-ALU001', type }),
+  });
+  assert.equal((await record('ENTRADA')).res.status, 201);
+  let dashboard = await request('/api/dashboard', { headers: auth(portaria) });
+  assert.equal(dashboard.body.metrics.semSaidaHoje, 1);
+  assert.equal(dashboard.body.studentStatuses.find((s) => s.id === 's1').lastType, 'ENTRADA');
+  assert.equal((await record('SAIDA')).res.status, 201);
+  dashboard = await request('/api/dashboard', { headers: auth(portaria) });
+  assert.equal(dashboard.body.metrics.semSaidaHoje, 0);
+  assert.equal(dashboard.body.studentStatuses.find((s) => s.id === 's1').lastType, 'SAIDA');
+  const guardian = await login('responsavel@demo.com');
+  const scoped = await request('/api/dashboard', { headers: auth(guardian) });
+  assert.equal(scoped.body.studentStatuses.length, 1);
+  assert.equal(scoped.body.studentStatuses[0].lastType, 'SAIDA');
+});
+
+test('exportação CSV neutraliza fórmula inserida em nome do estudante', async () => {
+  const manager = await login('gestor@demo.com');
+  const added = await request('/api/students', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...auth(manager) },
+    body: JSON.stringify({ name: '=1+2', enrollment: 'TEST-FORMULA', classId: 'c1', guardianId: 'resp1' }),
+  });
+  assert.equal(added.res.status, 201);
+  const event = await request('/api/attendance', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...auth(manager) },
+    body: JSON.stringify({ token: added.body.student.token, type: 'ENTRADA' }),
+  });
+  assert.equal(event.res.status, 201);
+  const exported = await request('/api/reports.csv', { headers: auth(manager) });
+  assert.equal(exported.res.status, 200);
+  assert.match(exported.body, /"'=1\+2"/);
+  assert.doesNotMatch(exported.body, /(?:^|\n)"=1\+2"/);
+});
+
+test('frontend profissional e seus assets são servidos pelo HTTP', async () => {
+  const page = await request('/');
+  const stylesheet = await request('/professional.css');
+  assert.equal(page.res.status, 200);
+  assert.match(page.body, /Portal de presença escolar/);
+  assert.match(page.body, /id="studentPulse"/);
+  assert.doesNotMatch(page.body, /MVP V1\.1/);
+  assert.equal(stylesheet.res.status, 200);
+  assert.match(stylesheet.res.headers.get('content-type'), /text\/css/);
+});
+
+test('cadastro de aluno exige gestão e matrícula única', async () => {
+  const guardian = await login('responsavel@demo.com');
+  const manager = await login('gestor@demo.com');
+  const payload = JSON.stringify({ name: 'Estudante Novo', enrollment: '2026-NEW', classId: 'c1', guardianId: 'resp1' });
+  const options = (token) => ({ method: 'POST', headers: { 'Content-Type': 'application/json', ...auth(token) }, body: payload });
+  assert.equal((await request('/api/students', options(guardian))).res.status, 403);
+  const created = await request('/api/students', options(manager));
+  assert.equal(created.res.status, 201);
+  assert.equal(created.body.student.name, 'Estudante Novo');
+  assert.equal((await request('/api/students', options(manager))).res.status, 409);
+});
+
+test('vínculo é restrito à gestão e altera o escopo do responsável', async () => {
+  const guardian = await login('responsavel@demo.com');
+  const manager = await login('gestor@demo.com');
+  const options = (token) => ({
+    method: 'POST', headers: { 'Content-Type': 'application/json', ...auth(token) },
+    body: JSON.stringify({ guardianId: 'resp1', studentId: 's2' }),
+  });
+  assert.equal((await request('/api/links', options(guardian))).res.status, 403);
+  assert.equal((await request('/api/links', options(manager))).res.status, 200);
+  const updated = await request('/api/students', { headers: auth(guardian) });
+  assert.deepEqual(updated.body.students.map((s) => s.id).sort(), ['s1', 's2']);
+  assert.equal(updated.body.students.every((s) => s.token === undefined), true);
+});
+
+test('marcação como lida respeita destinatário da notificação', async () => {
+  const gate = await login('portaria@demo.com');
+  const guardian = await login('responsavel@demo.com');
+  const other = await login('outro@demo.com');
+  assert.equal((await request('/api/attendance', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', ...auth(gate) },
+    body: JSON.stringify({ token: 'SS-ALU001', type: 'ENTRADA' }),
+  })).res.status, 201);
+  const dashboard = await request('/api/dashboard', { headers: auth(guardian) });
+  const notificationId = dashboard.body.notifications[0].id;
+  assert.equal((await request(`/api/notifications/${notificationId}`, { method: 'PATCH', headers: auth(other) })).res.status, 404);
+  const own = await request(`/api/notifications/${notificationId}`, { method: 'PATCH', headers: auth(guardian) });
+  assert.equal(own.res.status, 200);
+  assert.equal(own.body.notification.read, true);
+});
+
+test('relatórios e CSV respeitam o escopo e auditoria exige gestão', async () => {
+  const gate = await login('portaria@demo.com');
+  const guardian = await login('responsavel@demo.com');
+  const manager = await login('gestor@demo.com');
+  const reportGate = await request('/api/reports', { headers: auth(gate) });
+  const reportGuardian = await request('/api/reports', { headers: auth(guardian) });
+  assert.deepEqual(reportGate.body.rows.map((r) => r.studentId).sort(), ['s1', 's2']);
+  assert.deepEqual(reportGuardian.body.rows.map((r) => r.studentId), ['s1']);
+  assert.equal((await request('/api/audit', { headers: auth(gate) })).res.status, 403);
+  assert.equal((await request('/api/audit', { headers: auth(guardian) })).res.status, 403);
+  assert.equal((await request('/api/audit', { headers: auth(manager) })).res.status, 200);
+  await request('/api/attendance', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', ...auth(gate) },
+    body: JSON.stringify({ token: 'SS-ALU002', type: 'ENTRADA' }),
+  });
+  const scopedCsv = await request('/api/reports.csv', { headers: auth(guardian) });
+  assert.doesNotMatch(scopedCsv.body, /Aluno Dois/);
+  assert.doesNotMatch(scopedCsv.body, /2026-002/);
+});
+
+test('painel institucional serve interface, estilo e ilustração com MIME correto', async () => {
+  const page = await request('/');
+  const styles = await request('/school-experience.css');
+  const artwork = await request('/school-campus.jpg');
+  assert.equal(page.res.status, 200);
+  assert.match(page.body, /Acesse o seu portal/);
+  assert.match(page.body, /id="activityChart"/);
+  assert.match(page.body, /id="mobileNavBtn"/);
+  assert.equal(styles.res.status, 200);
+  assert.match(styles.res.headers.get('content-type'), /text\/css/);
+  assert.equal(artwork.res.status, 200);
+  assert.match(artwork.res.headers.get('content-type'), /image\/jpeg/);
+});
+
+test('indicadores semanais e de turma refletem somente alunos do perfil e registros reais', async () => {
+  const manager = await login('gestor@demo.com');
+  const guardian = await login('responsavel@demo.com');
+  const date = new Date().toISOString();
+  const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+  db.attendance.push({ id: 'live-1', studentId: 's1', type: 'ENTRADA', timestamp: date, method: 'QR_TOKEN' });
+  db.attendance.push({ id: 'live-2', studentId: 's2', type: 'ENTRADA', timestamp: date, method: 'QR_TOKEN' });
+  db.messages.push({ id: 'private-msg', fromUserId: 'resp2', toUserId: 'gest1', text: 'Mensagem privada do outro responsável', createdAt: date });
+  fs.writeFileSync(dbPath, JSON.stringify(db));
+  const managerDashboard = await request('/api/dashboard', { headers: auth(manager) });
+  const guardianDashboard = await request('/api/dashboard', { headers: auth(guardian) });
+  assert.equal(managerDashboard.body.metrics.entradasHoje, 2);
+  assert.equal(guardianDashboard.body.metrics.entradasHoje, 1);
+  assert.equal(managerDashboard.body.weeklyMovements.length, 7);
+  assert.equal(guardianDashboard.body.weeklyMovements.at(-1).entradas, 1);
+  assert.equal(managerDashboard.body.weeklyMovements.at(-1).entradas, 2);
+  assert.equal(guardianDashboard.body.classOverview.length, 1);
+  assert.deepEqual(guardianDashboard.body.classOverview[0], {
+    name: '6º Ano A - Manhã', students: 1, entradasSemSaida: 1, saidas: 0, semRegistro: 0,
+  });
+  assert.equal(guardianDashboard.body.recentMessages.some((m) => m.text.includes('Mensagem privada')), false);
+  assert.equal(managerDashboard.body.recentMessages.some((m) => m.text.includes('Mensagem privada')), true);
+  assert.equal(guardianDashboard.body.students[0].token, undefined);
+});
+
+test('gráfico semanal sem movimentos não inventa taxas ou presenças', async () => {
+  const token = await login('gestor@demo.com');
+  const { body, res } = await request('/api/dashboard', { headers: auth(token) });
+  assert.equal(res.status, 200);
+  assert.equal(body.weeklyMovements.length, 7);
+  assert.equal(body.weeklyMovements.every((d) => d.entradas === 0 && d.saidas === 0), true);
+  assert.equal(body.classOverview.reduce((sum, c) => sum + c.students, 0), body.metrics.students);
+  assert.equal(body.classOverview.every((c) => c.semRegistro === c.students), true);
+});

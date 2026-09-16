@@ -545,5 +545,20 @@
       "comment": "Relatórios e auditoria ajudam a justificar a adoção piloto.",
       "createdAt": "2026-06-18T15:05:00.000Z"
     }
+  ],
+  "guardianInvitations": [
+    {
+      "id": "demo-invite-sofia",
+      "name": "Responsável de Sofia Nunes",
+      "email": "familia.sofia@demo.com",
+      "phone": "(22) 99999-9999",
+      "relationship": "Responsável legal",
+      "studentIds": [
+        "s4"
+      ],
+      "status": "PENDENTE",
+      "codeHash": null,
+      "expiresAt": "2027-01-01T00:00:00.000Z"
+    }
   ]
 }
