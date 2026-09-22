@@ -51,7 +51,7 @@ function json(res, status, payload) {
 function csv(res, filename, rows) {
   const esc = (v) => {
     const raw = String(v ?? '');
-    // Prefix dangerous CSV cell values so spreadsheet apps do not treat user text as a formula.
+    // Prefixar valores perigosos de células CSV para que planilhas não interpretem texto como fórmula.
     const safe = /^[\s\x00-\x1f]*[=+\-@]/.test(raw) ? `'${raw}` : raw;
     return `"${safe.replace(/"/g, '""')}"`;
   };
@@ -109,7 +109,7 @@ function validEmail(value) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && 
 function normalizeCpf(value) { return String(value || '').replace(/\D/g, ''); }
 function validCpf(cpf) {
   if (!/^\d{11}$/.test(cpf)) return false;
-  if (/^(\d)\1{10}$/.test(cpf)) return false; // sequences like 111.111.111-11 pass the checksum but are never real
+  if (/^(\d)\1{10}$/.test(cpf)) return false; // sequências como 111.111.111-11 passam no dígito, mas nunca são reais
   const d = cpf.split('').map(Number);
   let sum = 0;
   for (let i = 0; i < 9; i += 1) sum += d[i] * (10 - i);
@@ -207,8 +207,8 @@ function userFromReq(req, db) {
     sessions.delete(token);
     return null;
   }
-  // Revalidate the user on each request: permissions and guardian links may change
-  // after login. A stale session must not retain revoked access or outdated links.
+  // Revalidar o usuário em cada requisição: permissões e vínculos podem mudar
+  // depois do login. Uma sessão desatualizada não pode conservar acesso revogado ou vínculos antigos.
   const current = db.users.find((item) => item.id === session.user.id && item.status === 'ATIVO');
   if (!current) {
     sessions.delete(token);
@@ -390,7 +390,7 @@ async function handler(req, res) {
       if (account) {
         const code = String(crypto.randomInt(100000, 1000000));
         passwordResets.set(email, { userId: account.id, codeHash: digestCode(code), expiresAt: Date.now() + 15 * 60 * 1000 });
-        // The MVP has no outbound mail service. Returning the code is intentional demo behavior.
+        // O MVP não possui serviço de envio de e-mail. Retornar o código é intencional no ambiente de demonstração.
         response.demoCode = code;
       }
       return json(res, 200, response);
@@ -467,7 +467,7 @@ async function handler(req, res) {
       clearLoginAttempts(ip);
       invitation.status = 'UTILIZADO';
       invitation.codeHash = null;
-      // Further invitations for the same approved email are merged into this activated account.
+      // Convites adicionais para o mesmo e-mail aprovado são incorporados à conta ativada.
       for (const pending of db.guardianInvitations || []) {
         if (pending.email !== email || pending.status !== 'PENDENTE') continue;
         account.studentIds = [...new Set([...account.studentIds, ...pending.studentIds.filter(id => db.students.some(s => s.id === id && s.status === 'ATIVO'))])];
@@ -511,7 +511,7 @@ async function handler(req, res) {
       const todayAtt = db.attendance
         .filter((r) => dateKey(r.timestamp) === today && allowed.has(r.studentId))
         .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
-      // Only the most recent event is displayed; a record is not proof of live location.
+      // Somente o evento mais recente é exibido; um registro não prova localização em tempo real.
       const latestToday = new Map();
       todayAtt.forEach((record) => latestToday.set(record.studentId, record));
       const studentStatuses = students.map((student) => {
@@ -524,8 +524,8 @@ async function handler(req, res) {
           lastTimestamp: last?.timestamp || null,
         };
       });
-      // Aggregates must be calculated on the server, *after* student scoping.
-      // These are movements, NOT classroom attendance or proof of physical location.
+      // Os agregados devem ser calculados no servidor, *depois* da aplicação do escopo de alunos.
+      // São movimentações, NÃO frequência em sala nem prova de localização física.
       const weeklyMovements = Array.from({ length: 7 }, (_, index) => {
         const day = new Date();
         day.setUTCDate(day.getUTCDate() - (6 - index));
@@ -635,7 +635,7 @@ async function handler(req, res) {
         audit(db, user.id, 'CONVIDAR_RESPONSAVEL', 'aluno', student.id, guardian.name);
       }
       audit(db, user.id, 'CADASTRAR_ALUNO', 'aluno', student.id, name);
-      writeDb(db); // Student and approved guardian link/invitation committed together.
+      writeDb(db); // Aluno e vínculo/convite do responsável aprovado são gravados juntos.
       return json(res, 201, { student: studentView(user, db, student, { includeGuardians: true }), invitation,
         guardianLinked: Boolean(matchedGuardian) });
     }

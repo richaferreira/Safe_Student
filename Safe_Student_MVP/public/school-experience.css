@@ -1,11 +1,11 @@
 /* ==========================================================================
    Safe Student — Application layout
-   Layer 2 of 2: shell composition, page-specific arrangements and all
-   responsive behaviour. Tokens and reusable components live in
-   professional.css, loaded first.
+   Camada 2 de 2: composição da aplicação, arranjos por página e todo o
+   comportamento responsivo. Variáveis e componentes reutilizáveis ficam em
+   professional.css, carregado primeiro.
    ========================================================================== */
 
-/* ---- Topbar ---- */
+/* ---- Barra superior ---- */
 .topbar{height:70px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 clamp(18px,3vw,34px);border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:30}
 .brand{display:flex;gap:11px;align-items:center;color:var(--ink);text-decoration:none;min-width:0}
 .brand-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:var(--side-bg);color:var(--side-gold);font-family:var(--font-display);font-weight:600;font-size:19px;flex:0 0 auto}
@@ -31,12 +31,12 @@ body.is-authenticated .app-top-context{display:flex}
 .header-profile small{font-size:10.5px;color:var(--muted)}
 .top-actions{display:flex;gap:9px;align-items:center;flex-shrink:0}
 
-/* ---- Sidebar section labels ---- */
+/* ---- Rótulos das seções da barra lateral ---- */
 .nav-group-label{font-size:10.5px;letter-spacing:.06em;color:var(--side-text-muted);font-weight:650;padding:0 12px 9px;font-variant-caps:all-small-caps}
 .nav-group-label.secondary-group{padding-top:20px}
 
 /* =========================================================================
-   Login — academic institutional split layout
+   Login — composição institucional acadêmica
    ========================================================================= */
 .login-shell{position:relative;isolation:isolate;overflow:hidden;max-width:none;margin:0;min-height:calc(100vh - 70px);padding:clamp(36px,6vw,72px) clamp(24px,5vw,72px);display:grid;grid-template-columns:minmax(0,1.12fr) minmax(360px,.88fr);gap:clamp(36px,6vw,92px);align-items:center;background:transparent}
 .login-backdrop{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;background:rgba(0,0,0,.18) url('school-campus.jpg') center/cover no-repeat;background-blend-mode:multiply}
@@ -97,7 +97,7 @@ body.is-authenticated .app-top-context{display:flex}
 .reset-demo-code{display:block;letter-spacing:.18em;font:700 1.25rem/1.2 ui-monospace,monospace;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);padding:12px;text-align:center;margin:10px 0 14px}
 
 /* =========================================================================
-   Application shell
+   Estrutura principal da aplicação
    ========================================================================= */
 .app-shell{max-width:none;margin:0;padding:0;display:block;min-height:calc(100vh - 70px)}
 .sidebar{position:fixed;left:0;top:70px;height:calc(100vh - 70px);width:250px;background:var(--side-bg);border-right:1px solid var(--side-line);padding:18px 13px 16px;display:flex;flex-direction:column;color:var(--side-text);overflow-y:auto;scrollbar-width:thin;z-index:25}
@@ -131,7 +131,7 @@ body.is-authenticated .app-top-context{display:flex}
 .date-chip{border:1px solid var(--line);background:var(--surface);padding:9px 13px;border-radius:var(--r-sm);font-size:.75rem;color:var(--muted);white-space:nowrap}
 
 /* =========================================================================
-   Dashboard
+   Painel inicial
    ========================================================================= */
 .dashboard-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:22px}
 .hero-copy{max-width:640px}
@@ -348,7 +348,7 @@ button.metric-card:hover .metric-chevron{transform:translate(2px,-2px);color:var
   .login-helpers{align-items:flex-start;flex-direction:column;gap:7px}
 }
 
-/* Operational product finish: quieter surfaces, less promotional geometry. */
+/* Acabamento operacional: superfícies discretas e menos elementos promocionais. */
 .environment-tag{border-radius:var(--r-sm);background:var(--surface);padding:6px 10px}
 .panel,.metric-card,.list-card,.chat-message,.table-wrap{box-shadow:none}
 .metric-card,.shortcut-button,.token-btn,.demo-card{border-radius:var(--r-sm)}

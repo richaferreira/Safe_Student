@@ -28,7 +28,7 @@ Evite imagens artificiais, estudantes com aparência de renderização, ilustra�
 
 Se não houver imagem adequada disponível, utilize um recurso visual provisório claramente identificado e de fácil substituição. Não insira URLs fictícias ou imagens quebradas.
 
-A fotografia deverá receber um tratamento visual discreto, com sobreposição de azul institucional para preservar a legibilidade dos textos.
+A fotografia deverá receber um tratamento visual discreto, com uma sobreposição escura e transparente para preservar a legibilidade dos textos, sem retirar suas cores naturais.
 
 O resultado deve lembrar um portal acadêmico profissional, e não uma página publicitária.
 
@@ -38,37 +38,31 @@ O resultado deve lembrar um portal acadêmico profissional, e não uma página p
 
 Estabeleça uma identidade visual consistente.
 
-Utilize como referência:
-
-Azul-marinho institucional: #14263D
-
-Azul acadêmico: #24476A
+Utilize como referência uma paleta institucional neutra e colorida:
 
 Branco: #FFFFFF
 
 Cinza claro: #F4F6F8
 
-Dourado discreto: #C49A52
+Grafite: #2E343A
 
-O azul deve transmitir confiança e segurança.
+As cores naturais da fotografia devem trazer vida à página, enquanto o grafite e o branco mantêm a leitura e a confiança institucional.
 
 O branco deve favorecer a organização e a leitura.
 
-O dourado deve aparecer apenas em detalhes específicos, como indicadores, pequenos ícones ou elementos de destaque.
-
-Evite gradientes exagerados, cores neon, efeitos glassmorphism, brilhos artificiais e sombras excessivas.
+Evite gradientes exagerados, cores neon, efeitos de transparência excessiva, brilhos artificiais e sombras excessivas.
 
 A composição deve ser sóbria, elegante e visualmente equilibrada.
 
 ---
 
-## 3. REESTRUTURAÇÃO DO LAYOUT
+## 3. REESTRUTURAÇÃO DA COMPOSIÇÃO
 
-Desenvolva um layout responsivo com duas áreas principais.
+Desenvolva uma composição responsiva com duas áreas principais.
 
 **Área esquerda — Identidade institucional**
 
-Utilize aproximadamente 55% a 60% da largura disponível em telas desktop.
+Utilize aproximadamente 55% a 60% da largura disponível em telas de computador.
 
 Apresente a fotografia acadêmica como plano de fundo, com tratamento visual adequado.
 
@@ -184,7 +178,7 @@ Não crie botões ou links apenas decorativos. Caso alguma funcionalidade depend
 
 A página deve funcionar corretamente em:
 
-Desktop.
+Computador.
 
 Notebook.
 
@@ -280,7 +274,7 @@ A ausência de imagens quebradas.
 
 A inexistência de regressões nas funcionalidades anteriores.
 
-Se houver ambiente disponível para testes visuais, gere capturas das versões desktop e mobile.
+Se houver ambiente disponível para testes visuais, gere capturas das versões para computador e celular.
 
 Não afirme que os testes passaram sem executá-los.
 

@@ -34,7 +34,7 @@ Os testes automatizados de Node passaram com 44/44, e a interação em Chromium 
 
 ## Pendências para produção
 
-- Substituir JSON por banco transacional, com índices únicos para matrícula/e-mail, migrations e estratégia de backup/restore.
+- Substituir JSON por banco transacional, com índices únicos para matrícula/e-mail, migrações e estratégia de cópia de segurança/restauração.
 - Implementar envio e verificação efetiva de convite e recuperação de senha por canal institucional, gestão segura de segredos e política antifraude para vínculos familiares. O MVP já possui redefinição local por código temporário de uso único, adequada apenas para demonstração.
 - Implantar HTTPS, observabilidade, limitação distribuída de requisições, sessões persistentes e testes de múltiplas instâncias.
 - Concluir homologação institucional, LGPD, retenção, controle de acesso por escola/unidade caso multi-instituição, e testes de carga/penetração.

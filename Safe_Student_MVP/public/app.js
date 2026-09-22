@@ -31,7 +31,7 @@ function goView(name){if(!viewMeta[name])return;if(name==='guardians'&&!['GESTAO
 function dashboardIcon(name){return `<svg class="nav-icon" aria-hidden="true"><use href="#${name}"/></svg>`}
 function renderMetrics(){
   const m=dashboard.metrics, guardian=currentUser.role==='RESPONSAVEL';
-  // A movement event is not synonymous with classroom attendance or an absence.
+  // Um evento de movimentação não equivale à frequência em sala nem caracteriza ausência.
   const cards=[
     ['i-users',m.students,guardian?'Meus estudantes':'Estudantes no escopo','Alunos cadastrados e acessíveis','students'],
     ['i-in',m.entradasHoje,'Entradas hoje','Registros efetuados hoje',guardian?'students':'presence'],
@@ -86,7 +86,7 @@ function renderDashboard(){
   $('recentMessages').innerHTML=(dashboard.recentMessages||[]).slice(0,3).map(m=>
     `<article class="message-preview"><div class="message-avatar" aria-hidden="true">${escapeHtml(initials(m.ownMessage?m.toName:m.fromName))}</div><div><strong>${escapeHtml(m.ownMessage?'Para: '+m.toName:m.fromName)}</strong><small>${fmt(m.createdAt)}</small><p>${escapeHtml(m.text)}</p></div></article>`
   ).join('')||'<p class="empty">Nenhuma mensagem disponível para sua conta.</p>';
-  // Tokens are shown only to permitted operation profiles.
+  // Os tokens aparecem somente para perfis autorizados a operar a portaria.
   const visible=guardian?[]:dashboard.students.filter(student=>student.token);
   $('studentTokenOptions').innerHTML=visible.map(student=>`<option value="${escapeHtml(student.token)}" label="${escapeHtml(student.name)}"></option>`).join('');
   $('quickTokens').innerHTML=visible.slice(0,6).map(student=>

@@ -4,12 +4,12 @@ Projeto demonstrativo de gestão de movimentações escolares, comunicação e a
 
 ## Sobre a revisão visual desta entrega
 
-A interface foi redesenhada como um sistema de design coeso, substituindo as 5 folhas de estilo sobrepostas (`styles.css`, `styles-academic.css`, `professional.css`, `school-experience.css`, `functional.css`) por duas, bem separadas por responsabilidade:
+A interface foi redesenhada como um sistema visual coeso, substituindo as 5 folhas de estilo sobrepostas (`styles.css`, `styles-academic.css`, `professional.css`, `school-experience.css`, `functional.css`) por duas, bem separadas por responsabilidade:
 
-- `public/professional.css` — tokens de design (cor, tipografia, espaçamento, sombra), reset e componentes reutilizáveis.
-- `public/school-experience.css` — composição de layout de cada tela e toda a responsividade, incluindo o login institucional em duas áreas com fotografia escolar local (`public/school-campus.jpg`).
+- `public/professional.css` — variáveis visuais (cor, tipografia, espaçamento, sombra), redefinições e componentes reutilizáveis.
+- `public/school-experience.css` — composição de cada tela e toda a responsividade, incluindo o acesso institucional com fotografia escolar local (`public/school-campus.jpg`).
 
-Tipografia baseada na pilha nativa do sistema operacional, sem carregar fontes decorativas ou depender de CDN — compatível com o Content-Security-Policy restrito já existente no `server.js`. O login usa a fotografia escolar local em escala de cinza, com tratamento neutro em grafite, pilares funcionais e área de acesso em superfície clara; não há gradientes genéricos, imagens externas ou elementos decorativos sem finalidade. O controle de senha, o estado de carregamento, o tratamento de falha de conexão, o convite e a recuperação de senha dependente da secretaria estão identificados na interface. Nenhuma rota, contrato de API, regra de negócio ou teste foi alterado por essa camada visual; a suíte (`npm test`) permanece verde.
+Tipografia baseada na pilha nativa do sistema operacional, sem carregar fontes decorativas ou depender de CDN — compatível com a política de segurança de conteúdo restrita já existente no `server.js`. O login usa a fotografia escolar local colorida em tela cheia, com tratamento escuro transparente apenas para preservar a leitura, pilares funcionais e área de acesso em superfície clara; não há gradientes genéricos, imagens externas ou elementos decorativos sem finalidade. O controle de senha, o estado de carregamento, o tratamento de falha de conexão, o convite e a recuperação de senha dependente da secretaria estão identificados na interface. Nenhuma rota, contrato de API, regra de negócio ou teste foi alterado por essa camada visual; a suíte (`npm test`) permanece verde.
 
 ## CPF como identificador adicional do responsável
 
@@ -72,9 +72,9 @@ Se a escola já possui um aluno sem vínculo, use Alunos → Vincular responsáv
 
 ## Persistência e migração
 
-A aplicação inicia copiando `data/db.seed.json` para `data/db.runtime.json` se a base mutável ainda não existe. O arquivo de runtime é ignorado no Git. **Para atualizar uma instalação existente, faça backup da sua `data/db.runtime.json` e preserve esse arquivo: não o substitua pelo seed.** O novo código usa `guardianInvitations` quando disponível e inicializa essa coleção se faltar na base antiga. Cadastros antigos sem vínculo devem ser revisados pela gestão.
+A aplicação inicia copiando a base inicial `data/db.seed.json` para a base de execução `data/db.runtime.json` se a base mutável ainda não existir. O arquivo de execução é ignorado no Git. **Para atualizar uma instalação existente, faça uma cópia de segurança da sua `data/db.runtime.json` e preserve esse arquivo: não o substitua pela base inicial.** O novo código usa `guardianInvitations` quando disponível e inicializa essa coleção se faltar na base antiga. Cadastros antigos sem vínculo devem ser revisados pela gestão.
 
-Opções de ambiente: `PORT` (3000), `SS_DB_PATH` (caminho da base), `SS_TIME_ZONE` (`America/Sao_Paulo`), `SS_SESSION_TTL_MS` (tempo da sessão). `npm run reset` **apaga os dados locais de demonstração**. Não use esse comando sem backup.
+Opções de ambiente: `PORT` (3000), `SS_DB_PATH` (caminho da base), `SS_TIME_ZONE` (`America/Sao_Paulo`), `SS_SESSION_TTL_MS` (tempo da sessão). `npm run reset` **apaga os dados locais de demonstração**. Não use esse comando sem uma cópia de segurança.
 
 ## Testes executados
 
@@ -82,6 +82,6 @@ Opções de ambiente: `PORT` (3000), `SS_DB_PATH` (caminho da base), `SS_TIME_ZO
 
 ## Limites antes de uma implantação real
 
-Este projeto utiliza armazenamento JSON, sessões em memória e convite entregue manualmente. Ainda são necessários banco transacional e migrações, concorrência entre instâncias, HTTPS/TLS, controle de infraestrutura, backup/restauração testados, envio e verificação de e-mail para convites e recuperação, validação documental do vínculo responsável-aluno, consentimento e governança institucional, políticas de retenção e LGPD, testes de carga, revisão de segurança e homologação com a escola. A recuperação de senha do MVP funciona localmente com código temporário exibido na tela de demonstração; em produção deve ser substituída por entrega via canal institucional. A aprovação da gestão no MVP é uma **simulação do processo de verificação de vínculo**; ter o e-mail ou o convite sozinho não substitui essa conferência operacional.
+Este projeto utiliza armazenamento JSON, sessões em memória e convite entregue manualmente. Ainda são necessários banco transacional e migrações, concorrência entre instâncias, HTTPS/TLS, controle de infraestrutura, cópia de segurança e restauração testadas, envio e verificação de e-mail para convites e recuperação, validação documental do vínculo responsável-aluno, consentimento e governança institucional, políticas de retenção e LGPD, testes de carga, revisão de segurança e homologação com a escola. A recuperação de senha do MVP funciona localmente com código temporário exibido na tela de demonstração; em produção deve ser substituída por entrega via canal institucional. A aprovação da gestão no MVP é uma **simulação do processo de verificação de vínculo**; ter o e-mail ou o convite sozinho não substitui essa conferência operacional.
 
 Os protótipos de imagem são referências visuais; os dados e botões deste projeto são os efetivamente suportados pelo servidor, sem números inventados. Leia `REVISAO_FUNCIONAL.md` para detalhes e pendências.

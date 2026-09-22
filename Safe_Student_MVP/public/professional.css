@@ -1,30 +1,30 @@
 /* ==========================================================================
    Safe Student — Design system
-   Layer 1 of 2: typography, tokens, reset, and reusable components.
-   Page/view composition and responsive rules live in school-experience.css.
+   Camada 1 de 2: tipografia, variáveis visuais, redefinições e componentes reutilizáveis.
+   A composição das páginas e as regras responsivas ficam em school-experience.css.
    ========================================================================== */
 
-/* ---- Typeface: system UI stack ----
-   Use the system UI stack. It is quiet, familiar and renders consistently
-   across school offices, reception desks and home devices. */
+/* ---- Tipografia: pilha nativa do sistema ----
+   A pilha nativa é discreta, familiar e tem boa consistência
+   em computadores da escola, recepções e dispositivos domésticos. */
 
-/* ---- Design tokens ---- */
+/* ---- Variáveis visuais ---- */
 :root{
   color-scheme:light;
-  /* Fixed brand ink — the sidebar and the login "visual" panel stay this
-     tone regardless of the light/dark toggle, same as the original build. */
+  /* Tom fixo da marca — a barra lateral e a área visual do login mantêm
+     este tom independentemente da alternância entre claro e escuro. */
   --side-bg:#2e343a;--side-bg-raised:#3b434b;--side-line:#505a64;
   --side-text:#d8dde1;--side-text-muted:#aab2b9;--side-text-strong:#ffffff;
   --side-gold:#87919a;
 
-  /* Theme-reactive surface + text tokens */
+  /* Variáveis de superfície e texto que reagem ao tema */
   --ink:#252a2f;--ink-soft:#48515a;--muted:#68737d;--faint:#8b949c;
   --line:#d8dee5;--paper:#f5f7f9;--surface:#ffffff;--surface-2:#f0f3f6;
 
-  /* Brand accent (warm brass/gold — deliberately not blue or purple) */
+  /* Cor de destaque neutra da marca */
   --gold:#5f6972;--gold-soft:#7d8891;--gold-tint:#edf0f2;--gold-line:#cbd2d7;
 
-  /* Semantic */
+  /* Estados semânticos */
   --success:#1f7a52;--success-tint:#e3f3ec;
   --warn:#a15a12;--warn-tint:#fbedd9;
   --danger:#b3283a;--danger-tint:#fbe7ea;
@@ -52,7 +52,7 @@ html[data-theme="dark"]{
   --shadow-lg:0 8px 24px rgba(0,0,0,.38);
 }
 
-/* ---- Reset & base ---- */
+/* ---- Redefinição e base ---- */
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font-family:var(--font-sans);font-size:15px;background:var(--paper);color:var(--ink);line-height:1.6;letter-spacing:-.001em;-webkit-font-smoothing:antialiased}
@@ -68,10 +68,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .skip-link{position:fixed;left:16px;top:-60px;background:var(--ink);color:#fff;padding:11px 16px;border-radius:var(--r-sm);z-index:99;font-weight:600;font-size:13px}
 .skip-link:focus{top:16px}
 
-/* ---- Typography helpers ---- */
+/* ---- Auxiliares de tipografia ---- */
 .eyebrow{color:var(--gold);font-weight:600;font-size:.8125rem;letter-spacing:-.005em}
 
-/* ---- Buttons ---- */
+/* ---- Botões ---- */
 .btn{border:0;border-radius:var(--r-sm);padding:10px 18px;font-weight:600;font-size:.875rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;white-space:nowrap}
 .btn.primary{background:var(--ink);color:#fff;box-shadow:var(--shadow-1)}
 .btn.primary:hover{background:var(--ink-soft);box-shadow:var(--shadow-2)}
@@ -86,14 +86,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .icon-btn{width:38px;height:38px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-sm);color:var(--ink-soft);display:grid;place-items:center}
 .icon-btn:hover{background:var(--surface-2);color:var(--ink)}
 
-/* A small "see more" affordance: icon travels on hover instead of a
-   literal arrow glyph sitting in the copy. Used sparingly — see
-   school-experience.css for exactly where it's applied. */
+/* Recurso discreto de "ver mais": o ícone se move ao passar o cursor,
+   em vez de usar uma seta literal no texto. Aplicado pontualmente em
+   school-experience.css. */
 .link-more{display:inline-flex;align-items:center;gap:6px}
 .link-more .nav-icon{width:14px;height:14px;transition:transform var(--base) var(--ease)}
 .link-more:hover .nav-icon{transform:translateX(3px)}
 
-/* ---- Form controls ---- */
+/* ---- Controles de formulário ---- */
 label{display:block;font-size:.8125rem;font-weight:600;color:var(--ink-soft);margin:14px 0}
 input,select,textarea{width:100%;margin-top:7px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);border-radius:var(--r-sm);padding:11px 13px;font-size:.875rem}
 input::placeholder,textarea::placeholder{color:var(--faint)}
@@ -105,13 +105,13 @@ textarea{resize:vertical}
 .form-grid label{min-width:0}
 .form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 
-/* ---- Panels / cards ---- */
+/* ---- Painéis e cartões ---- */
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-1);padding:24px}
 .panel h2{font-size:1.0625rem;font-weight:650;letter-spacing:-.012em;margin:2px 0 4px}
 .section-title{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:16px}
 .section-helper{font-size:.8125rem;color:var(--muted);margin:2px 0 0}
 
-/* ---- Badges / pills ---- */
+/* ---- Selos e indicadores ---- */
 .status-pill{display:inline-block;padding:4px 10px;border-radius:var(--r-pill);background:var(--success-tint);color:var(--success);font-size:.75rem;font-weight:650;text-transform:lowercase}
 .status-pill::first-letter{text-transform:uppercase}
 .status-pill.is-inactive{background:var(--surface-2);color:var(--muted)}
@@ -122,7 +122,7 @@ textarea{resize:vertical}
 .environment-tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold-soft)}
 .demo-evidence{display:inline-flex;margin-top:8px;padding:3px 8px;border-radius:var(--r-pill);background:var(--warn-tint);color:var(--warn);font-size:.6875rem;font-weight:700}
 
-/* ---- Tables ---- */
+/* ---- Tabelas ---- */
 .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:var(--r-md)}
 table{width:100%;border-collapse:collapse;min-width:680px}
 th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);font-size:.8125rem}
@@ -133,7 +133,7 @@ tr:last-child td{border-bottom:0}
 .student-action{padding:6px 10px;font-size:.75rem;white-space:nowrap;min-height:32px}
 .toolbar{margin-bottom:12px}
 
-/* ---- Lists / feed cards ---- */
+/* ---- Listas e cartões de atividade ---- */
 .stack-list{display:flex;flex-direction:column;gap:8px}
 .list-card{border:1px solid var(--line);border-radius:var(--r-md);padding:13px;background:var(--surface-2)}
 .list-card.unread{border-left:3px solid var(--gold)}
@@ -142,7 +142,7 @@ tr:last-child td{border-bottom:0}
 .list-card p{margin:7px 0 0;font-size:.8125rem;line-height:1.55}
 .empty{color:var(--muted);font-size:.8125rem;padding:16px;background:var(--surface-2);border:1px dashed var(--line);border-radius:var(--r-md)}
 
-/* ---- Chat ---- */
+/* ---- Mensagens ---- */
 .chat-list{max-height:520px;overflow:auto;display:flex;flex-direction:column;gap:10px}
 .chat-message{padding:12px 13px;border-radius:var(--r-md);background:var(--surface-2);border:1px solid var(--line)}
 .chat-message.mine{border-left:3px solid var(--gold)}
@@ -150,7 +150,7 @@ tr:last-child td{border-bottom:0}
 .chat-message small{color:var(--muted);font-size:.75rem;margin-top:1px}
 .chat-message p{margin:6px 0 0;font-size:.8125rem;line-height:1.5}
 
-/* ---- Misc ---- */
+/* ---- Elementos diversos ---- */
 .check-list{display:grid;gap:9px;margin-top:14px}
 .check-list>div{display:flex;align-items:center;gap:11px;background:var(--success-tint);color:var(--success);border-radius:var(--r-md);padding:12px 13px;font-weight:650;font-size:.8125rem}
 .check-list>div .nav-icon{flex:0 0 auto;width:16px;height:16px}
