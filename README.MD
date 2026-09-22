@@ -9,7 +9,7 @@
 
 O Safe Student é um **MVP acadêmico/extensionista**, não um produto homologado para produção.
 
-A versão executável atual do MVP é **2.0**. A especificação acadêmica/modelagem permanece identificada como **V2.0**, pois representa a revisão formal dos requisitos e diagramas.
+A versão executável atual do MVP é **1.0**. A especificação acadêmica/modelagem permanece identificada como **V1.0**, pois representa a revisão formal dos requisitos e diagramas.
 
 
 ## Problema e proposta de valor
