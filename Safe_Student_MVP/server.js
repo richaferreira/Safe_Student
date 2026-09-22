@@ -756,7 +756,7 @@ async function handler(req, res) {
       });
       return json(res, 200, {
         rows,
-        disclaimer: 'Contagem de movimentações de portaria; não equivale à frequência em sala de aula. A taxa demo usa dias fictícios e não deve ser usada para avaliação escolar.',
+        disclaimer: 'Contagem de movimentações de portaria; não equivale à frequência em sala de aula. A taxa de demonstração usa dias fictícios e não deve ser usada para avaliação escolar.',
       });
     }
 
@@ -840,7 +840,7 @@ async function handler(req, res) {
         successRate,
         avgTimeSeconds,
         demoSeedCount: all.length - measured.length,
-        disclaimer: 'Registros marcados como DEMO_SEED são ilustrativos e não contam como evidência de pesquisa de campo. O feedback coletado não armazena a identidade do participante.',
+        disclaimer: 'Registros marcados como DEMO_SEED são ilustrativos e não contam como evidência de pesquisa de campo. A avaliação coletada não armazena a identidade do participante.',
       });
     }
 
