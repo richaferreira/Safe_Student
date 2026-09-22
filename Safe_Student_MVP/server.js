@@ -495,6 +495,17 @@ async function handler(req, res) {
       return json(res, 200, { user });
     }
 
+    if (req.method === 'GET' && url.pathname === '/api/search') {
+      const term = String(url.searchParams.get('q') || '').trim().toLocaleLowerCase('pt-BR');
+      if (term.length < 2) return json(res, 200, { students: [], guardians: [], records: [], messages: [] });
+      const allowed = new Set(allowedStudentIds(user, db));
+      const students = db.students.filter((student) => allowed.has(student.id) && [student.name, student.enrollment, student.token, className(db, student.classId)].some((value) => String(value || '').toLocaleLowerCase('pt-BR').includes(term))).slice(0, 8).map((student) => ({ id: student.id, name: student.name, enrollment: student.enrollment, className: className(db, student.classId), view: 'students' }));
+      const guardians = canManageSchool(user.role) ? db.users.filter((candidate) => candidate.role === 'RESPONSAVEL' && [candidate.name, candidate.email, candidate.phone].some((value) => String(value || '').toLocaleLowerCase('pt-BR').includes(term))).slice(0, 6).map((candidate) => ({ id: candidate.id, name: candidate.name, email: candidate.email, view: 'guardians' })) : [];
+      const records = db.attendance.filter((record) => allowed.has(record.studentId) && [record.type, studentById(db, record.studentId)?.name].some((value) => String(value || '').toLocaleLowerCase('pt-BR').includes(term))).slice().sort((a, b) => b.timestamp.localeCompare(a.timestamp)).slice(0, 6).map((record) => ({ id: record.id, title: `${record.type === 'ENTRADA' ? 'Entrada' : 'Saída'} registrada`, description: studentById(db, record.studentId)?.name || 'Aluno', createdAt: record.timestamp, view: 'reports' }));
+      const messages = (db.messages || []).filter((message) => (message.fromUserId === user.id || message.toUserId === user.id) && String(message.text || '').toLocaleLowerCase('pt-BR').includes(term)).slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 5).map((message) => ({ id: message.id, title: 'Mensagem', description: message.text, createdAt: message.createdAt, view: 'messages' }));
+      return json(res, 200, { students, guardians, records, messages });
+    }
+
     if (req.method === 'GET' && url.pathname === '/api/dashboard') {
       const ids = allowedStudentIds(user, db);
       const allowed = new Set(ids);
@@ -540,12 +551,13 @@ async function handler(req, res) {
       const byClass = new Map();
       studentStatuses.forEach((student) => {
         const key = student.className;
-        if (!byClass.has(key)) byClass.set(key, { name: key, students: 0, entradasSemSaida: 0, saidas: 0, semRegistro: 0 });
+        if (!byClass.has(key)) byClass.set(key, { name: key, students: 0, entradas: 0, entradasSemSaida: 0, saidas: 0, semRegistro: 0, ultimoRegistro: null });
         const row = byClass.get(key);
         row.students += 1;
-        if (student.lastType === 'ENTRADA') row.entradasSemSaida += 1;
+        if (student.lastType === 'ENTRADA') { row.entradas += 1; row.entradasSemSaida += 1; }
         else if (student.lastType === 'SAIDA') row.saidas += 1;
         else row.semRegistro += 1;
+        if (student.lastTimestamp && (!row.ultimoRegistro || student.lastTimestamp > row.ultimoRegistro)) row.ultimoRegistro = student.lastTimestamp;
       });
       const recentMessages = (db.messages || [])
         .filter((message) => message.fromUserId === user.id || message.toUserId === user.id)
@@ -559,12 +571,33 @@ async function handler(req, res) {
           toName: userById(db, message.toUserId)?.name || 'Escola',
           ownMessage: message.fromUserId === user.id,
         }));
+      const pendingInvitations = canManageSchool(user.role)
+        ? (db.guardianInvitations || []).filter((invitation) => invitation.status === 'PENDENTE').length : 0;
+      const unlinkedStudents = canManageSchool(user.role)
+        ? students.filter((student) => !db.users.some((candidate) => candidate.role === 'RESPONSAVEL' && candidate.status === 'ATIVO' && (candidate.studentIds || []).includes(student.id)) && !(db.guardianInvitations || []).some((invitation) => invitation.status === 'PENDENTE' && invitation.studentIds.includes(student.id))).length : 0;
+      const attention = [];
+      if (Array.from(latestToday.values()).filter((record) => record.type === 'ENTRADA').length) {
+        attention.push({ type: 'warning', label: 'Entradas sem saída', count: Array.from(latestToday.values()).filter((record) => record.type === 'ENTRADA').length, description: 'Registros que precisam de conferência', view: 'students', action: 'Ver alunos' });
+      }
+      if (pendingInvitations) attention.push({ type: 'info', label: 'Convites pendentes', count: pendingInvitations, description: 'Responsáveis aguardando ativação', view: 'guardians', action: 'Revisar convites' });
+      if (unlinkedStudents) attention.push({ type: 'warning', label: 'Alunos sem responsável', count: unlinkedStudents, description: 'Cadastros que exigem revisão', view: 'students', action: 'Resolver agora' });
+      if (notifications.filter((notification) => !notification.read).length) attention.push({ type: 'info', label: 'Notificações não lidas', count: notifications.filter((notification) => !notification.read).length, description: 'Avisos disponíveis para sua conta', view: 'notifications', action: 'Ver notificações' });
+      if (!attention.length) attention.push({ type: 'ok', label: 'Nenhuma pendência crítica', count: 0, description: 'A rotina está em dia neste momento', view: 'dashboard', action: 'Continuar acompanhamento' });
+      const timeline = [
+        ...attendance.slice(0, 8).map((record) => ({ type: record.type === 'ENTRADA' ? 'entrada' : 'saida', title: `${record.type === 'ENTRADA' ? 'Entrada' : 'Saída'} registrada`, description: record.student, createdAt: record.timestamp, view: 'presence' })),
+        ...notifications.slice(0, 5).map((notification) => ({ type: 'notificacao', title: notification.title, description: notification.student, createdAt: notification.createdAt, view: 'notifications' })),
+        ...recentMessages.slice(0, 5).map((message) => ({ type: 'mensagem', title: 'Mensagem recente', description: message.ownMessage ? `Para ${message.toName}` : `De ${message.fromName}`, createdAt: message.createdAt, view: 'messages' })),
+      ].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 8);
       return json(res, 200, {
         school: { ...db.school, timeZone: db.school?.timeZone || TIME_ZONE },
         students,
         studentStatuses,
         weeklyMovements,
-        classOverview: [...byClass.values()].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
+        classOverview: [...byClass.values()].map(({ name, students, entradasSemSaida, saidas, semRegistro }) => ({ name, students, entradasSemSaida, saidas, semRegistro })).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
+        classOperational: [...byClass.values()].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
+        attention,
+        timeline,
+        operations: { pendingInvitations, unlinkedStudents },
         recentMessages,
         attendance: attendance.slice(0, 60),
         notifications: notifications.slice(0, 30),

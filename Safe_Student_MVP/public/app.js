@@ -47,6 +47,18 @@ function renderMetrics(){
   $('headerNotifCount').textContent=m.notificacoesNaoLidas;
   $('headerNotifCount').classList.toggle('hidden',m.notificacoesNaoLidas===0);
 }
+function renderQuickActions(){
+  const role=currentUser.role;
+  const actions=role==='RESPONSAVEL'?[['i-users','Consultar estudantes','Acompanhe os alunos vinculados','students'],['i-message','Enviar mensagem','Fale com a escola','messages'],['i-bell','Ver notificações','Confira os avisos da conta','notifications']]:role==='PORTARIA'?[['i-scan','Registrar movimentação','Entrada ou saída de estudante','presence'],['i-users','Consultar alunos','Localize um estudante autorizado','students'],['i-chart','Ver registros','Confira o histórico da portaria','reports']]:[['i-users','Cadastrar aluno','Cadastre aluno e responsável juntos','students'],['i-scan','Registrar movimentação','Entrada ou saída de estudante','presence'],['i-bell','Revisar pendências','Veja o que requer atenção','notifications'],['i-chart','Ver relatórios','Analise e exporte os registros','reports']];
+  $('quickActions').innerHTML=actions.map(([icon,title,description,view])=>`<button type="button" class="quick-action" data-go="${view}"><span class="quick-action-icon">${dashboardIcon(icon)}</span><span><strong>${title}</strong><small>${description}</small></span><span class="quick-action-arrow">${dashboardIcon('i-arrow')}</span></button>`).join('');
+}
+function renderAttention(){
+  const items=dashboard.attention||[];$('attentionCount').textContent=items.filter(item=>item.type!=='ok').reduce((sum,item)=>sum+item.count,0);
+  $('attentionList').innerHTML=items.map(item=>`<article class="attention-item ${item.type}"><span class="attention-icon">${dashboardIcon(item.type==='ok'?'i-check':item.type==='warning'?'i-clock':'i-bell')}</span><span class="attention-copy"><strong>${escapeHtml(item.label)}${item.count?` <b>${item.count}</b>`:''}</strong><small>${escapeHtml(item.description)}</small></span><button type="button" class="text-btn" data-go="${item.view}">${escapeHtml(item.action)} <svg class="nav-icon"><use href="#i-arrow"/></svg></button></article>`).join('');
+}
+function renderTimeline(){
+  const items=dashboard.timeline||[];$('dashboardTimeline').innerHTML=items.map(item=>`<button type="button" class="timeline-row dashboard-timeline-row" data-go="${item.view}"><span class="event-icon ${item.type==='saida'?'exit':''}">${dashboardIcon(item.type==='entrada'?'i-in':item.type==='mensagem'?'i-message':item.type==='notificacao'?'i-bell':'i-out')}</span><span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.description)}</small></span><span class="event-time">${fmt(item.createdAt)}</span></button>`).join('')||'<p class="empty">Nenhum acontecimento recente.</p>';
+}
 function renderChart(){
   const days=dashboard.weeklyMovements||[];
   const highest=Math.max(1,...days.flatMap(day=>[day.entradas,day.saidas]));
@@ -60,23 +72,24 @@ function renderChart(){
   if(!any) $('activityChart').insertAdjacentHTML('beforeend','<p class="chart-empty-note">Nenhuma movimentação registrada neste período.</p>');
 }
 function renderClasses(){
-  const classes=dashboard.classOverview||[];
+  const classes=dashboard.classOperational||dashboard.classOverview||[];
   $('classOverview').innerHTML=classes.map(c=>{
     const pct=c.students?Math.round(c.entradasSemSaida/c.students*100):0;
-    return `<div class="class-row"><div class="class-row-title"><strong>${escapeHtml(c.name)}</strong><span>${c.students} aluno(s)</span></div><div class="class-progress"><div style="width:${pct}%"></div></div><small>${c.entradasSemSaida} entrada(s) sem saída · ${c.saidas} saída(s) · ${c.semRegistro} sem registro</small></div>`;
+    return `<div class="class-row"><div class="class-row-title"><strong>${escapeHtml(c.name)}</strong><span>${c.students} aluno(s)</span></div><div class="class-progress"><div style="width:${pct}%"></div></div><div class="class-stats"><span><b>${c.entradas}</b> entradas</span><span><b>${c.saidas}</b> saídas</span><span><b>${c.entradasSemSaida}</b> pendentes</span></div><small>${c.semRegistro} sem registro${c.ultimoRegistro?' · último movimento '+fmt(c.ultimoRegistro):''}</small></div>`;
   }).join('')||'<p class="empty">Nenhuma turma no seu escopo.</p>';
 }
 function renderDashboard(){
-  renderMetrics();renderChart();renderClasses();
+  renderQuickActions();renderAttention();renderMetrics();renderChart();renderClasses();renderTimeline();
   const guardian=currentUser.role==='RESPONSAVEL', gate=currentUser.role==='PORTARIA';
   $('headerSchool').textContent=dashboard.school?.name||'Unidade escolar';
   $('dashboardSchool').textContent=dashboard.school?.name||'Unidade escolar';
-  $('dashboardHeadline').textContent=guardian?'Mais perto da rotina de quem você cuida.':gate?'Uma portaria organizada faz a diferença.':'Juntos por uma escola mais presente.';
+  $('dashboardHeadline').textContent=guardian?'Acompanhe a rotina de quem você cuida.':gate?'Mantenha a portaria em movimento.':'Acompanhe o que precisa de atenção.';
   $('dashboardDescription').textContent=guardian
     ?'Acompanhe os últimos registros e as mensagens disponíveis para sua família.'
     :gate?'Acesse os lançamentos e registre movimentações com agilidade.'
-    :'Consulte movimentações, avisos e indicadores no mesmo ambiente.';
+    :'Consulte movimentações, pendências e indicadores no mesmo ambiente.';
   $('heroDate').textContent=new Intl.DateTimeFormat('pt-BR',{timeZone:schoolTimeZone,weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date());
+  const totalEnt=(dashboard.weeklyMovements||[]).reduce((sum,day)=>sum+day.entradas,0),totalSai=(dashboard.weeklyMovements||[]).reduce((sum,day)=>sum+day.saidas,0);$('trendSummary').innerHTML=`<span><b>${totalEnt}</b> entradas</span><span><b>${totalSai}</b> saídas</span><span><b>${dashboard.metrics.semSaidaHoje}</b> pendentes hoje</span>`;
   $('recentAttendance').innerHTML=dashboard.attendance.slice(0,5).map(r=>
     `<div class="timeline-row"><span class="event-icon ${r.type==='SAIDA'?'exit':''}" aria-hidden="true">${dashboardIcon(r.type==='ENTRADA'?'i-in':'i-out')}</span><div><strong>${escapeHtml(r.student)}</strong><small>${r.type==='ENTRADA'?'Entrada':'Saída'} · Registrado por token</small></div><span class="event-time">${fmt(r.timestamp)}</span></div>`
   ).join('')||'<p class="empty">Nenhuma movimentação registrada no seu escopo.</p>';
@@ -166,9 +179,13 @@ $('togglePassword').addEventListener('click',()=>{const input=$('password');cons
  $('backFromResetBtn').addEventListener('click',()=>{$('passwordResetForm').classList.add('hidden');$('loginForm').classList.remove('hidden');$('loginError').textContent=''});
  $('requestResetBtn').addEventListener('click',async()=>{const btn=$('requestResetBtn');$('resetError').textContent='';btn.disabled=true;try{const d=await api('/api/password/forgot',{method:'POST',body:JSON.stringify({email:$('resetEmail').value})});$('resetCodeArea').classList.remove('hidden');$('resetDemoCode').textContent=d.demoCode||'Código enviado ao canal institucional cadastrado.';toast('Código temporário gerado.')}catch(error){$('resetError').textContent=error.message}finally{btn.disabled=false}});
  $('passwordResetForm').addEventListener('submit',async event=>{event.preventDefault();const btn=$('resetPasswordBtn');$('resetError').textContent='';btn.disabled=true;try{await api('/api/password/reset',{method:'POST',body:JSON.stringify({email:$('resetEmail').value,code:$('resetCode').value,password:$('resetPassword').value,confirmPassword:$('resetConfirm').value})});$('email').value=$('resetEmail').value;$('passwordResetForm').reset();$('resetCodeArea').classList.add('hidden');$('passwordResetForm').classList.add('hidden');$('loginForm').classList.remove('hidden');toast('Senha redefinida. Entre com a nova senha.')}catch(error){$('resetError').textContent=error.message}finally{btn.disabled=false}});
-function executeGlobalSearch(){$('studentSearch').value=$('globalSearch').value;goView('students');$('studentSearch').dispatchEvent(new Event('input'));$('studentSearch').focus()}
+function renderGlobalSearchResults(data){const groups=[['Alunos',data.students||[],item=>`${item.name} · ${item.className}`],['Responsáveis',data.guardians||[],item=>`${item.name} · ${item.email}`],['Registros',data.records||[],item=>`${item.title} · ${item.description}`],['Mensagens',data.messages||[],item=>item.description]];const items=groups.flatMap(([title,list,label])=>list.map(item=>({label:label(item),view:item.view,group:title,id:item.id})));$('globalSearchResults').innerHTML=items.length?items.map(item=>`<button type="button" class="search-result" data-search-view="${item.view}" data-search-id="${item.id}"><small>${item.group}</small><strong>${escapeHtml(item.label)}</strong></button>`).join(''):'<p class="search-empty">Nenhum resultado encontrado.</p>';$('globalSearchResults').classList.remove('hidden')}
+async function executeGlobalSearch(){const term=$('globalSearch').value.trim();if(term.length<2){$('globalSearchResults').classList.add('hidden');return}try{renderGlobalSearchResults(await api(`/api/search?q=${encodeURIComponent(term)}`))}catch(error){toast(error.message)}}
+$('globalSearch').addEventListener('input',()=>{clearTimeout(window.__searchTimer);window.__searchTimer=setTimeout(executeGlobalSearch,220)});
 $('globalSearch').addEventListener('keydown',event=>{if(event.key!=='Enter')return;event.preventDefault();executeGlobalSearch()});
 $('globalSearchBtn').addEventListener('click',executeGlobalSearch);
+$('globalSearchResults').addEventListener('click',event=>{const result=event.target.closest('[data-search-view]');if(!result)return;$('globalSearchResults').classList.add('hidden');const view=result.dataset.searchView;goView(view);if(view==='students'){$('studentSearch').value=$('globalSearch').value;$('studentSearch').dispatchEvent(new Event('input'))}});
+document.addEventListener('click',event=>{if(!event.target.closest('.global-search'))$('globalSearchResults')?.classList.add('hidden')});
 $('headerNotifications').addEventListener('click',async()=>{try{await loadNotifications();goView('notifications')}catch(error){toast(error.message)}});
 qsa('[data-login]').forEach(b=>b.addEventListener('click',()=>{$('email').value=b.dataset.login;$('password').value='demo123'}));
  $('loginForm').addEventListener('submit',async e=>{e.preventDefault();const btn=$('loginSubmitBtn');$('loginError').textContent='';btn.disabled=true;btn.classList.add('is-loading');btn.setAttribute('aria-busy','true');btn.innerHTML='<span class="spinner" aria-hidden="true"></span> Entrando no portal';try{await login($('email').value,$('password').value)}catch(err){$('loginError').textContent=err instanceof TypeError?'Não foi possível conectar ao portal. Verifique sua conexão e tente novamente.':err.message}finally{btn.disabled=false;btn.classList.remove('is-loading');btn.removeAttribute('aria-busy');btn.innerHTML='Entrar no portal <svg class="nav-icon"><use href="#i-arrow"/></svg>'}});
