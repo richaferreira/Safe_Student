@@ -46,26 +46,6 @@ A implementação em `Safe_Student_MVP/` usa:
 - **senhas:** `scrypt` + `timingSafeEqual`;
 - **testes:** `node:test` para domínio, segurança, API e regressões de privacidade.
 
-
-## Correções relevantes da revisão sênior
-
-A auditoria corrigiu, entre outros pontos:
-
-- mensagens privadas deixaram de ser visíveis para usuários que não participam da conversa;
-- notificações são entregues somente ao destinatário;
-- diretório de comunicação expõe apenas dados mínimos;
-- responsáveis retornados em consultas administrativas foram minimizados;
-- tokens de aluno não são expostos a perfis que não precisam operá-los;
-- feedback acadêmico passou a ser tratado sem identidade do participante na coleta nova;
-- token de novo aluno passou a ter verificação explícita de colisão;
-- cálculo da taxa demonstrativa passou a usar a mesma definição de dia escolar/fuso do servidor;
-- CSV de validação deixou de exportar linhas `DEMO_SEED`;
-- restauração da demonstração passou a gerar evento de auditoria;
-- arquivo mutável de execução deixou de ser versionado;
-- workflows que dependiam de scripts excluídos foram removidos;
-- UML e DER foram refeitos para não misturar associações, setas de processo, chaves estrangeiras e conceitos de diagramas diferentes;
-- documentos Office/PDF, apresentação e ZIP do MVP foram regenerados a partir da revisão final.
-
 ## Executar
 
 ```bash
@@ -96,22 +76,7 @@ cd Safe_Student_MVP
 npm test
 ```
 
-Na verificação final de 22/09/2026, a suíte foi executada com **49 testes aprovados e 0 falhas** em Node.js 22. Essa é a evidência local desta entrega; o status de CI não é afirmado porque o workflow não está incluído neste pacote. O workflow de publicação dos documentos V2 também executa a suíte antes de permitir o commit dos binários. A compatibilidade com Node 18 ou superior é declarada pelo projeto, mas a execução comprovada nesta entrega foi feita em Node.js 22.
-
-## Validação acadêmica
-
-O módulo Feedback registra, sem nome do participante:
-
-- perfil avaliado;
-- cenário/tarefa;
-- conclusão ou não;
-- tempo aproximado;
-- nota de 1 a 5;
-- comentário.
-
 `DEMO_SEED` é apenas dado ilustrativo. Somente registros `APRESENTACAO` entram como coleta realizada e são exportados no CSV de validação.
-
-**Importante:** os resultados históricos de pesquisa declarados em versão anterior não possuem, no repositório, evidência primária suficiente para reprodução. Portanto quantidade de participantes, percentuais e médias históricas não devem ser apresentados como resultados auditados até anexar a comprovação ou executar nova coleta real.
 
 
 ## Produção é outro estágio
