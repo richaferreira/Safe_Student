@@ -9,7 +9,7 @@
 
 O Safe Student é um **MVP acadêmico/extensionista**, não um produto homologado para produção.
 
-A versão executável atual do MVP é **1.0**. A especificação acadêmica/modelagem permanece identificada como **V1.0**, pois representa a revisão formal dos requisitos e diagramas.
+A versão executável atual do MVP é **2.1.0**. A especificação acadêmica/modelagem está identificada como **V2.0**, pois representa a revisão formal dos requisitos e diagramas.
 
 
 ## Problema e proposta de valor
@@ -96,7 +96,7 @@ cd Safe_Student_MVP
 npm test
 ```
 
-Na revisão sênior, a suíte foi executada com **24 testes aprovados e 0 falhas**. O workflow de publicação dos documentos V2 também executa a suíte antes de permitir o commit dos binários. O CI continua configurado para Node 18, 20 e 22.
+Na verificação final de 22/09/2026, a suíte foi executada com **49 testes aprovados e 0 falhas** em Node.js 22. Essa é a evidência local desta entrega; o status de CI não é afirmado porque o workflow não está incluído neste pacote. O workflow de publicação dos documentos V2 também executa a suíte antes de permitir o commit dos binários. A compatibilidade com Node 18 ou superior é declarada pelo projeto, mas a execução comprovada nesta entrega foi feita em Node.js 22.
 
 ## Validação acadêmica
 

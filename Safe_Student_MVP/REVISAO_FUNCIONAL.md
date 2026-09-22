@@ -30,7 +30,7 @@ As sessões são revalidadas contra o usuário e os vínculos atuais a cada requ
 
 Foram verificados: cadastro sem responsável rejeitado sem criar aluno; matrícula com novo responsável cria convite; senha ou convite inválidos não ativam; matrícula de dois filhos para o mesmo e-mail unifica convite; convite antigo deixa de funcionar após renovar; responsável ativado visualiza seus dois filhos; terceiro filho da mesma pessoa aparece imediatamente na sessão aberta após aprovação pela gestão; usuário da portaria não visualiza dados de convite ou executa ações administrativas; responsável não consulta tokens; remoção do vínculo atualiza o escopo; desativação impede registrar entrada, reativação restitui o acesso conforme vínculo; entrada duplicada é bloqueada; saída exige entrada; relatórios filtrados não revelam outra família; exportação protege contra fórmula de planilha; convite pode ser revogado; envio de mensagem e leitura de notificação funcionam na interface.
 
-Os testes automatizados de Node passaram com 44/44, e a interação em Chromium percorreu gestão → responsável → portaria → responsável → gestão. Erros JS observados no roteiro: zero; verificação final em largura de 390px sem rolagem horizontal. Isso valida **os cenários exercitados**, não equivale a afirmar ausência universal de defeitos.
+Os testes automatizados de Node passaram com 49/49, e a interação em Chromium percorreu gestão → responsável → portaria → responsável → gestão. Erros JS observados no roteiro: zero; verificação final em largura de 390px sem rolagem horizontal. Isso valida **os cenários exercitados**, não equivale a afirmar ausência universal de defeitos.
 
 ## Pendências para produção
 
