@@ -1,0 +1,17 @@
+SAFE STUDENT — PROJETO FUNCIONAL REVISADO
+
+1) Descompacte este ZIP.
+2) Abra a pasta Safe_Student_MVP_Revisado no VS Code.
+3) No terminal execute: npm test
+4) Em seguida: npm start
+5) Abra: http://localhost:3000
+
+GESTÃO: gestor@demo.com / demo123
+PORTARIA: portaria@demo.com / demo123
+RESPONSÁVEL: responsavel@demo.com / demo123
+
+O cadastro de aluno exige um responsável no mesmo formulário. Um novo responsável recebe um código de convite que é mostrado à Gestão; entregue-o por canal institucional conferido. Na página de login, o responsável escolhe "Ative sua conta", usa e-mail + código e vê seus filhos automaticamente.
+
+Para guardar dados de uma instalação anterior, preserve data/db.runtime.json. NÃO execute npm run reset sem backup.
+
+Este é um MVP com dados fictícios, não homologado para armazenamento de dados reais de estudantes. Consulte README.md e REVISAO_FUNCIONAL.md.
