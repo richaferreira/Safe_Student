@@ -28,14 +28,6 @@ CONTEÚDO
 11 Modelos de Termos, Pesquisa e Aceite - DOCX
 12 Auditoria Competitiva - XLSX
 
-FONTES TÉCNICAS DE CONFERÊNCIA
-- O índice de fontes editáveis está em docs/. O dossiê PDF consolidado está em PEI_I_a_PEI_V/.
-- docs/ESPECIFICACAO_REQUISITOS_V2.md
-- docs/AUDITORIA_SENIOR_V2.md
-- docs/diagramas/
-- docs/BUILD_STATUS_V2.md
-- ACADEMIC_COMPLIANCE.md
-- Safe_Student_MVP/
 
 OBSERVAÇÃO ACADÊMICA IMPORTANTE
 O MVP utiliza dados sintéticos de apresentação. A pesquisa de campo deve permanecer classificada como PARCIAL enquanto não houver evidência primária verificável (por exemplo, formulários/termos aplicáveis, respostas anonimizadas ou CSV de validação real). Não apresentar números históricos sem comprovação como resultado auditado.
