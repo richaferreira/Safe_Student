@@ -1,18 +1,37 @@
-SAFE STUDENT — PROJETO FUNCIONAL REVISADO
+SAFE STUDENT — MVP FUNCIONAL EVOLUÍDO
 
 1) Abra a pasta Safe_Student_MVP no VS Code.
 2) No terminal execute: npm test
-3) Em seguida: npm start
-4) Abra: http://localhost:3000
+3) Opcionalmente execute: npm run benchmark
+4) Em seguida: npm start
+5) Abra: http://localhost:3000
 
-VERSÃO: MVP 2.1.0 | DOCUMENTAÇÃO: V2.0
+VERSÃO EXECUTÁVEL: MVP 2.1.0 | ESPECIFICAÇÃO ACADÊMICA: V2.0
 
 GESTÃO: gestor@demo.com / demo123
 PORTARIA: portaria@demo.com / demo123
 RESPONSÁVEL: responsavel@demo.com / demo123
 
-O cadastro de aluno exige um responsável no mesmo formulário. Um novo responsável recebe um código de convite mostrado à Gestão; entregue-o somente por canal institucional conferido. Na página de login, o responsável escolhe “Ative sua conta”, usa e-mail + código e visualiza os filhos vinculados.
+FLUXO DE CADASTRO
+- Gestão > Alunos > Novo aluno.
+- Preencha aluno, adicione um ou mais responsáveis e revise antes de confirmar.
+- Responsável já ativo é vinculado imediatamente.
+- Pessoa sem conta recebe código de convite exibido somente à Gestão.
+- Quando a pessoa ativa a conta, todos os filhos previamente vinculados aparecem automaticamente.
 
-A portaria utiliza token digitado/selecionado. Não há leitura de QR por câmera nesta versão.
+PORTARIA
+- Localize o aluno pelo token ou use "Ler QR" quando o navegador oferecer BarcodeDetector/câmera compatível.
+- O QR deve conter somente o token Safe Student (ex.: SS-...).
+- O token digitado continua disponível como fallback.
+- O painel mostra DENTRO*, FORA* ou SEM REGISTRO e oferece somente a próxima operação válida.
+- *DENTRO/FORA é estado derivado do último registro do dia; não é rastreamento em tempo real nem frequência em sala.
 
-A base usa dados fictícios. Não execute npm run reset sem uma cópia de segurança da base local. O MVP não é homologado para dados reais de estudantes.
+SEGURANÇA/SESSÃO
+- A interface usa cookie de sessão HttpOnly/SameSite.
+- Para HTTPS real, configure SS_SECURE_COOKIE=1.
+- A autorização continua sendo validada no servidor.
+
+TESTES DESTA ENTREGA
+- 57 aprovados / 0 falhas.
+
+A base usa dados fictícios. Não execute npm run reset sem uma cópia de segurança da base local. O MVP não está homologado para dados reais de estudantes.

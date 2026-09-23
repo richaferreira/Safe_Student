@@ -8,7 +8,8 @@
     "start": "node server.js",
     "test": "node --test --test-concurrency=1 tests/*.test.js",
     "test:unit": "node --test tests/domain.test.js tests/security.test.js",
-    "reset": "node scripts-reset.js"
+    "reset": "node scripts-reset.js",
+    "benchmark": "node scripts-benchmark.js"
   },
   "engines": {
     "node": ">=18"

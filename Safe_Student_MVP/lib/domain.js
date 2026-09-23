@@ -26,20 +26,33 @@ function canMessageRole(fromRole, toRole) {
 
 function allowedStudentIds(user, db) {
   if (!user) return [];
-  if (user.role === 'RESPONSAVEL') return (user.studentIds || []).filter(id => db.students.some(s => s.id === id && s.status === 'ATIVO'));
+  if (user.role === 'RESPONSAVEL') {
+    return (user.studentIds || []).filter((id) => db.students.some((s) => s.id === id && s.status === 'ATIVO'));
+  }
   if (['PORTARIA', 'GESTAO', 'ADMIN'].includes(user.role)) {
     return db.students.filter((s) => s.status === 'ATIVO').map((s) => s.id);
   }
   return [];
 }
 
+function sortedAttendance(records) {
+  return [...(records || [])].sort((a, b) => String(a.timestamp || '').localeCompare(String(b.timestamp || '')));
+}
+
+function movementState(records) {
+  const ordered = sortedAttendance(records);
+  const last = ordered[ordered.length - 1] || null;
+  if (!last) return { state: 'SEM_REGISTRO', label: 'Sem registro hoje', nextType: 'ENTRADA', last: null };
+  if (last.type === 'ENTRADA') return { state: 'DENTRO', label: 'Entrada registrada', nextType: 'SAIDA', last };
+  return { state: 'FORA', label: 'Saída registrada', nextType: 'ENTRADA', last };
+}
+
 function validateAttendanceSequence(records, type) {
-  const sorted = [...records].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
-  const last = sorted[sorted.length - 1];
-  if (type === 'ENTRADA' && last && last.type === 'ENTRADA') {
+  const status = movementState(records);
+  if (type === 'ENTRADA' && status.nextType !== 'ENTRADA') {
     return { ok: false, error: 'Já existe entrada pendente para este aluno hoje.' };
   }
-  if (type === 'SAIDA' && (!last || last.type !== 'ENTRADA')) {
+  if (type === 'SAIDA' && status.nextType !== 'SAIDA') {
     return { ok: false, error: 'Não há entrada válida para registrar saída.' };
   }
   return { ok: true };
@@ -64,4 +77,5 @@ module.exports = {
   allowedStudentIds,
   validateAttendanceSequence,
   attendanceRate,
+  movementState,
 };

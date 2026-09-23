@@ -12,6 +12,7 @@ const {
   validateAttendanceSequence,
   attendanceRate,
   canMessageRole,
+  movementState,
 } = require('./lib/domain');
 
 const PORT = Number(process.env.PORT || 3000);
@@ -195,12 +196,32 @@ function audit(db, userId, action, entity = '', entityId = '', details = '') {
   });
 }
 
+function cookieValue(req, name) {
+  const raw = String(req.headers.cookie || '');
+  const pair = raw.split(';').map((part) => part.trim()).find((part) => part.startsWith(`${name}=`));
+  return pair ? decodeURIComponent(pair.slice(name.length + 1)) : '';
+}
+
 function bearerToken(req) {
   return (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
 }
 
+function sessionTokenFromReq(req) {
+  return bearerToken(req) || cookieValue(req, 'ss_session');
+}
+
+function setSessionCookie(res, token, maxAgeSeconds = Math.floor(SESSION_TTL_MS / 1000)) {
+  const secure = process.env.SS_SECURE_COOKIE === '1' ? '; Secure' : '';
+  res.setHeader('Set-Cookie', `ss_session=${encodeURIComponent(token)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAgeSeconds}${secure}`);
+}
+
+function clearSessionCookie(res) {
+  const secure = process.env.SS_SECURE_COOKIE === '1' ? '; Secure' : '';
+  res.setHeader('Set-Cookie', `ss_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secure}`);
+}
+
 function userFromReq(req, db) {
-  const token = bearerToken(req);
+  const token = sessionTokenFromReq(req);
   const session = sessions.get(token);
   if (!session) return null;
   if (Date.now() > session.expiresAt) {
@@ -263,29 +284,96 @@ function formatSchoolDateTime(value = new Date()) {
   }).format(date);
 }
 
+function validIsoDate(value) {
+  if (!value) return true;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T12:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
 function reportFilters(url, db, res) {
   const from = url.searchParams.get('from') || '';
   const to = url.searchParams.get('to') || '';
   const classId = url.searchParams.get('classId') || '';
-  const iso = /^\d{4}-\d{2}-\d{2}$/;
-  const validDate = value => !value || (iso.test(value) && !Number.isNaN(Date.parse(`${value}T12:00:00Z`)) &&
-    new Date(`${value}T12:00:00Z`).toISOString().slice(0, 10) === value);
-  if (!validDate(from) || !validDate(to) || (from && to && from > to) ||
-    (classId && !db.classes.some(c => c.id === classId))) {
-    json(res, 400, { error: 'Filtros inválidos: confira data inicial, data final e turma.' });
+  const studentId = url.searchParams.get('studentId') || '';
+  const type = String(url.searchParams.get('type') || '').toUpperCase();
+  if (!validIsoDate(from) || !validIsoDate(to) || (from && to && from > to) ||
+    (classId && !db.classes.some((item) => item.id === classId)) ||
+    (studentId && !db.students.some((item) => item.id === studentId)) ||
+    (type && !['ENTRADA', 'SAIDA'].includes(type))) {
+    json(res, 400, { error: 'Filtros inválidos: confira período, turma, aluno e tipo de movimentação.' });
     return null;
   }
-  return { classId, inRange: timestamp => {
-    const key = dateKey(timestamp);
-    return (!from || key >= from) && (!to || key <= to);
-  }};
+  return {
+    from,
+    to,
+    classId,
+    studentId,
+    type,
+    inRange(timestamp) {
+      const key = dateKey(timestamp);
+      return (!from || key >= from) && (!to || key <= to);
+    },
+  };
+}
+
+function attendanceStatusForStudent(db, student) {
+  const today = dateKey();
+  const records = (db.attendance || []).filter((record) => record.studentId === student.id && dateKey(record.timestamp) === today);
+  return movementState(records);
+}
+
+function visibleNotifications(user, db) {
+  const allowed = new Set(allowedStudentIds(user, db));
+  return (db.notifications || [])
+    .filter((notification) => notification.userId === user.id && (!notification.studentId || allowed.has(notification.studentId)))
+    .map((notification) => ({ ...notification, student: studentById(db, notification.studentId)?.name || 'Aluno' }))
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+function buildReportData(user, db, filters) {
+  const allowed = new Set(allowedStudentIds(user, db));
+  const students = db.students.filter((student) => allowed.has(student.id) &&
+    (!filters.classId || student.classId === filters.classId) &&
+    (!filters.studentId || student.id === filters.studentId));
+  const studentIds = new Set(students.map((student) => student.id));
+  const records = (db.attendance || [])
+    .filter((record) => studentIds.has(record.studentId) && filters.inRange(record.timestamp) && (!filters.type || record.type === filters.type))
+    .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+    .map((record) => {
+      const student = studentById(db, record.studentId);
+      return {
+        id: record.id,
+        studentId: record.studentId,
+        name: student?.name || 'Aluno',
+        enrollment: student?.enrollment || '',
+        className: className(db, student?.classId),
+        type: record.type,
+        timestamp: record.timestamp,
+        method: record.method,
+        registeredBy: userById(db, record.registeredBy)?.name || 'Sistema',
+      };
+    });
+  const summary = students.map((student) => {
+    const own = records.filter((record) => record.studentId === student.id);
+    return {
+      studentId: student.id,
+      name: student.name,
+      enrollment: student.enrollment,
+      className: className(db, student.classId),
+      entradas: own.filter((record) => record.type === 'ENTRADA').length,
+      saidas: own.filter((record) => record.type === 'SAIDA').length,
+      ultimoRegistro: own[0]?.timestamp || null,
+    };
+  });
+  return { records, summary };
 }
 
 function securityHeaders(res) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Referrer-Policy', 'no-referrer');
-  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()');
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   res.setHeader(
     'Content-Security-Policy',
@@ -432,10 +520,12 @@ async function handler(req, res) {
       }
       clearLoginAttempts(ip);
       const token = randomToken();
+      user.lastLoginAt = new Date().toISOString();
       const sanitized = safeUser(user);
       sessions.set(token, { user: sanitized, expiresAt: Date.now() + SESSION_TTL_MS });
       audit(db, user.id, 'LOGIN', 'sessao', '', `Perfil ${user.role}`);
       writeDb(db);
+      setSessionCookie(res, token);
       return json(res, 200, { token, user: sanitized, expiresInSeconds: SESSION_TTL_MS / 1000 });
     }
 
@@ -462,7 +552,7 @@ async function handler(req, res) {
       const studentIds = [...new Set(invitation.studentIds)].filter(id => db.students.some(s => s.id === id && s.status === 'ATIVO'));
       if (!studentIds.length) return json(res, 409, { error: 'O convite não possui aluno ativo. Contate a escola.' });
       const account = { id: crypto.randomUUID(), name: invitation.name, email, phone: invitation.phone,
-        cpf: cpf || invitation.cpf || '', passwordHash: hashPassword(password), role: 'RESPONSAVEL', studentIds, status: 'ATIVO' };
+        cpf: cpf || invitation.cpf || '', passwordHash: hashPassword(password), role: 'RESPONSAVEL', studentIds, status: 'ATIVO', lastLoginAt: new Date().toISOString() };
       db.users.push(account);
       clearLoginAttempts(ip);
       invitation.status = 'UTILIZADO';
@@ -478,16 +568,18 @@ async function handler(req, res) {
       const token = randomToken();
       const sanitized = safeUser(account);
       sessions.set(token, { user: sanitized, expiresAt: Date.now() + SESSION_TTL_MS });
-      return json(res, 201, { token, user: sanitized, childrenLinked: studentIds.length });
+      setSessionCookie(res, token);
+      return json(res, 201, { token, user: sanitized, childrenLinked: account.studentIds.length });
     }
 
     const user = userFromReq(req, db);
     if (!user) return json(res, 401, { error: 'Sessão expirada ou ausente.' });
 
     if (req.method === 'POST' && url.pathname === '/api/logout') {
-      sessions.delete(bearerToken(req));
+      sessions.delete(sessionTokenFromReq(req));
       audit(db, user.id, 'LOGOUT');
       writeDb(db);
+      clearSessionCookie(res);
       return json(res, 200, { ok: true });
     }
 
@@ -514,10 +606,7 @@ async function handler(req, res) {
         .filter((r) => allowed.has(r.studentId))
         .map((r) => ({ ...r, student: studentById(db, r.studentId)?.name || 'Aluno' }))
         .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-      const notifications = (db.notifications || [])
-        .filter((n) => n.userId === user.id)
-        .map((n) => ({ ...n, student: studentById(db, n.studentId)?.name || 'Aluno' }))
-        .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      const notifications = visibleNotifications(user, db);
       const today = dateKey();
       const todayAtt = db.attendance
         .filter((r) => dateKey(r.timestamp) === today && allowed.has(r.studentId))
@@ -527,12 +616,16 @@ async function handler(req, res) {
       todayAtt.forEach((record) => latestToday.set(record.studentId, record));
       const studentStatuses = students.map((student) => {
         const last = latestToday.get(student.id);
+        const status = movementState(last ? [last] : []);
         return {
           id: student.id,
           name: student.name,
           className: student.className,
           lastType: last?.type || null,
           lastTimestamp: last?.timestamp || null,
+          state: status.state,
+          stateLabel: status.label,
+          nextType: status.nextType,
         };
       });
       // Os agregados devem ser calculados no servidor, *depois* da aplicação do escopo de alunos.
@@ -571,8 +664,13 @@ async function handler(req, res) {
           toName: userById(db, message.toUserId)?.name || 'Escola',
           ownMessage: message.fromUserId === user.id,
         }));
-      const pendingInvitations = canManageSchool(user.role)
-        ? (db.guardianInvitations || []).filter((invitation) => invitation.status === 'PENDENTE').length : 0;
+      const pendingInvitationRows = canManageSchool(user.role)
+        ? (db.guardianInvitations || []).filter((invitation) => invitation.status === 'PENDENTE') : [];
+      const pendingInvitations = pendingInvitationRows.length;
+      const expiringInvitations = pendingInvitationRows.filter((invitation) => {
+        const remaining = new Date(invitation.expiresAt).getTime() - Date.now();
+        return remaining > 0 && remaining <= 7 * 86400000;
+      }).length;
       const unlinkedStudents = canManageSchool(user.role)
         ? students.filter((student) => !db.users.some((candidate) => candidate.role === 'RESPONSAVEL' && candidate.status === 'ATIVO' && (candidate.studentIds || []).includes(student.id)) && !(db.guardianInvitations || []).some((invitation) => invitation.status === 'PENDENTE' && invitation.studentIds.includes(student.id))).length : 0;
       const attention = [];
@@ -580,6 +678,7 @@ async function handler(req, res) {
         attention.push({ type: 'warning', label: 'Entradas sem saída', count: Array.from(latestToday.values()).filter((record) => record.type === 'ENTRADA').length, description: 'Registros que precisam de conferência', view: 'students', action: 'Ver alunos' });
       }
       if (pendingInvitations) attention.push({ type: 'info', label: 'Convites pendentes', count: pendingInvitations, description: 'Responsáveis aguardando ativação', view: 'guardians', action: 'Revisar convites' });
+      if (expiringInvitations) attention.push({ type: 'warning', label: 'Convites próximos de expirar', count: expiringInvitations, description: 'Expiram nos próximos 7 dias', view: 'guardians', action: 'Revisar validade' });
       if (unlinkedStudents) attention.push({ type: 'warning', label: 'Alunos sem responsável', count: unlinkedStudents, description: 'Cadastros que exigem revisão', view: 'students', action: 'Resolver agora' });
       if (notifications.filter((notification) => !notification.read).length) attention.push({ type: 'info', label: 'Notificações não lidas', count: notifications.filter((notification) => !notification.read).length, description: 'Avisos disponíveis para sua conta', view: 'notifications', action: 'Ver notificações' });
       if (!attention.length) attention.push({ type: 'ok', label: 'Nenhuma pendência crítica', count: 0, description: 'A rotina está em dia neste momento', view: 'dashboard', action: 'Continuar acompanhamento' });
@@ -597,7 +696,7 @@ async function handler(req, res) {
         classOperational: [...byClass.values()].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
         attention,
         timeline,
-        operations: { pendingInvitations, unlinkedStudents },
+        operations: { pendingInvitations, expiringInvitations, unlinkedStudents },
         recentMessages,
         attendance: attendance.slice(0, 60),
         notifications: notifications.slice(0, 30),
@@ -606,6 +705,9 @@ async function handler(req, res) {
           entradasHoje: todayAtt.filter((r) => r.type === 'ENTRADA').length,
           saidasHoje: todayAtt.filter((r) => r.type === 'SAIDA').length,
           semSaidaHoje: Array.from(latestToday.values()).filter((r) => r.type === 'ENTRADA').length,
+          dentroHoje: studentStatuses.filter((student) => student.state === 'DENTRO').length,
+          foraHoje: studentStatuses.filter((student) => student.state === 'FORA').length,
+          semRegistroHoje: studentStatuses.filter((student) => student.state === 'SEM_REGISTRO').length,
           notificacoesNaoLidas: notifications.filter((n) => !n.read).length,
         },
       });
@@ -623,54 +725,95 @@ async function handler(req, res) {
       const name = String(body.name || '').trim();
       const enrollment = String(body.enrollment || '').trim();
       const classId = String(body.classId || '').trim();
-      const existingGuardian = body.guardianId && db.users.find(u => u.id === body.guardianId && u.role === 'RESPONSAVEL' && u.status === 'ATIVO');
-      if (body.guardianId && !existingGuardian) return json(res, 404, { error: 'Responsável existente não encontrado ou sem acesso ativo.' });
-      const guardian = body.guardian && {
-        name: String(body.guardian.name || '').trim(), email: normalizeEmail(body.guardian.email),
-        phone: String(body.guardian.phone || '').replace(/[^0-9+() -]/g, '').trim(),
-        relationship: String(body.guardian.relationship || '').trim(),
-        cpf: normalizeCpf(body.guardian.cpf),
-      };
-      if (!validPerson(name) || enrollment.length < 3 || enrollment.length > 40 || !db.classes.some(c => c.id === classId)) {
+      if (!validPerson(name) || enrollment.length < 3 || enrollment.length > 40 || !db.classes.some((item) => item.id === classId)) {
         return json(res, 400, { error: 'Nome, matrícula e turma válidos são obrigatórios.' });
       }
-      if (db.students.some(s => s.enrollment.toLowerCase() === enrollment.toLowerCase())) {
+      if (db.students.some((student) => student.enrollment.toLowerCase() === enrollment.toLowerCase())) {
         return json(res, 409, { error: 'Matrícula já cadastrada.' });
       }
-      if (!existingGuardian && (!guardian || !validPerson(guardian.name) || !validEmail(guardian.email)
-        || guardian.phone.replace(/\D/g, '').length < 10 || guardian.phone.replace(/\D/g, '').length > 13
-        || !['Mãe','Pai','Responsável legal','Outro'].includes(guardian.relationship))) {
-        return json(res, 400, { error: 'Informe o responsável: nome, e-mail válido, telefone e vínculo familiar. Também pode selecionar uma conta existente.' });
+
+      let guardianSpecs = Array.isArray(body.guardians) ? body.guardians : [];
+      // Compatibilidade com o contrato anterior de um único responsável.
+      if (!guardianSpecs.length && body.guardianId) guardianSpecs = [{ mode: 'existing', guardianId: body.guardianId }];
+      if (!guardianSpecs.length && body.guardian) guardianSpecs = [{ mode: 'new', ...body.guardian }];
+      if (!guardianSpecs.length) return json(res, 400, { error: 'Cadastre ou selecione pelo menos um responsável para o aluno.' });
+      if (guardianSpecs.length > 10) return json(res, 400, { error: 'Revise a lista de responsáveis antes de concluir o cadastro.' });
+
+      const resolved = [];
+      const seen = new Set();
+      for (const raw of guardianSpecs) {
+        const mode = raw?.mode === 'existing' || raw?.guardianId ? 'existing' : 'new';
+        if (mode === 'existing') {
+          const account = db.users.find((candidate) => candidate.id === raw.guardianId && candidate.role === 'RESPONSAVEL' && candidate.status === 'ATIVO');
+          if (!account) return json(res, 404, { error: 'Um dos responsáveis selecionados não foi encontrado ou está sem acesso ativo.' });
+          const key = `user:${account.id}`;
+          if (!seen.has(key)) { seen.add(key); resolved.push({ kind: 'account', account }); }
+          continue;
+        }
+
+        const guardian = {
+          name: String(raw?.name || '').trim(),
+          email: normalizeEmail(raw?.email),
+          phone: String(raw?.phone || '').replace(/[^0-9+() -]/g, '').trim(),
+          relationship: String(raw?.relationship || '').trim(),
+          cpf: normalizeCpf(raw?.cpf),
+        };
+        if (!validPerson(guardian.name) || !validEmail(guardian.email) ||
+          guardian.phone.replace(/\D/g, '').length < 10 || guardian.phone.replace(/\D/g, '').length > 13 ||
+          !['Mãe', 'Pai', 'Responsável legal', 'Outro'].includes(guardian.relationship)) {
+          return json(res, 400, { error: `Confira os dados do responsável ${guardian.name || 'informado'}: nome, e-mail, telefone e vínculo são obrigatórios.` });
+        }
+        if (guardian.cpf && !validCpf(guardian.cpf)) return json(res, 400, { error: `CPF inválido para ${guardian.name}.` });
+        if (db.users.some((candidate) => normalizeEmail(candidate.email) === guardian.email && candidate.role !== 'RESPONSAVEL')) {
+          return json(res, 409, { error: `O e-mail ${guardian.email} pertence a outro perfil. Solicite conferência à gestão.` });
+        }
+        if (guardian.cpf && db.users.some((candidate) => candidate.cpf === guardian.cpf && candidate.role !== 'RESPONSAVEL')) {
+          return json(res, 409, { error: `O CPF informado para ${guardian.name} pertence a outro perfil.` });
+        }
+        const matched = db.users.find((candidate) => candidate.role === 'RESPONSAVEL' && candidate.status === 'ATIVO' &&
+          ((guardian.email && normalizeEmail(candidate.email) === guardian.email) || (guardian.cpf && candidate.cpf && candidate.cpf === guardian.cpf)));
+        if (matched) {
+          if (guardian.name.toLocaleLowerCase('pt-BR') !== matched.name.toLocaleLowerCase('pt-BR')) {
+            return json(res, 409, { error: `O e-mail ou CPF informado para o nome ${guardian.name} já pertence ao responsável ${matched.name}. Confira a identidade antes de vincular.` });
+          }
+          const key = `user:${matched.id}`;
+          if (!seen.has(key)) { seen.add(key); resolved.push({ kind: 'account', account: matched }); }
+          continue;
+        }
+        const pending = (db.guardianInvitations || []).find((invitation) => invitation.status === 'PENDENTE' &&
+          (invitation.email === guardian.email || (guardian.cpf && invitation.cpf === guardian.cpf)));
+        if (pending && pending.name.toLocaleLowerCase('pt-BR') !== guardian.name.toLocaleLowerCase('pt-BR')) {
+          return json(res, 409, { error: `Já existe convite pendente com os mesmos dados de identificação para ${pending.name}. Revise antes de continuar.` });
+        }
+        const key = guardian.cpf ? `cpf:${guardian.cpf}` : `email:${guardian.email}`;
+        if (!seen.has(key)) { seen.add(key); resolved.push({ kind: 'invite', guardian }); }
       }
-      if (!existingGuardian && guardian.cpf && !validCpf(guardian.cpf)) {
-        return json(res, 400, { error: 'CPF do responsável inválido. Deixe o campo em branco se preferir não informar.' });
-      }
-      if (guardian && !existingGuardian && db.users.some(u => u.email.toLowerCase() === guardian.email && u.role !== 'RESPONSAVEL')) {
-        return json(res, 409, { error: 'Este e-mail já pertence a outro perfil. Solicite conferência à gestão.' });
-      }
-      if (guardian && !existingGuardian && guardian.cpf && db.users.some(u => u.cpf === guardian.cpf && u.role !== 'RESPONSAVEL')) {
-        return json(res, 409, { error: 'Este CPF já pertence a outro perfil. Solicite conferência à gestão.' });
-      }
-      const matchedGuardian = existingGuardian || (guardian && db.users.find(u => u.role === 'RESPONSAVEL' && u.status === 'ATIVO' &&
-        ((guardian.email && normalizeEmail(u.email) === guardian.email) || (guardian.cpf && u.cpf && u.cpf === guardian.cpf))));
-      if (matchedGuardian && guardian && !existingGuardian && guardian.name.toLocaleLowerCase('pt-BR') !== matchedGuardian.name.toLocaleLowerCase('pt-BR')) {
-        return json(res, 409, { error: 'O e-mail ou CPF informado já possui responsável cadastrado com outro nome. Confira o cadastro antes de vincular.' });
-      }
-      const student = { id: crypto.randomUUID(), name, enrollment, classId,
-        token: uniqueStudentToken(db), status: 'ATIVO' };
+      if (!resolved.length) return json(res, 400, { error: 'Nenhum responsável válido foi informado.' });
+
+      const student = { id: crypto.randomUUID(), name, enrollment, classId, token: uniqueStudentToken(db), status: 'ATIVO' };
       db.students.push(student);
-      let invitation = null;
-      if (matchedGuardian) {
-        matchedGuardian.studentIds = [...new Set([...(matchedGuardian.studentIds || []), student.id])];
-        audit(db, user.id, 'VINCULAR_RESPONSAVEL', 'aluno', student.id, matchedGuardian.name);
-      } else {
-        invitation = issueGuardianInvitation(db, guardian, student.id);
-        audit(db, user.id, 'CONVIDAR_RESPONSAVEL', 'aluno', student.id, guardian.name);
+      const invitations = [];
+      let linkedCount = 0;
+      for (const item of resolved) {
+        if (item.kind === 'account') {
+          item.account.studentIds = [...new Set([...(item.account.studentIds || []), student.id])];
+          linkedCount += 1;
+          audit(db, user.id, 'VINCULAR_RESPONSAVEL', 'aluno', student.id, item.account.name);
+        } else {
+          const invitation = issueGuardianInvitation(db, item.guardian, student.id);
+          invitations.push(invitation);
+          audit(db, user.id, 'CONVIDAR_RESPONSAVEL', 'aluno', student.id, item.guardian.name);
+        }
       }
-      audit(db, user.id, 'CADASTRAR_ALUNO', 'aluno', student.id, name);
-      writeDb(db); // Aluno e vínculo/convite do responsável aprovado são gravados juntos.
-      return json(res, 201, { student: studentView(user, db, student, { includeGuardians: true }), invitation,
-        guardianLinked: Boolean(matchedGuardian) });
+      audit(db, user.id, 'CADASTRAR_ALUNO', 'aluno', student.id, `${name}; responsáveis: ${resolved.length}`);
+      writeDb(db); // Matrícula e todos os vínculos/convites validados são persistidos juntos.
+      return json(res, 201, {
+        student: studentView(user, db, student, { includeGuardians: true }),
+        invitations,
+        invitation: invitations[0] || null,
+        guardianLinkedCount: linkedCount,
+        guardianLinked: linkedCount > 0,
+      });
     }
 
     if (req.method === 'PATCH' && /^\/api\/students\/[^/]+$/.test(url.pathname)) {
@@ -718,6 +861,20 @@ async function handler(req, res) {
       return json(res, 200, { ok: true });
     }
 
+    if (req.method === 'GET' && url.pathname === '/api/attendance/status') {
+      if (!canRegisterAttendance(user.role)) return json(res, 403, { error: 'Perfil sem permissão para consultar a operação de portaria.' });
+      const tokenCode = normalizeToken(url.searchParams.get('token'));
+      const studentId = String(url.searchParams.get('studentId') || '').trim();
+      const student = db.students.find((candidate) => candidate.status === 'ATIVO' &&
+        ((studentId && candidate.id === studentId) || (tokenCode && candidate.token === tokenCode)));
+      if (!student) return json(res, 404, { error: 'Aluno ativo não encontrado.' });
+      const status = attendanceStatusForStudent(db, student);
+      return json(res, 200, {
+        student: studentView(user, db, student, { includeGuardians: canManageSchool(user.role) }),
+        status: { state: status.state, label: status.label, nextType: status.nextType, lastType: status.last?.type || null, lastTimestamp: status.last?.timestamp || null },
+      });
+    }
+
     if (req.method === 'POST' && url.pathname === '/api/attendance') {
       if (!canRegisterAttendance(user.role)) return json(res, 403, { error: 'Perfil sem permissão para registrar presença.' });
       const body = await parseBody(req);
@@ -733,11 +890,13 @@ async function handler(req, res) {
       if (!sequence.ok) return json(res, 409, { error: sequence.error });
 
       const now = new Date();
+      const requestedMethod = String(body.method || 'TOKEN_MANUAL').toUpperCase();
+      const method = ['TOKEN_MANUAL', 'QR_CAMERA', 'QR_TOKEN'].includes(requestedMethod) ? requestedMethod : 'TOKEN_MANUAL';
       const record = {
         id: crypto.randomUUID(),
         studentId: student.id,
         type,
-        method: 'TOKEN_MANUAL',
+        method,
         timestamp: now.toISOString(),
         registeredBy: user.id,
         origin: 'PORTARIA_DEMO',
@@ -757,12 +916,28 @@ async function handler(req, res) {
       }));
       audit(db, user.id, `REGISTRAR_${type}`, 'presenca', record.id, student.name);
       writeDb(db);
-      return json(res, 201, { record, student: studentView(user, db, student), notified: guardians.length });
+      const updatedStatus = attendanceStatusForStudent(db, student);
+      return json(res, 201, { record, student: studentView(user, db, student), notified: guardians.length,
+        status: { state: updatedStatus.state, label: updatedStatus.label, nextType: updatedStatus.nextType, lastType: updatedStatus.last?.type || null, lastTimestamp: updatedStatus.last?.timestamp || null } });
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/notifications') {
+      const readFilter = String(url.searchParams.get('read') || 'all').toLowerCase();
+      const studentId = String(url.searchParams.get('studentId') || '').trim();
+      if (!['all', 'read', 'unread'].includes(readFilter)) return json(res, 400, { error: 'Filtro de leitura inválido.' });
+      const allowed = new Set(allowedStudentIds(user, db));
+      if (studentId && !allowed.has(studentId)) return json(res, 200, { notifications: [] });
+      let items = visibleNotifications(user, db);
+      if (studentId) items = items.filter((item) => item.studentId === studentId);
+      if (readFilter === 'read') items = items.filter((item) => item.read);
+      if (readFilter === 'unread') items = items.filter((item) => !item.read);
+      return json(res, 200, { notifications: items.slice(0, 150) });
     }
 
     if (req.method === 'PATCH' && url.pathname.startsWith('/api/notifications/')) {
       const id = url.pathname.split('/').pop();
-      const notification = (db.notifications || []).find((n) => n.id === id && n.userId === user.id);
+      const allowed = new Set(allowedStudentIds(user, db));
+      const notification = (db.notifications || []).find((n) => n.id === id && n.userId === user.id && (!n.studentId || allowed.has(n.studentId)));
       if (!notification) return json(res, 404, { error: 'Notificação não encontrada.' });
       notification.read = true;
       audit(db, user.id, 'LER_NOTIFICACAO', 'notificacao', notification.id);
@@ -771,60 +946,56 @@ async function handler(req, res) {
     }
 
     if (req.method === 'GET' && url.pathname === '/api/reports') {
-      const range = reportFilters(url, db, res);
-      if (!range) return;
-      const ids = new Set(allowedStudentIds(user, db));
-      const rows = db.students.filter((s) => ids.has(s.id) && (!range.classId || s.classId === range.classId)).map((s) => {
-        const records = db.attendance.filter((r) => r.studentId === s.id && range.inRange(r.timestamp));
-        return {
-          studentId: s.id,
-          name: s.name,
-          enrollment: s.enrollment,
-          className: className(db, s.classId),
-          entradas: records.filter((r) => r.type === 'ENTRADA').length,
-          saidas: records.filter((r) => r.type === 'SAIDA').length,
-          taxaDemo: attendanceRate(records, 20, dateKey),
-          ultimoRegistro: [...records].sort((a, b) => b.timestamp.localeCompare(a.timestamp))[0]?.timestamp || null,
-        };
-      });
+      const filters = reportFilters(url, db, res);
+      if (!filters) return;
+      const data = buildReportData(user, db, filters);
       return json(res, 200, {
-        rows,
-        disclaimer: 'Contagem de movimentações de portaria; não equivale à frequência em sala de aula. A taxa de demonstração usa dias fictícios e não deve ser usada para avaliação escolar.',
+        rows: data.summary,
+        records: data.records,
+        totals: {
+          students: data.summary.length,
+          records: data.records.length,
+          entradas: data.records.filter((record) => record.type === 'ENTRADA').length,
+          saidas: data.records.filter((record) => record.type === 'SAIDA').length,
+        },
+        disclaimer: 'Relatório de movimentações da portaria; não equivale à frequência em sala de aula nem comprova localização física em tempo real.',
       });
     }
 
     if (req.method === 'GET' && url.pathname === '/api/reports.csv') {
-      const range = reportFilters(url, db, res);
-      if (!range) return;
-      const ids = new Set(allowedStudentIds(user, db));
-      const rows = [['Aluno', 'Matrícula', 'Turma', 'Tipo', 'Data/Hora', 'Método']];
-      db.attendance
-        .filter((r) => ids.has(r.studentId) && range.inRange(r.timestamp) && (!range.classId || studentById(db, r.studentId)?.classId === range.classId))
-        .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
-        .forEach((r) => {
-          const student = studentById(db, r.studentId);
-          rows.push([
-            student?.name,
-            student?.enrollment,
-            className(db, student?.classId),
-            r.type,
-            formatSchoolDateTime(r.timestamp),
-            r.method,
-          ]);
-        });
-      return csv(res, 'safe-student-relatorio-demo.csv', rows);
+      const filters = reportFilters(url, db, res);
+      if (!filters) return;
+      const data = buildReportData(user, db, filters);
+      const rows = [['Aluno', 'Matrícula', 'Turma', 'Tipo', 'Data/Hora', 'Método', 'Registrado por']];
+      data.records.forEach((record) => rows.push([
+        record.name,
+        record.enrollment,
+        record.className,
+        record.type,
+        formatSchoolDateTime(record.timestamp),
+        record.method,
+        record.registeredBy,
+      ]));
+      return csv(res, 'safe-student-relatorio-movimentacoes.csv', rows);
     }
 
     if (req.method === 'GET' && url.pathname === '/api/messages') {
+      const withUserId = String(url.searchParams.get('withUserId') || '').trim();
+      let peer = null;
+      if (withUserId) {
+        peer = db.users.find((candidate) => candidate.id === withUserId);
+        if (!canMessageUser(user, peer)) return json(res, 403, { error: 'Conversa não permitida para este perfil.' });
+      }
       const visible = (db.messages || [])
-        .filter((m) => m.fromUserId === user.id || m.toUserId === user.id)
+        .filter((message) => (message.fromUserId === user.id || message.toUserId === user.id) &&
+          (!withUserId || message.fromUserId === withUserId || message.toUserId === withUserId))
         .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
-        .map((m) => ({
-          ...m,
-          fromName: userById(db, m.fromUserId)?.name || 'Escola',
-          toName: userById(db, m.toUserId)?.name || 'Escola',
+        .map((message) => ({
+          ...message,
+          fromName: userById(db, message.fromUserId)?.name || 'Escola',
+          toName: userById(db, message.toUserId)?.name || 'Escola',
         }));
-      return json(res, 200, { messages: visible });
+      return json(res, 200, { messages: visible, peer: peer ? directoryUser(peer) : null });
     }
 
     if (req.method === 'POST' && url.pathname === '/api/messages') {
@@ -928,11 +1099,27 @@ async function handler(req, res) {
 
     if (req.method === 'GET' && url.pathname === '/api/audit') {
       if (!canViewAudit(user.role)) return json(res, 403, { error: 'Perfil sem permissão para auditoria.' });
-      const rows = (db.audit || []).slice(-120).reverse().map((event) => ({
+      const q = String(url.searchParams.get('q') || '').trim().toLocaleLowerCase('pt-BR');
+      const action = String(url.searchParams.get('action') || '').trim();
+      const actorId = String(url.searchParams.get('userId') || '').trim();
+      const from = String(url.searchParams.get('from') || '').trim();
+      const to = String(url.searchParams.get('to') || '').trim();
+      if (!validIsoDate(from) || !validIsoDate(to) || (from && to && from > to)) return json(res, 400, { error: 'Período de auditoria inválido.' });
+      let rows = (db.audit || []).map((event) => ({
         ...event,
         userName: event.userId ? (userById(db, event.userId)?.name || 'Sistema') : 'Sistema',
       }));
-      return json(res, 200, { rows });
+      if (action) rows = rows.filter((event) => event.action === action);
+      if (actorId) rows = rows.filter((event) => event.userId === actorId);
+      if (from) rows = rows.filter((event) => dateKey(event.createdAt) >= from);
+      if (to) rows = rows.filter((event) => dateKey(event.createdAt) <= to);
+      if (q) rows = rows.filter((event) => [event.userName, event.action, event.entity, event.details].some((value) => String(value || '').toLocaleLowerCase('pt-BR').includes(q)));
+      rows = rows.sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 250);
+      return json(res, 200, {
+        rows,
+        actions: [...new Set((db.audit || []).map((event) => event.action))].sort(),
+        users: db.users.filter((candidate) => candidate.status === 'ATIVO').map(directoryUser).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
+      });
     }
 
     if (req.method === 'GET' && url.pathname === '/api/classes') {
@@ -979,10 +1166,22 @@ async function handler(req, res) {
     if (req.method === 'GET' && url.pathname === '/api/guardians') {
       if (!canManageSchool(user.role)) return json(res, 403, { error: 'Perfil sem permissão.' });
       return json(res, 200, {
-        guardians: db.users.filter(u => u.role === 'RESPONSAVEL').map(u =>
-          ({ id: u.id, name: u.name, email: u.email, phone: u.phone || '', cpfMasked: maskCpf(u.cpf), status: u.status,
-            studentIds: u.studentIds || [] })),
-        invitations: (db.guardianInvitations || []).filter(i => i.status === 'PENDENTE').map(guardianInvitationView),
+        guardians: db.users.filter((candidate) => candidate.role === 'RESPONSAVEL').map((candidate) => ({
+          id: candidate.id,
+          name: candidate.name,
+          email: candidate.email,
+          phone: candidate.phone || '',
+          cpfMasked: maskCpf(candidate.cpf),
+          status: candidate.status,
+          lastLoginAt: candidate.lastLoginAt || null,
+          studentIds: candidate.studentIds || [],
+          students: (candidate.studentIds || []).map((studentId) => studentById(db, studentId)).filter(Boolean).map((student) => ({ id: student.id, name: student.name, className: className(db, student.classId), status: student.status })),
+        })),
+        invitations: (db.guardianInvitations || []).filter((invitation) => invitation.status === 'PENDENTE').map((invitation) => ({
+          ...guardianInvitationView(invitation),
+          students: invitation.studentIds.map((studentId) => studentById(db, studentId)).filter(Boolean).map((student) => ({ id: student.id, name: student.name, className: className(db, student.classId) })),
+          daysToExpire: Math.max(0, Math.ceil((new Date(invitation.expiresAt).getTime() - Date.now()) / 86400000)),
+        })),
       });
     }
 
