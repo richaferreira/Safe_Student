@@ -7,6 +7,14 @@ SAFE STUDENT — MVP ACADÊMICO COM SQLITE
 5. Execute: npm start
 6. Abra: http://localhost:3000
 
+cd Safe_Student_MVP
+
+npm test
+
+npm run db:status
+
+npm start
+
 NÃO É NECESSÁRIO INSTALAR SQLITE, MYSQL OU POSTGRESQL.
 O banco SQLite é acessado pelo próprio Node.js.
 
