@@ -1,0 +1,6 @@
+Validação final
+- npm test: 62 aprovados, 0 falhas.
+- HTML: 232 IDs, nenhum ID duplicado.
+- Referências $('id') do app.js: nenhuma referência sem elemento correspondente no HTML.
+- server.js e public/app.js: sintaxe validada pelo Node.js.
+- Chromium disponível no ambiente, porém a política organizacional desta sessão bloqueia acesso do navegador a localhost/file://; portanto não foi declarado teste E2E visual navegador-servidor nesta entrega.

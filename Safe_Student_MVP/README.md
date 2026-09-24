@@ -214,3 +214,7 @@ O banco agora é relacional, porém o projeto continua sendo um **MVP acadêmico
 Use somente dados fictícios na apresentação.
 
 Leia também `docs/MIGRACAO_SQLITE.md` e `docs/GUIA_ESTRUTURA_CODIGO.md`.
+
+## Refinamento do painel e tema escuro
+
+O dashboard foi reorganizado para destacar primeiro indicadores, ações e pendências. A camada `public/css/interface-polish.css` concentra os ajustes de composição e os tokens de contraste dos temas claro e escuro. Detalhes em `docs/MELHORIAS_PAINEL_TEMA.md`.

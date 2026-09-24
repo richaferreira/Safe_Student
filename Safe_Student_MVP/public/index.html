@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="css/professional.css" />
   <link rel="stylesheet" href="css/school-experience.css" />
   <link rel="stylesheet" href="css/evolution.css" />
+  <link rel="stylesheet" href="css/interface-polish.css" />
 </head>
 <body>
 <a class="skip-link" href="#mainContent">Pular para o conteúdo</a>
@@ -140,15 +141,19 @@
 
       <section id="view-dashboard" class="view-section">
         <div class="dashboard-hero"><div class="hero-copy"><div class="school-indicator"><span class="indicator-dot"></span><span id="dashboardSchool">Unidade escolar</span><span class="hero-date-sep">·</span><span id="heroDate">Hoje</span></div><h2 id="dashboardHeadline">Acompanhe o que precisa de atenção.</h2><p id="dashboardDescription">Uma visão objetiva da rotina, dos registros e das próximas ações.</p></div><div class="hero-actions"><button type="button" id="heroActionBtn" class="btn primary role-op" data-go="presence"><span>Novo registro</span> <svg class="nav-icon"><use href="#i-arrow"/></svg></button><button type="button" class="btn secondary" data-go="students">Consultar alunos</button></div></div>
-        <section class="quick-actions panel"><div class="section-title"><div><span class="eyebrow">Ações rápidas</span><h2>Comece pelo que precisa ser feito</h2></div></div><div id="quickActions" class="quick-action-grid"></div></section>
-        <section class="attention-panel"><div class="section-title"><div><span class="eyebrow">Acompanhamento</span><h2>Pontos de atenção</h2><p class="section-helper">Pendências e alertas dentro do seu escopo de acesso.</p></div><span class="attention-count" id="attentionCount">0</span></div><div id="attentionList" class="attention-list"></div></section>
-        <div class="metric-grid" id="metrics" aria-label="Indicadores calculados com dados da sua conta"></div>
+        <div class="metric-grid dashboard-metrics" id="metrics" aria-label="Indicadores calculados com dados da sua conta"></div>
+        <div class="dashboard-priority-grid">
+          <section class="quick-actions panel"><div class="section-title"><div><span class="eyebrow">Ações rápidas</span><h2>Atalhos operacionais</h2><p class="section-helper">Acesse os fluxos mais usados sem percorrer o menu lateral.</p></div></div><div id="quickActions" class="quick-action-grid"></div></section>
+          <section class="attention-panel"><div class="section-title"><div><span class="eyebrow">Acompanhamento</span><h2>Pontos de atenção</h2><p class="section-helper">Pendências e alertas que merecem revisão dentro do seu perfil.</p></div><span class="attention-count" id="attentionCount">0</span></div><div id="attentionList" class="attention-list"></div></section>
+        </div>
         <div class="dashboard-content-grid">
           <article class="panel trend-panel"><div class="section-title"><div><h2>Movimentações da portaria</h2><p class="section-helper">Entradas e saídas dos últimos sete dias</p></div><button type="button" class="text-btn link-more" data-go="reports">Relatórios<svg class="nav-icon"><use href="#i-arrow"/></svg></button></div><div class="trend-summary" id="trendSummary"></div><div class="activity-chart" id="activityChart" role="img" aria-label="Gráfico de movimentações nos últimos sete dias"></div><div class="chart-legend"><span><i class="legend-dot entry"></i>Entradas</span><span><i class="legend-dot exit"></i>Saídas</span></div></article>
           <article class="panel class-panel"><div class="section-title"><div><h2>Resumo por turma</h2><p class="section-helper">Situação mais recente dos alunos autorizados</p></div></div><div id="classOverview" class="class-overview"></div></article>
           <article class="panel timeline-panel"><div class="section-title"><div><h2>Linha do tempo</h2><p class="section-helper">Últimos acontecimentos no seu ambiente</p></div></div><div id="dashboardTimeline" class="timeline"></div></article>
-          <article class="panel messages-panel"><div class="section-title"><div><h2>Comunicação recente</h2></div><button type="button" class="text-btn link-more" data-go="messages">Ver todas<svg class="nav-icon"><use href="#i-arrow"/></svg></button></div><div id="recentMessages" class="stack-list"></div><button class="btn secondary full new-message-shortcut" type="button" data-go="messages">Abrir mensagens</button></article>
-          <article class="panel alerts-panel"><div class="section-title"><div><h2>Notificações recentes</h2></div><button type="button" class="text-btn link-more" data-go="notifications">Ver todas<svg class="nav-icon"><use href="#i-arrow"/></svg></button></div><div id="recentNotifications" class="stack-list"></div></article>
+          <div class="dashboard-side-stack">
+            <article class="panel messages-panel"><div class="section-title"><div><h2>Comunicação recente</h2></div><button type="button" class="text-btn link-more" data-go="messages">Ver todas<svg class="nav-icon"><use href="#i-arrow"/></svg></button></div><div id="recentMessages" class="stack-list"></div><button class="btn secondary full new-message-shortcut" type="button" data-go="messages">Abrir mensagens</button></article>
+            <article class="panel alerts-panel"><div class="section-title"><div><h2>Notificações recentes</h2></div><button type="button" class="text-btn link-more" data-go="notifications">Ver todas<svg class="nav-icon"><use href="#i-arrow"/></svg></button></div><div id="recentNotifications" class="stack-list"></div></article>
+          </div>
         </div>
         <article class="panel student-overview"><div class="section-title"><div><h2>Último registro por estudante</h2></div><button type="button" class="text-btn link-more" data-go="students">Ver alunos<svg class="nav-icon"><use href="#i-arrow"/></svg></button></div><p class="section-helper">Os lançamentos não confirmam localização física em tempo real. Sem registro não significa ausência.</p><div id="studentPulse" class="student-pulse"></div></article>
       </section>

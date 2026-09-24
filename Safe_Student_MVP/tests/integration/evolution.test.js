@@ -142,3 +142,16 @@ test('responsável abre histórico somente dos próprios filhos e vê notificaç
 test('frontend permite abrir histórico individual pelo nome do aluno',async()=>{
   const html=await (await fetch(base+'/')).text();const js=[await (await fetch(base+'/js/views/presence.js')).text(),await (await fetch(base+'/js/views/students.js')).text(),await (await fetch(base+'/js/views/studentProfile.js')).text(),await (await fetch(base+'/js/core/events.js')).text()].join('\n');const css=await (await fetch(base+'/css/evolution.css')).text(); assert.match(html,/view-student-profile/);assert.match(html,/Linha do tempo do aluno/);assert.match(js,/data-student-profile/);assert.match(js,/openStudentProfile/);assert.match(css,/student-history-timeline/);
 });
+
+test('painel refinado carrega tema consistente e tokens próprios para ações', async () => {
+  const html = await (await fetch(base + '/')).text();
+  const css = await (await fetch(base + '/css/interface-polish.css')).text();
+
+  assert.match(html, /css\/interface-polish\.css/);
+  assert.match(html, /dashboard-priority-grid/);
+  assert.match(html, /dashboard-side-stack/);
+  assert.match(css, /--action-bg:/);
+  assert.match(css, /html\[data-theme="dark"\]/);
+  assert.match(css, /\.btn\.primary/);
+  assert.match(css, /\.bubble\.mine/);
+});
