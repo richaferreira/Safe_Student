@@ -1,12 +1,18 @@
 <!doctype html>
+<!--
+  Safe Student - Interface principal
+  Estrutura HTML mantida em uma única página porque o MVP usa navegação por seções.
+  Os estilos e scripts foram separados por responsabilidade para facilitar o estudo.
+-->
 <html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Safe Student MVP acadêmico - controle de presença escolar e comunicação com responsáveis." />
   <title>Safe Student | Portal de presença escolar</title>
-  <link rel="stylesheet" href="professional.css" />
-  <link rel="stylesheet" href="school-experience.css" />
+  <link rel="stylesheet" href="css/professional.css" />
+  <link rel="stylesheet" href="css/school-experience.css" />
+  <link rel="stylesheet" href="css/evolution.css" />
 </head>
 <body>
 <a class="skip-link" href="#mainContent">Pular para o conteúdo</a>
@@ -148,74 +154,83 @@
       </section>
 
       <section id="view-presence" class="view-section hidden">
-        <div class="portaria-layout">
-          <article class="panel portaria-console">
-            <div class="section-title"><div><span class="eyebrow">Operação de portaria</span><h2>Identificar estudante</h2><p class="section-helper">Digite o token, selecione um aluno ou leia um QR que contenha o token Safe Student.</p></div><span class="live-indicator"><i></i> Operacional</span></div>
-            <div class="token-search-row"><label class="token-main-label">Token do aluno<input id="studentToken" list="studentTokenOptions" placeholder="Ex.: SS-ALU001" autocomplete="off" /><datalist id="studentTokenOptions"></datalist></label><button id="lookupStudentBtn" type="button" class="btn secondary">Localizar</button><button id="startQrScannerBtn" type="button" class="btn secondary"><svg class="nav-icon"><use href="#i-scan"/></svg>Ler QR</button></div>
-            <div class="quick-tokens" id="quickTokens"></div>
-            <div id="qrScannerPanel" class="qr-scanner hidden"><video id="qrVideo" playsinline muted></video><div class="qr-frame" aria-hidden="true"></div><div class="qr-scanner-footer"><span id="qrScannerStatus">Aponte a câmera para o QR do token.</span><button id="stopQrScannerBtn" type="button" class="btn secondary">Fechar câmera</button></div></div>
-            <div id="presenceStudentCard" class="presence-student-card hidden" aria-live="polite">
-              <div class="student-identity"><span class="student-avatar" id="presenceStudentInitials">SS</span><div><span class="eyebrow">Estudante localizado</span><h3 id="presenceStudentName">Aluno</h3><p id="presenceStudentMeta">Turma · matrícula</p></div></div>
-              <div class="operational-state"><span id="presenceStateBadge" class="movement-state state-none">Sem registro hoje</span><small id="presenceLastMovement">Nenhuma movimentação hoje.</small></div>
-              <div class="next-operation"><span>Próxima operação válida</span><strong id="presenceNextAction">ENTRADA</strong></div>
-              <button id="registerBtn" class="btn primary full" type="button">Registrar entrada</button>
+        <div class="operations-layout">
+          <article class="panel gate-console">
+            <div class="section-title"><div><span class="section-kicker">Operação de portaria</span><h2>Localizar estudante</h2></div><span class="live-pill">● Operação local</span></div>
+            <p class="hint">Digite o token, selecione um estudante ou leia um QR. O sistema identifica automaticamente a próxima operação válida.</p>
+            <div class="gate-search-row"><label class="grow">Token / QR<input id="studentToken" list="studentTokenOptions" placeholder="Ex.: SS-ALU001" autocomplete="off" /><datalist id="studentTokenOptions"></datalist></label><button id="lookupStudentBtn" class="btn secondary" type="button">Consultar</button><button id="startQrBtn" class="btn secondary" type="button">Ler QR</button></div>
+            <div id="qrReader" class="qr-reader hidden"><video id="qrVideo" playsinline muted></video><div><strong>Leitura por câmera</strong><small id="qrStatus">Aponte a câmera para o QR do estudante.</small><button id="stopQrBtn" class="text-btn" type="button">Fechar câmera</button></div></div>
+            <div id="presenceLookupEmpty" class="operation-empty"><svg class="operation-empty-icon"><use href="#i-scan"/></svg><strong>Nenhum estudante selecionado</strong><span>Consulte um token para visualizar o estado operacional.</span></div>
+            <div id="presenceStudentCard" class="student-operation-card hidden">
+              <div class="student-operation-head"><span id="presenceAvatar" class="student-avatar">SS</span><div><button id="presenceStudentName" class="student-name-link profile-heading-link" type="button">Estudante</button><p><span id="presenceStudentClass">Turma</span> · <span id="presenceStudentEnrollment">Matrícula</span></p></div><span id="presenceState" class="status-badge">Sem registro</span></div>
+              <div class="operation-meta"><div><small>Último evento de hoje</small><strong id="presenceLastEvent">Nenhum</strong></div><div><small>Próxima ação válida</small><strong id="presenceNextActionText">Entrada</strong></div></div>
+              <button id="registerBtn" class="btn primary full operation-confirm" type="button">Registrar entrada</button>
               <div id="registerFeedback" class="feedback" role="status"></div>
             </div>
           </article>
-          <aside class="panel portaria-side">
-            <div class="section-title"><div><h2>Movimentações recentes</h2><p class="section-helper">Últimos registros disponíveis no seu escopo.</p></div><button class="text-btn" type="button" data-go="reports">Ver relatório</button></div>
-            <div id="portariaRecent" class="portaria-recent"></div>
-            <div class="operation-note"><svg class="nav-icon"><use href="#i-shield"/></svg><p><strong>Validação no servidor</strong><br>O sistema só permite ENTRADA quando não existe entrada pendente e só permite SAÍDA após uma entrada válida no mesmo dia.</p></div>
-          </aside>
+          <article class="panel gate-queue"><div class="section-title"><div><span class="section-kicker">Tempo real</span><h2>Movimentações recentes</h2></div><button type="button" class="text-btn" data-go="reports">Abrir relatório</button></div><div id="presenceRecent" class="operation-feed"></div></article>
         </div>
       </section>
 
       <section id="view-students" class="view-section hidden">
-        <article class="panel"><div class="section-title"><div><h2 id="studentsHeading">Alunos</h2><p class="section-helper" id="studentsHelper">Cadastros disponíveis no seu escopo.</p></div><button id="newStudentBtn" class="btn primary role-manager">Novo aluno</button></div><div class="toolbar"><input id="studentSearch" type="search" aria-label="Buscar alunos" placeholder="Buscar por nome, matrícula ou turma" /></div><div id="studentsTable" class="table-wrap"></div></article>
-
-        <article id="studentFormPanel" class="panel hidden role-manager student-wizard">
-          <div class="section-title"><div><span class="eyebrow">Novo cadastro</span><h2>Cadastrar aluno e responsáveis</h2><p class="section-helper">Aluno e vínculos são gravados juntos somente depois da revisão final.</p></div><button id="cancelStudentBtn" class="text-btn" type="button">Cancelar</button></div>
-          <div class="wizard-steps" aria-label="Etapas do cadastro"><span class="wizard-step active" data-wizard-indicator="1"><b>1</b>Aluno</span><span class="wizard-step" data-wizard-indicator="2"><b>2</b>Responsáveis</span><span class="wizard-step" data-wizard-indicator="3"><b>3</b>Revisão</span></div>
-          <div id="studentWizardStep1" class="wizard-pane">
-            <h3>Dados do estudante</h3><div class="form-grid"><label>Nome completo<input id="newStudentName" maxlength="120" autocomplete="off" required /></label><label>Matrícula<input id="newStudentEnrollment" maxlength="40" required /></label><label>Turma<select id="newStudentClass" required></select></label></div>
-          </div>
-          <div id="studentWizardStep2" class="wizard-pane hidden">
-            <div class="section-title"><div><h3>Responsáveis autorizados</h3><p class="section-helper">Adicione um ou mais responsáveis. Contas existentes são vinculadas; pessoas sem conta recebem convite.</p></div><span id="guardianDraftCount" class="status-pill is-pending">0 adicionados</span></div>
-            <label>Como deseja adicionar?<select id="guardianMode"><option value="new">Pessoa sem conta / gerar convite</option><option value="existing">Responsável já ativo</option></select></label>
-            <div id="guardianNewFields" class="form-grid"><label>Nome completo<input id="newGuardianName" maxlength="120" /></label><label>E-mail<input id="newGuardianEmail" type="email" /></label><label>Telefone com DDD<input id="newGuardianPhone" type="tel" /></label><label>Vínculo<select id="newGuardianRelation"><option>Mãe</option><option>Pai</option><option>Responsável legal</option><option>Outro</option></select></label><label>CPF (opcional)<input id="newGuardianCpf" maxlength="14" placeholder="000.000.000-00" /></label></div>
-            <div id="guardianExistingFields" class="hidden"><label>Responsável existente<select id="studentGuardianId"></select></label></div>
-            <button id="addGuardianDraftBtn" type="button" class="btn secondary">+ Adicionar responsável</button>
-            <div id="guardianDraftList" class="guardian-draft-list"></div>
-          </div>
-          <div id="studentWizardStep3" class="wizard-pane hidden"><h3>Revisar antes de cadastrar</h3><p class="hint">Confirme os dados abaixo. A matrícula e todos os vínculos/convites válidos serão persistidos na mesma operação.</p><div id="studentReview" class="review-card"></div></div>
-          <div class="wizard-actions"><button id="wizardBackBtn" type="button" class="btn secondary hidden">Voltar</button><button id="wizardNextBtn" type="button" class="btn primary">Continuar</button><button id="saveStudentBtn" type="button" class="btn primary hidden">Confirmar cadastro</button></div>
+        <article class="panel"><div class="section-title"><div><span class="section-kicker">Cadastros</span><h2>Alunos e vínculos familiares</h2></div><button id="newStudentBtn" class="btn primary role-manager">Nova matrícula</button></div><div class="toolbar"><input id="studentSearch" placeholder="Buscar por nome, matrícula ou turma" /><select id="studentStatusFilter"><option value="">Todos os status</option><option value="ATIVO">Ativos</option><option value="INATIVO">Inativos</option></select></div><div id="studentsTable" class="table-wrap"></div></article>
+        <article id="studentFormPanel" class="panel hidden role-manager enrollment-wizard">
+          <div class="wizard-head"><div><span class="section-kicker">Matrícula integrada</span><h2>Novo aluno e responsáveis</h2><p>O aluno só é salvo depois que todos os responsáveis informados forem validados.</p></div><button id="cancelStudentBtn" type="button" class="icon-btn" aria-label="Fechar cadastro"><svg class="nav-icon"><use href="#i-close"/></svg></button></div>
+          <div class="wizard-steps"><span class="active">1 Dados do aluno</span><span>2 Responsáveis</span><span>3 Revisão</span></div>
+          <div class="wizard-section"><h3>Dados do aluno</h3><div class="form-grid"><label>Nome completo<input id="newStudentName" maxlength="120" required /></label><label>Matrícula<input id="newStudentEnrollment" maxlength="40" required /></label><label>Turma<select id="newStudentClass" required></select></label></div></div>
+          <div class="wizard-section"><div class="section-title"><div><h3>Responsáveis autorizados</h3><p class="hint">Adicione até quatro responsáveis. Contas existentes são vinculadas; novos responsáveis recebem convite.</p></div><button id="addGuardianBtn" type="button" class="btn secondary">+ Adicionar responsável</button></div><div id="guardianRows" class="guardian-builder"></div></div>
+          <div class="wizard-section review-box"><h3>Revisão antes de salvar</h3><div id="studentReview" class="review-summary"></div></div>
+          <div class="form-actions"><button id="saveStudentBtn" type="button" class="btn primary">Confirmar matrícula e vínculos</button><button id="cancelStudentBtnBottom" type="button" class="btn secondary">Cancelar</button></div>
         </article>
-
-        <article id="invitationResult" class="panel hidden role-manager" aria-live="polite"><div class="section-title"><div><h2>Convites de ativação</h2><p class="section-helper">Os códigos aparecem somente após a emissão. Entregue-os pelo canal institucional conferido.</p></div></div><div id="invitationResults" class="invitation-results"></div><button id="copyInvitationBtn" class="btn secondary" type="button">Copiar instruções</button></article>
+        <article id="invitationResult" class="panel hidden role-manager" aria-live="polite"><div class="section-title"><div><span class="section-kicker">Ativação familiar</span><h2>Convites gerados</h2></div></div><div id="invitationList" class="invite-result-list"></div></article>
         <article id="editStudentPanel" class="panel hidden role-manager"><h2>Editar cadastro do aluno</h2><div class="form-grid"><label>Nome<input id="editStudentName" maxlength="120" /></label><label>Matrícula<input id="editStudentEnrollment" maxlength="40" /></label><label>Turma<select id="editStudentClass"></select></label><label>Situação<select id="editStudentStatus"><option value="ATIVO">Ativo</option><option value="INATIVO">Inativo</option></select></label></div><div class="form-actions"><button id="saveEditStudentBtn" type="button" class="btn primary">Salvar alterações</button><button id="cancelEditStudentBtn" type="button" class="btn secondary">Cancelar</button></div></article>
-        <article id="linkPanel" class="panel hidden role-manager"><h2>Vincular outro responsável</h2><p class="hint">A gestão deve conferir o vínculo familiar antes de autorizar o acesso.</p><label>Aluno<select id="linkStudent"></select></label><label>Tipo de responsável<select id="linkMode"><option value="existing">Pessoa que já tem acesso</option><option value="new">Pessoa sem conta (gerar convite)</option></select></label><div id="linkExistingFields"><label>Responsável ativo<select id="linkGuardian"></select></label></div><div id="linkNewFields" class="form-grid hidden"><label>Nome completo<input id="linkGuardianName" maxlength="120" /></label><label>E-mail<input id="linkGuardianEmail" type="email" /></label><label>Telefone com DDD<input id="linkGuardianPhone" type="tel" /></label><label>Vínculo<select id="linkGuardianRelation"><option>Mãe</option><option>Pai</option><option>Responsável legal</option><option>Outro</option></select></label><label>CPF (opcional)<input id="linkGuardianCpf" maxlength="14" placeholder="000.000.000-00" /></label></div><div class="form-actions"><button id="saveLinkBtn" class="btn primary" type="button">Confirmar vínculo ou gerar convite</button><button id="cancelLinkBtn" class="btn secondary" type="button">Cancelar</button></div></article>
+        <article id="linkPanel" class="panel hidden role-manager"><h2>Adicionar responsável ao aluno</h2><label>Aluno<select id="linkStudent"></select></label><label>Tipo de responsável<select id="linkMode"><option value="existing">Pessoa que já tem acesso</option><option value="new">Pessoa sem conta (gerar convite)</option></select></label><div id="linkExistingFields"><label>Responsável ativo<select id="linkGuardian"></select></label></div><div id="linkNewFields" class="form-grid hidden"><label>Nome completo<input id="linkGuardianName" maxlength="120" /></label><label>E-mail<input id="linkGuardianEmail" type="email" /></label><label>Telefone com DDD<input id="linkGuardianPhone" type="tel" /></label><label>Vínculo<select id="linkGuardianRelation"><option>Mãe</option><option>Pai</option><option>Responsável legal</option><option>Outro</option></select></label><label>CPF (opcional)<input id="linkGuardianCpf" maxlength="14" placeholder="000.000.000-00" /></label></div><div class="form-actions"><button id="saveLinkBtn" class="btn primary" type="button">Confirmar vínculo</button><button id="cancelLinkBtn" class="btn secondary" type="button">Cancelar</button></div></article>
+      </section>
+
+      <section id="view-student-profile" class="view-section hidden">
+        <div class="student-profile-topbar">
+          <button id="studentProfileBack" class="btn secondary" type="button">← Voltar</button>
+          <div class="student-profile-context"><span>Histórico individual</span><small id="studentProfileScope">Acesso conforme seu perfil</small></div>
+        </div>
+        <article class="panel student-profile-hero">
+          <div class="student-profile-identity">
+            <span id="studentProfileAvatar" class="student-avatar xl">SS</span>
+            <div><span class="section-kicker">Perfil do aluno</span><h2 id="studentProfileName">Aluno</h2><p><span id="studentProfileEnrollment">Matrícula</span> · <span id="studentProfileClass">Turma</span></p></div>
+          </div>
+          <div class="student-profile-status"><span id="studentProfileAcademicStatus" class="status-badge">ATIVO</span><span id="studentProfileOperational" class="status-badge neutral">SEM REGISTRO</span><small id="studentProfileLastMovement">Nenhuma movimentação registrada</small></div>
+          <div class="student-profile-actions"><button id="studentProfileOperate" type="button" class="btn primary role-op hidden">Operar na portaria</button><button id="studentProfileEdit" type="button" class="btn secondary role-manager hidden">Editar cadastro</button></div>
+        </article>
+        <div id="studentProfileMetrics" class="metric-grid"></div>
+        <article class="panel student-history-panel">
+          <div class="section-title"><div><span class="section-kicker">Histórico completo</span><h2>Linha do tempo do aluno</h2><p id="studentProfileDisclaimer" class="section-helper"></p></div><span id="studentProfileEventCount" class="count-chip">0 eventos</span></div>
+          <div class="student-history-filters"><label>De<input id="studentHistoryFrom" type="date" /></label><label>Até<input id="studentHistoryTo" type="date" /></label><label>Movimento<select id="studentHistoryType"><option value="">Entrada e saída</option><option value="ENTRADA">Entrada</option><option value="SAIDA">Saída</option></select></label><label class="grow">Buscar<input id="studentHistoryQuery" placeholder="Método, ação, responsável pelo registro..." /></label><button id="applyStudentHistory" class="btn primary" type="button">Aplicar</button><button id="clearStudentHistory" class="btn secondary" type="button">Limpar</button></div>
+          <div class="profile-tabs" role="tablist"><button class="profile-tab active" data-profile-tab="timeline" type="button">Linha do tempo</button><button class="profile-tab" data-profile-tab="movements" type="button">Movimentações</button><button class="profile-tab role-manager" data-profile-tab="family" type="button">Responsáveis</button><button class="profile-tab role-manager" data-profile-tab="administrative" type="button">Trilha administrativa</button><button class="profile-tab profile-notifications-tab hidden" data-profile-tab="notifications" type="button">Notificações</button></div>
+          <div id="studentProfileTimeline" class="student-history-timeline"></div>
+          <div id="studentProfileMovements" class="table-wrap hidden"></div>
+          <div id="studentProfileFamily" class="profile-family-grid hidden"></div>
+          <div id="studentProfileAdministrative" class="table-wrap hidden"></div>
+          <div id="studentProfileNotifications" class="stack-list hidden"></div>
+        </article>
       </section>
 
       <section id="view-guardians" class="view-section hidden role-manager">
-        <div class="guardian-summary" id="guardianSummary"></div>
-        <article class="panel"><div class="section-title"><div><h2>Central de responsáveis</h2><p class="section-helper">Contas ativas, filhos vinculados e último acesso conhecido no ambiente de demonstração.</p></div><button type="button" id="refreshGuardiansBtn" class="btn secondary">Atualizar</button></div><div class="table-wrap" id="guardiansTable"></div></article>
-        <article class="panel"><div class="section-title"><div><h2>Convites pendentes</h2><p class="section-helper">Convites próximos do vencimento recebem destaque para revisão.</p></div></div><div id="invitationsTable" class="invitation-grid"></div></article>
+        <div class="family-summary" id="familySummary"></div>
+        <article class="panel"><div class="section-title"><div><span class="section-kicker">Famílias</span><h2>Central de responsáveis</h2></div><button type="button" id="refreshGuardiansBtn" class="btn secondary">Atualizar</button></div><div class="toolbar"><input id="guardianSearch" placeholder="Buscar responsável, e-mail ou aluno" /><select id="guardianAccountFilter"><option value="">Todos</option><option value="ATIVO">Contas ativas</option><option value="PENDENTE">Convites pendentes</option></select></div><div id="guardiansTable"></div></article>
+        <article class="panel"><div class="section-title"><div><span class="section-kicker">Acesso</span><h2>Convites pendentes</h2></div></div><div id="invitationsTable"></div></article>
       </section>
 
-      <section id="view-notifications" class="view-section hidden"><article class="panel"><div class="section-title"><div><h2>Notificações</h2><p class="section-helper">Avisos internos relacionados aos estudantes que continuam no seu escopo.</p></div></div><div class="notification-filters"><label>Leitura<select id="notifReadFilter"><option value="all">Todas</option><option value="unread">Não lidas</option><option value="read">Lidas</option></select></label><label>Estudante<select id="notifStudentFilter"><option value="">Todos</option></select></label><button id="applyNotifFilterBtn" class="btn secondary" type="button">Aplicar</button></div><div id="notificationsList" class="stack-list"></div></article></section>
+      <section id="view-notifications" class="view-section hidden"><article class="panel"><div class="section-title"><div><span class="section-kicker">Avisos internos</span><h2>Notificações</h2></div><button id="markAllReadBtn" type="button" class="btn secondary">Marcar visíveis como lidas</button></div><div class="toolbar notification-toolbar"><select id="notificationReadFilter"><option value="">Todas</option><option value="unread">Não lidas</option></select><select id="notificationStudentFilter"><option value="">Todos os estudantes</option></select></div><div id="notificationsList" class="stack-list"></div></article></section>
 
       <section id="view-reports" class="view-section hidden">
         <div class="metric-grid" id="reportMetrics"></div>
-        <article class="panel"><div class="section-title"><div><h2>Relatório de movimentações</h2><p class="section-helper">A tabela e o CSV usam os mesmos filtros e o mesmo conjunto de eventos.</p></div><button class="btn secondary" type="button" id="csvBtn">Exportar CSV filtrado</button></div>
-          <div class="report-filters"><label>Data inicial<input id="reportFrom" type="date" /></label><label>Data final<input id="reportTo" type="date" /></label><label>Turma<select id="reportClass"><option value="">Todas</option></select></label><label>Aluno<select id="reportStudent"><option value="">Todos</option></select></label><label>Tipo<select id="reportType"><option value="">Entrada e saída</option><option value="ENTRADA">Entrada</option><option value="SAIDA">Saída</option></select></label><button id="applyReportBtn" class="btn primary" type="button">Aplicar filtros</button><button id="clearReportBtn" class="btn secondary" type="button">Limpar</button></div>
-          <p class="hint" id="reportDisclaimer">Relatório de movimentações da portaria; não representa frequência em sala de aula.</p><div id="reportsTable" class="table-wrap"></div></article>
+        <article class="panel"><div class="section-title"><div><span class="section-kicker">Movimentações</span><h2>Relatório operacional</h2></div><button class="btn secondary" type="button" id="csvBtn">Exportar resultado</button></div>
+          <div class="report-filters advanced"><label>Data inicial<input id="reportFrom" type="date" /></label><label>Data final<input id="reportTo" type="date" /></label><label>Turma<select id="reportClass"><option value="">Todas</option></select></label><label>Aluno<select id="reportStudent"><option value="">Todos</option></select></label><label>Tipo<select id="reportType"><option value="">Entrada e saída</option><option value="ENTRADA">Entrada</option><option value="SAIDA">Saída</option></select></label><div class="filter-actions"><button id="applyReportBtn" class="btn primary" type="button">Aplicar</button><button id="clearReportBtn" class="btn secondary" type="button">Limpar</button></div></div>
+          <p class="hint" id="reportDisclaimer">Relatório de movimentações da portaria; não representa frequência em sala de aula.</p><div class="report-tabs"><button class="report-tab active" data-report-view="events">Eventos</button><button class="report-tab" data-report-view="summary">Resumo por aluno</button></div><div id="reportsTable" class="table-wrap"></div></article>
       </section>
 
-      <section id="view-messages" class="view-section hidden">
-        <div class="conversation-shell panel"><aside class="conversation-contacts"><div class="section-title"><div><h2>Conversas</h2><p class="section-helper">Somente contatos permitidos pelo seu perfil.</p></div></div><div id="conversationContacts" class="contact-list"></div></aside><section class="conversation-main"><header class="conversation-header"><div><span class="eyebrow">Comunicação interna</span><h2 id="conversationTitle">Selecione um contato</h2><p id="conversationSubtitle" class="section-helper">Escolha ao lado com quem deseja conversar.</p></div></header><div id="messagesList" class="chat-thread"><p class="empty">Selecione um contato para abrir a conversa.</p></div><div id="messageComposer" class="message-composer hidden"><textarea id="messageText" rows="3" maxlength="500" aria-label="Mensagem" placeholder="Digite sua mensagem..."></textarea><button id="sendMessageBtn" class="btn primary" type="button">Enviar mensagem</button></div></section></div>
-      </section>
+      <section id="view-messages" class="view-section hidden"><div class="messenger-shell"><article class="panel conversation-list-panel"><div class="section-title"><div><span class="section-kicker">Comunicação</span><h2>Conversas</h2></div><button id="newConversationBtn" class="icon-btn" type="button" title="Nova conversa">+</button></div><div id="conversationList" class="conversation-list"></div></article><article class="panel thread-panel"><div id="threadHeader" class="thread-header"><div><h2>Selecione uma conversa</h2><small>Mensagens permitidas pelo perfil</small></div></div><div id="messagesList" class="thread-messages"><p class="empty">Escolha um contato ao lado.</p></div><div class="message-composer"><select id="messageTo" aria-label="Destinatário"></select><textarea id="messageText" rows="2" maxlength="500" placeholder="Escreva uma mensagem..."></textarea><button id="sendMessageBtn" class="btn primary">Enviar</button></div></article></div></section>
 
-      <section id="view-audit" class="view-section hidden"><article class="panel"><div class="section-title"><div><h2>Trilha de auditoria</h2><p class="section-helper">Pesquise eventos críticos sem expor senhas, sessões ou códigos de convite.</p></div></div><div class="audit-filters"><label>Pesquisar<input id="auditSearch" type="search" placeholder="Ação, usuário, entidade ou detalhe" /></label><label>Ação<select id="auditAction"><option value="">Todas</option></select></label><label>Usuário<select id="auditUser"><option value="">Todos</option></select></label><label>De<input id="auditFrom" type="date" /></label><label>Até<input id="auditTo" type="date" /></label><button id="applyAuditBtn" class="btn primary" type="button">Filtrar</button><button id="clearAuditBtn" class="btn secondary" type="button">Limpar</button></div><div id="auditTable" class="table-wrap"></div></article></section>
+      <section id="view-audit" class="view-section hidden"><article class="panel"><div class="section-title"><div><span class="section-kicker">Governança</span><h2>Trilha de auditoria</h2></div><span id="auditCount" class="count-chip">0 eventos</span></div><div class="audit-filters"><label>De<input id="auditFrom" type="date" /></label><label>Até<input id="auditTo" type="date" /></label><label>Ação<select id="auditAction"><option value="">Todas</option></select></label><label>Usuário<select id="auditUser"><option value="">Todos</option></select></label><label class="grow">Busca<input id="auditQuery" placeholder="Ação, entidade ou detalhe" /></label><button id="applyAuditBtn" class="btn primary" type="button">Filtrar</button><button id="clearAuditBtn" class="btn secondary" type="button">Limpar</button></div><div id="auditTable" class="table-wrap"></div></article></section>
 
       <section id="view-feedback" class="view-section hidden">
         <div class="content-grid equal">
@@ -225,12 +240,29 @@
       </section>
 
       <section id="view-privacy" class="view-section hidden">
-        <div class="content-grid equal"><article class="panel"><h2>Controles implementados no MVP</h2><div class="check-list"><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Dados de apresentação no MVP acadêmico</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Acesso baseado em perfil no servidor</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Responsável vê somente aluno vinculado</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Trilha de auditoria em ações críticas</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Biometria e geolocalização fora do MVP</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Cabeçalhos básicos de segurança</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Sessão temporária protegida por cookie HttpOnly e controle no servidor</span></div></div></article><article class="panel"><h2>O que não deve ser inferido</h2><p>Este MVP não é uma solução pronta para produção. Antes de usar dados reais, a instituição deve definir governança, base legal, retenção, resposta a incidentes, responsáveis pelo tratamento, infraestrutura segura, HTTPS/TLS, banco transacional, backup e avaliação de impacto quando aplicável.</p><div class="warning-card">A apresentação não substitui validação jurídica, segurança operacional nem autorização institucional.</div></article></div>
+        <div class="content-grid equal"><article class="panel"><h2>Controles implementados no MVP</h2><div class="check-list"><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Dados de apresentação no MVP acadêmico</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Acesso baseado em perfil no servidor</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Responsável vê somente aluno vinculado</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Trilha de auditoria em ações críticas</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Biometria e geolocalização fora do MVP</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Cabeçalhos básicos de segurança</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Sessão de apresentação limitada ao navegador/aba</span></div></div></article><article class="panel"><h2>O que não deve ser inferido</h2><p>Este MVP não é uma solução pronta para produção. Antes de usar dados reais, a instituição deve definir governança, base legal, retenção, resposta a incidentes, responsáveis pelo tratamento, infraestrutura segura, HTTPS/TLS, banco transacional, backup e avaliação de impacto quando aplicável.</p><div class="warning-card">A apresentação não substitui validação jurídica, segurança operacional nem autorização institucional.</div></article></div>
       </section>
     </section>
   </section>
 </main>
 <footer class="site-footer"><span><strong>Safe Student</strong> · Gestão escolar com propósito <small>Ambiente acadêmico com dados fictícios · Não utilizar dados reais.</small></span><span>Mais presença. Mais aprendizado. Mais oportunidades.</span></footer>
-<script src="app.js"></script>
+<!-- JavaScript organizado por responsabilidade. A ordem é importante porque o MVP não usa bundler. -->
+<script src="js/core/state.js"></script>
+<script src="js/core/helpers.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/navigation.js"></script>
+<script src="js/views/dashboard.js"></script>
+<script src="js/views/students.js"></script>
+<script src="js/views/studentProfile.js"></script>
+<script src="js/views/guardians.js"></script>
+<script src="js/views/presence.js"></script>
+<script src="js/views/notifications.js"></script>
+<script src="js/views/reports.js"></script>
+<script src="js/views/messages.js"></script>
+<script src="js/views/auditFeedback.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/core/events.js"></script>
+<script src="js/core/search.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

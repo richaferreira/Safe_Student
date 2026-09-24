@@ -1,5 +1,8 @@
-# Gerado localmente com dados fictícios de demonstração.
-data/db.runtime.json
+# Banco gerado localmente. O projeto o recria com migrations + seed.
+data/safe_student.db
+data/safe_student.db-wal
+data/safe_student.db-shm
+
 node_modules/
 *.log
 .env
