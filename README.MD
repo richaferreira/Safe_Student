@@ -33,19 +33,16 @@ A hipótese do MVP é que um fluxo simples de identificação, registro rastreá
 Mensagens, exportações CSV, tema, restauração da demo e feedback são recursos complementares.
 
 ## Arquitetura implementada
-
-A implementação em `Safe_Student_MVP/` usa:
-
-- **backend:** Node.js 18+ com módulos nativos (`http`, `fs`, `crypto`);
-- **frontend:** HTML, CSS e JavaScript sem framework;
-- **domínio:** `lib/domain.js`;
-- **segurança:** `lib/security.js`;
+A implementação executável atual fica em `Safe_Student_MVP/` e usa:
+- **backend/API:** Node.js `>=22.13`, HTTP nativo e `node:sqlite`;
+- **frontend:** HTML, CSS e JavaScript sem framework externo;
+- **regras e serviços:** `src/app.js` e `src/services/`;
+- **persistência mutável:** SQLite em `data/safe_student.db`, com schema/migrations em `src/database/`;
 - **seed sintética:** `data/db.seed.json`;
-- **base mutável local:** `data/db.runtime.json`, criada automaticamente e ignorada pelo Git;
-- **sessões:** memória do processo com expiração;
-- **senhas:** `scrypt` + `timingSafeEqual`;
-- **testes:** `node:test` para domínio, segurança, API e regressões de privacidade.
+- **sessões, tentativas e recuperação:** estado temporário em memória do processo;
+- **testes:** `node:test`, com unidades e integrações.
 
+A camada `src/database/repository.js` mantém compatibilidade entre os serviços e o armazenamento relacional SQLite.
 ## Executar
 
 ```bash
@@ -63,7 +60,7 @@ Depois acesse `http://localhost:3000`.
 | Portaria | `portaria@demo.com` | `demo123` |
 | Gestão | `gestor@demo.com` | `demo123` |
 
-A base mutável `db.runtime.json` é criada a partir da seed na primeira execução. Para restaurá-la pelo terminal:
+A base mutável SQLite `data/safe_student.db` é inicializada a partir da seed quando necessário. Para restaurar a demonstração pelo terminal:
 
 ```bash
 npm run reset

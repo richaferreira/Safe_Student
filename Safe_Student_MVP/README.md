@@ -38,7 +38,7 @@ Na primeira inicialização, o sistema cria automaticamente `data/safe_student.d
 ## Estrutura do projeto
 
 ```text
-Safe_Student_MVP_SQLite/
+Safe_Student_MVP/
 ├── data/
 │   ├── db.seed.json              # Dados fictícios usados pelo seed
 │   └── safe_student.db           # Gerado localmente; não precisa ir ao Git
@@ -158,7 +158,7 @@ npm run db:import-json -- caminho\para\db.runtime.json
 
 ## Testes
 
-A suíte atual executa **68 testes**:
+A suíte atual executa **69 testes**:
 
 ```powershell
 npm test
