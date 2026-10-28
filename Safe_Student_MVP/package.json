@@ -5,6 +5,8 @@
   "description": "MVP acadêmico do Safe Student com persistência relacional SQLite, migrations e dados de demonstração.",
   "main": "server.js",
   "scripts": {
+    "dev": "node --disable-warning=ExperimentalWarning server.js",
+    "build": "node --check server.js",
     "start": "node --disable-warning=ExperimentalWarning server.js",
     "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 tests/unit/*.test.js tests/integration/*.test.js",
     "test:unit": "node --disable-warning=ExperimentalWarning --test tests/unit/*.test.js",

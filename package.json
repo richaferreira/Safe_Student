@@ -1,0 +1,20 @@
+{
+  "name": "safe-student",
+  "version": "2.1.0",
+  "private": true,
+  "description": "Safe Student - Portal de presença escolar e comunicação com responsáveis.",
+  "main": "Safe_Student_MVP/server.js",
+  "scripts": {
+    "dev": "node --disable-warning=ExperimentalWarning Safe_Student_MVP/server.js",
+    "start": "node --disable-warning=ExperimentalWarning Safe_Student_MVP/server.js",
+    "build": "node --check Safe_Student_MVP/server.js",
+    "test": "npm test --prefix Safe_Student_MVP",
+    "db:migrate": "npm run db:migrate --prefix Safe_Student_MVP",
+    "db:seed": "npm run db:seed --prefix Safe_Student_MVP",
+    "db:reset": "npm run db:reset --prefix Safe_Student_MVP"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT"
+}

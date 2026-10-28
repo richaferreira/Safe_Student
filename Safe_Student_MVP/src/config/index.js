@@ -9,7 +9,8 @@ const path = require('path');
 const ROOT_DIR = path.resolve(__dirname, '..', '..');
 
 const config = {
-  port: Number(process.env.PORT || 3000),
+  port: Number(process.env.APP_PORT || 3000),
+  host: '0.0.0.0',
   timeZone: process.env.SS_TIME_ZONE || 'America/Sao_Paulo',
   sessionTtlMs: Number(process.env.SS_SESSION_TTL_MS || 2 * 60 * 60 * 1000),
   maxBodyBytes: 1_000_000,

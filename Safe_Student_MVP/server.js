@@ -14,7 +14,7 @@ const server = http.createServer(app.handler);
 if (require.main === module) {
   // Garante que o schema e o seed estejam disponíveis antes de aceitar acessos.
   ensureDatabase();
-  server.listen(config.port, () => {
+  server.listen(config.port, config.host || '0.0.0.0', () => {
     console.log(`Safe Student MVP em http://localhost:${config.port}`);
   });
 }

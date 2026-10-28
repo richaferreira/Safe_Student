@@ -1,0 +1,8 @@
+{
+  "name": "Safe Student",
+  "description": "Portal acadêmico de controle de presença escolar e comunicação com responsáveis.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
