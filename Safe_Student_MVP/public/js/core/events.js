@@ -26,6 +26,15 @@ function bindEvents(){
         behavior:'smooth'
       });return
     }
+    const editClass=event.target.closest('[data-edit-class]');if(editClass){
+      const c=classCatalog.find(x=>x.id===editClass.dataset.editClass);if(c)openClassForm(c);return
+    }
+    const toggleClass=event.target.closest('[data-toggle-class-status]');if(toggleClass){
+      await toggleClassStatus(toggleClass.dataset.toggleClassStatus);return
+    }
+    const delClass=event.target.closest('[data-delete-class]');if(delClass){
+      await deleteClass(delClass.dataset.deleteClass);return
+    }
     const link=event.target.closest('[data-link-student]');if(link){
       $('linkStudent').value=link.dataset.linkStudent;$('linkPanel').classList.remove('hidden');$('linkPanel').scrollIntoView({
         behavior:'smooth'
@@ -295,6 +304,14 @@ function bindEvents(){
   document.addEventListener('click',e=>{
     if(!e.target.closest('.global-search'))$('globalSearchResults').classList.add('hidden')
   });
+  $('newClassBtn')?.addEventListener('click',()=>openClassForm());
+  $('cancelClassFormBtn')?.addEventListener('click',closeClassForm);
+  $('cancelClassFormBtnBottom')?.addEventListener('click',closeClassForm);
+  $('saveClassBtn')?.addEventListener('click',saveClassForm);
+  $('classSearch')?.addEventListener('input',renderClassesTable);
+  $('classStatusFilter')?.addEventListener('change',renderClassesTable);
+  $('quickNewClassBtn')?.addEventListener('click',()=>{goView('classes');openClassForm();});
+
   $('themeBtn').addEventListener('click',()=>{
     const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;safeStoreSet('ss_theme',next)
   });

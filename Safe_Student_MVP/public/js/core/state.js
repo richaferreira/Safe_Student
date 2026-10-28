@@ -36,5 +36,17 @@ const qsa=s=>Array.from(document.querySelectorAll(s));
 const isManager=()=>['GESTAO','ADMIN'].includes(currentUser?.role);
 const isOperator=()=>['PORTARIA','GESTAO','ADMIN'].includes(currentUser?.role);
 const viewMeta={
-  dashboard:['Painel','Visão geral','O que precisa de atenção na rotina escolar.'], presence:['Operação','Portaria','Consulte o estudante e execute somente a próxima movimentação válida.'], students:['Cadastros','Alunos e vínculos','Matrículas, situação operacional e responsáveis autorizados.'], 'student-profile':['Aluno','Histórico individual','Perfil, movimentações e eventos organizados conforme sua permissão.'], guardians:['Famílias','Central de responsáveis','Contas, filhos vinculados e convites de ativação.'], notifications:['Comunicação','Notificações','Avisos internos gerados para a sua conta.'], reports:['Indicadores','Relatórios','Movimentações filtradas e exportação consistente em CSV.'], messages:['Relacionamento','Comunicação','Conversas entre os perfis permitidos.'], audit:['Governança','Auditoria','Eventos críticos pesquisáveis e rastreáveis.'], feedback:['Demonstração','Validação acadêmica','Evidências de teste sem dados pessoais do participante.'], privacy:['Informações','Privacidade','Controles existentes e limites desta demonstração.']
+  dashboard:['Painel','Visão geral','O que precisa de atenção na rotina escolar.'],
+  presence:['Operação','Portaria','Consulte o estudante e execute somente a próxima movimentação válida.'],
+  students:['Cadastros','Alunos e vínculos','Matrículas, situação operacional e responsáveis autorizados.'],
+  classes:['Cadastros','Gestão de turmas','Cadastre turmas antes de matricular alunos e controle turno e status.'],
+  'student-profile':['Aluno','Histórico individual','Perfil, movimentações e eventos organizados conforme sua permissão.'],
+  guardians:['Famílias','Central de responsáveis','Contas, filhos vinculados e convites de ativação.'],
+  notifications:['Comunicação','Notificações','Avisos internos gerados para a sua conta.'],
+  reports:['Indicadores','Relatórios','Movimentações filtradas e exportação consistente em CSV.'],
+  messages:['Relacionamento','Comunicação','Conversas entre os perfis permitidos.'],
+  audit:['Governança','Auditoria','Eventos críticos pesquisáveis e rastreáveis.'],
+  feedback:['Demonstração','Validação acadêmica','Evidências de teste sem dados pessoais do participante.'],
+  architecture:['Engenharia de Software','Modelagem UML & DER','Casos de uso com include/extend, DER relacional e roteiro de defesa da banca.'],
+  privacy:['Informações','Privacidade','Controles existentes e limites desta demonstração.']
 };

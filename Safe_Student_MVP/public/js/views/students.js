@@ -40,11 +40,17 @@ function renderStudents(){
 }
 function populateStudentSelectors(){
   if(isManager()){
-    const opts=classCatalog.map(c=>`<option value="${c.id}">${escapeHtml(c.name)} · ${escapeHtml(c.shift)}</option>`).join('');$('newStudentClass').innerHTML=opts;$('editStudentClass').innerHTML=opts;
-    $('linkStudent').innerHTML=students.filter(s=>s.status==='ATIVO').map(s=>`<option value="${s.id}">${escapeHtml(s.name)} · ${escapeHtml(s.className)}</option>`).join('');
-    $('linkGuardian').innerHTML=guardianCatalog.map(g=>`<option value="${g.id}">${escapeHtml(g.name)} · ${escapeHtml(g.email)}</option>`).join('');
+    const activeClasses = classCatalog.filter(c => (c.status || 'ATIVO') === 'ATIVO');
+    const opts = (activeClasses.length ? activeClasses : classCatalog)
+      .map(c => `<option value="${c.id}">${escapeHtml(c.name)} · ${escapeHtml(c.shift)}</option>`).join('');
+    if ($('newStudentClass')) $('newStudentClass').innerHTML = opts;
+    const allOpts = classCatalog
+      .map(c => `<option value="${c.id}">${escapeHtml(c.name)} · ${escapeHtml(c.shift)}${(c.status || 'ATIVO') === 'INATIVO' ? ' (Inativa)' : ''}</option>`).join('');
+    if ($('editStudentClass')) $('editStudentClass').innerHTML = allOpts;
+    if ($('linkStudent')) $('linkStudent').innerHTML=students.filter(s=>s.status==='ATIVO').map(s=>`<option value="${s.id}">${escapeHtml(s.name)} · ${escapeHtml(s.className)}</option>`).join('');
+    if ($('linkGuardian')) $('linkGuardian').innerHTML=guardianCatalog.map(g=>`<option value="${g.id}">${escapeHtml(g.name)} · ${escapeHtml(g.email)}</option>`).join('');
   }
-  $('studentTokenOptions').innerHTML=students.filter(s=>s.token&&s.status==='ATIVO').map(s=>`<option value="${escapeHtml(s.token)}">${escapeHtml(s.name)} · ${escapeHtml(s.className)}</option>`).join('');
+  if ($('studentTokenOptions')) $('studentTokenOptions').innerHTML=students.filter(s=>s.token&&s.status==='ATIVO').map(s=>`<option value="${escapeHtml(s.token)}">${escapeHtml(s.name)} · ${escapeHtml(s.className)}</option>`).join('');
 }
 function defaultGuardian(){return {mode:'new',guardianId:'',name:'',email:'',phone:'',relationship:'Mãe',cpf:''}}
 function renderGuardianRows(){

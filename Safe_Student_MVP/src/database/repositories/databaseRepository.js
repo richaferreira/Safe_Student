@@ -44,8 +44,13 @@ function loadAggregate(database) {
   }));
 
   const classes = database.prepare(
-    'SELECT id, name, shift FROM classes ORDER BY rowid',
-  ).all();
+    'SELECT id, name, shift, status FROM classes ORDER BY rowid',
+  ).all().map((row) => ({
+    id: row.id,
+    name: row.name,
+    shift: row.shift,
+    status: row.status || 'ATIVO',
+  }));
 
   const students = database.prepare(`
     SELECT id, name, enrollment, class_id, token, status
@@ -215,9 +220,9 @@ function replaceAggregate(database, aggregate) {
       );
     }
 
-    const insertClass = database.prepare('INSERT INTO classes(id, name, shift) VALUES (?, ?, ?)');
+    const insertClass = database.prepare('INSERT INTO classes(id, name, shift, status) VALUES (?, ?, ?, ?)');
     for (const schoolClass of aggregate.classes || []) {
-      insertClass.run(schoolClass.id, schoolClass.name, schoolClass.shift);
+      insertClass.run(schoolClass.id, schoolClass.name, schoolClass.shift, schoolClass.status || 'ATIVO');
     }
 
     const insertStudent = database.prepare(`

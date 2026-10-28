@@ -29,6 +29,7 @@ function applyRole(){
 async function goView(name){
   if(!viewMeta[name]) return;
   if(name==='guardians'&&!isManager())return;
+  if(name==='classes'&&!isManager())return;
   if(name==='presence'&&!isOperator())return;
   if(name==='audit'&&!isManager())return;
   currentView=name;
@@ -42,6 +43,7 @@ async function goView(name){
   try{
     if(name==='presence')await loadPresence();
     if(name==='students')await loadStudents();
+    if(name==='classes')await loadClassesView();
     if(name==='student-profile'&&activeStudentProfileId)await loadStudentProfile();
     if(name==='guardians')await loadGuardians();
     if(name==='notifications')await loadNotifications();
@@ -49,6 +51,7 @@ async function goView(name){
     if(name==='messages')await loadMessages();
     if(name==='audit')await loadAudit();
     if(name==='feedback')await loadFeedback();
+    if(name==='architecture')await loadArchitectureView();
   }catch(error){
     toast(error.message)
   }

@@ -125,6 +125,7 @@
         <button type="button" data-view="dashboard" class="nav-item active"><svg class="nav-icon"><use href="#i-grid"/></svg><span>Visão geral</span></button>
         <button type="button" data-view="presence" class="nav-item role-op"><svg class="nav-icon"><use href="#i-scan"/></svg><span>Presença / Portaria</span></button>
         <button type="button" data-view="students" class="nav-item"><svg class="nav-icon"><use href="#i-users"/></svg><span>Alunos</span></button>
+        <button type="button" data-view="classes" class="nav-item role-manager"><svg class="nav-icon"><use href="#i-table"/></svg><span>Turmas</span></button>
         <button type="button" data-view="guardians" class="nav-item role-manager"><svg class="nav-icon"><use href="#i-users"/></svg><span>Responsáveis e convites</span></button>
         <button type="button" data-view="notifications" class="nav-item"><svg class="nav-icon"><use href="#i-bell"/></svg><span>Notificações</span><em id="notifBadge" class="badge-count">0</em></button>
         <button type="button" data-view="reports" class="nav-item"><svg class="nav-icon"><use href="#i-chart"/></svg><span>Relatórios</span></button>
@@ -133,6 +134,7 @@
         <button type="button" data-view="audit" class="nav-item role-manager"><svg class="nav-icon"><use href="#i-shield"/></svg><span>Auditoria</span></button>
         <details class="more-tools"><summary>Informações e demonstração</summary>
           <button type="button" data-view="feedback" class="nav-item"><svg class="nav-icon"><use href="#i-check"/></svg><span>Validação acadêmica</span></button>
+          <button type="button" data-view="architecture" class="nav-item"><svg class="nav-icon"><use href="#i-book"/></svg><span>UML, DER e Arquitetura</span></button>
           <button type="button" data-view="privacy" class="nav-item"><svg class="nav-icon"><use href="#i-lock"/></svg><span>Privacidade</span></button>
         </details>
       </nav>
@@ -184,7 +186,7 @@
         <article id="studentFormPanel" class="panel hidden role-manager enrollment-wizard">
           <div class="wizard-head"><div><span class="section-kicker">Matrícula integrada</span><h2>Novo aluno e responsáveis</h2><p>O aluno só é salvo depois que todos os responsáveis informados forem validados.</p></div><button id="cancelStudentBtn" type="button" class="icon-btn" aria-label="Fechar cadastro"><svg class="nav-icon"><use href="#i-close"/></svg></button></div>
           <div class="wizard-steps"><span class="active">1 Dados do aluno</span><span>2 Responsáveis</span><span>3 Revisão</span></div>
-          <div class="wizard-section"><h3>Dados do aluno</h3><div class="form-grid"><label>Nome completo<input id="newStudentName" maxlength="120" required /></label><label>Matrícula<input id="newStudentEnrollment" maxlength="40" required /></label><label>Turma<select id="newStudentClass" required></select></label></div></div>
+          <div class="wizard-section"><h3>Dados do aluno</h3><div class="form-grid"><label>Nome completo<input id="newStudentName" maxlength="120" required /></label><label>Matrícula<input id="newStudentEnrollment" maxlength="40" required /></label><label>Turma <button id="quickNewClassBtn" type="button" class="text-btn inline-btn">+ Nova turma</button><select id="newStudentClass" required></select></label></div></div>
           <div class="wizard-section"><div class="section-title"><div><h3>Responsáveis autorizados</h3><p class="hint">Adicione até quatro responsáveis. Contas existentes são vinculadas; novos responsáveis recebem convite.</p></div><button id="addGuardianBtn" type="button" class="btn secondary">+ Adicionar responsável</button></div><div id="guardianRows" class="guardian-builder"></div></div>
           <div class="wizard-section review-box"><h3>Revisão antes de salvar</h3><div id="studentReview" class="review-summary"></div></div>
           <div class="form-actions"><button id="saveStudentBtn" type="button" class="btn primary">Confirmar matrícula e vínculos</button><button id="cancelStudentBtnBottom" type="button" class="btn secondary">Cancelar</button></div>
@@ -192,6 +194,65 @@
         <article id="invitationResult" class="panel hidden role-manager" aria-live="polite"><div class="section-title"><div><span class="section-kicker">Ativação familiar</span><h2>Convites gerados</h2></div></div><div id="invitationList" class="invite-result-list"></div></article>
         <article id="editStudentPanel" class="panel hidden role-manager"><h2>Editar cadastro do aluno</h2><div class="form-grid"><label>Nome<input id="editStudentName" maxlength="120" /></label><label>Matrícula<input id="editStudentEnrollment" maxlength="40" /></label><label>Turma<select id="editStudentClass"></select></label><label>Situação<select id="editStudentStatus"><option value="ATIVO">Ativo</option><option value="INATIVO">Inativo</option></select></label></div><div class="form-actions"><button id="saveEditStudentBtn" type="button" class="btn primary">Salvar alterações</button><button id="cancelEditStudentBtn" type="button" class="btn secondary">Cancelar</button></div></article>
         <article id="linkPanel" class="panel hidden role-manager"><h2>Adicionar responsável ao aluno</h2><label>Aluno<select id="linkStudent"></select></label><label>Tipo de responsável<select id="linkMode"><option value="existing">Pessoa que já tem acesso</option><option value="new">Pessoa sem conta (gerar convite)</option></select></label><div id="linkExistingFields"><label>Responsável ativo<select id="linkGuardian"></select></label></div><div id="linkNewFields" class="form-grid hidden"><label>Nome completo<input id="linkGuardianName" maxlength="120" /></label><label>E-mail<input id="linkGuardianEmail" type="email" /></label><label>Telefone com DDD<input id="linkGuardianPhone" type="tel" /></label><label>Vínculo<select id="linkGuardianRelation"><option>Mãe</option><option>Pai</option><option>Responsável legal</option><option>Outro</option></select></label><label>CPF (opcional)<input id="linkGuardianCpf" maxlength="14" placeholder="000.000.000-00" /></label></div><div class="form-actions"><button id="saveLinkBtn" class="btn primary" type="button">Confirmar vínculo</button><button id="cancelLinkBtn" class="btn secondary" type="button">Cancelar</button></div></article>
+      </section>
+
+      <section id="view-classes" class="view-section hidden role-manager">
+        <article class="panel">
+          <div class="section-title">
+            <div>
+              <span class="section-kicker">Estrutura Escolar</span>
+              <h2>Turmas e Turnos</h2>
+              <p class="section-helper">Cadastre e gerencie turmas para matrícula de estudantes. Controle de turnos e status ativo/inativo.</p>
+            </div>
+            <div class="head-group-actions">
+              <span id="classesCountBadge" class="count-chip">0 turmas</span>
+              <button id="newClassBtn" class="btn primary" type="button">+ Nova turma</button>
+            </div>
+          </div>
+          <div class="toolbar">
+            <input id="classSearch" placeholder="Buscar turma por nome ou turno..." />
+            <select id="classStatusFilter">
+              <option value="">Todos os status</option>
+              <option value="ATIVO">Apenas Ativas</option>
+              <option value="INATIVO">Apenas Inativas</option>
+            </select>
+          </div>
+          <div id="classesTable" class="table-wrap"></div>
+        </article>
+
+        <article id="classFormPanel" class="panel hidden">
+          <div class="wizard-head">
+            <div>
+              <span class="section-kicker">Cadastro de Turma</span>
+              <h2 id="classFormTitle">Cadastrar Nova Turma</h2>
+              <p>O aluno só pode ser matriculado em turmas previamente criadas e ativas.</p>
+            </div>
+            <button id="cancelClassFormBtn" type="button" class="icon-btn" aria-label="Fechar"><svg class="nav-icon"><use href="#i-close"/></svg></button>
+          </div>
+          <div class="form-grid">
+            <label>Nome da turma
+              <input id="classFormName" maxlength="60" placeholder="Ex.: 6º Ano A, 1º Ano Ensino Médio" required />
+            </label>
+            <label>Turno
+              <select id="classFormShift">
+                <option value="Manhã">Manhã</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noite">Noite</option>
+                <option value="Integral">Integral</option>
+              </select>
+            </label>
+            <label>Situação
+              <select id="classFormStatus">
+                <option value="ATIVO">Ativa (permite novas matrículas)</option>
+                <option value="INATIVO">Inativa (bloqueia novas matrículas)</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-actions">
+            <button id="saveClassBtn" type="button" class="btn primary">Salvar Turma</button>
+            <button id="cancelClassFormBtnBottom" type="button" class="btn secondary">Cancelar</button>
+          </div>
+        </article>
       </section>
 
       <section id="view-student-profile" class="view-section hidden">
@@ -249,6 +310,10 @@
       <section id="view-privacy" class="view-section hidden">
         <div class="content-grid equal"><article class="panel"><h2>Controles implementados no MVP</h2><div class="check-list"><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Dados de apresentação no MVP acadêmico</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Acesso baseado em perfil no servidor</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Responsável vê somente aluno vinculado</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Trilha de auditoria em ações críticas</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Biometria e geolocalização fora do MVP</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Cabeçalhos básicos de segurança</span></div><div><svg class="nav-icon"><use href="#i-check"/></svg><span>Sessão de apresentação limitada ao navegador/aba</span></div></div></article><article class="panel"><h2>O que não deve ser inferido</h2><p>Este MVP não é uma solução pronta para produção. Antes de usar dados reais, a instituição deve definir governança, base legal, retenção, resposta a incidentes, responsáveis pelo tratamento, infraestrutura segura, HTTPS/TLS, banco transacional, backup e avaliação de impacto quando aplicável.</p><div class="warning-card">A apresentação não substitui validação jurídica, segurança operacional nem autorização institucional.</div></article></div>
       </section>
+
+      <section id="view-architecture" class="view-section hidden">
+        <div id="architectureContent"></div>
+      </section>
     </section>
   </section>
 </main>
@@ -259,6 +324,7 @@
 <script src="js/core/api.js"></script>
 <script src="js/core/navigation.js"></script>
 <script src="js/views/dashboard.js"></script>
+<script src="js/views/classes.js"></script>
 <script src="js/views/students.js"></script>
 <script src="js/views/studentProfile.js"></script>
 <script src="js/views/guardians.js"></script>
@@ -267,6 +333,7 @@
 <script src="js/views/reports.js"></script>
 <script src="js/views/messages.js"></script>
 <script src="js/views/auditFeedback.js"></script>
+<script src="js/views/architecture.js"></script>
 <script src="js/core/auth.js"></script>
 <script src="js/core/events.js"></script>
 <script src="js/core/search.js"></script>

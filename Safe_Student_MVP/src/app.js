@@ -424,8 +424,12 @@ async function handler(req, res) {
       const name = String(body.name || '').trim();
       const enrollment = String(body.enrollment || '').trim();
       const classId = String(body.classId || '').trim();
-      if (!validPerson(name) || enrollment.length < 3 || enrollment.length > 40 || !db.classes.some(c => c.id === classId)) {
+      const targetClass = db.classes.find(c => c.id === classId);
+      if (!validPerson(name) || enrollment.length < 3 || enrollment.length > 40 || !targetClass) {
         return json(res, 400, { error: 'Nome, matrícula e turma válidos são obrigatórios.' });
+      }
+      if (targetClass.status === 'INATIVO') {
+        return json(res, 400, { error: 'A turma selecionada está inativa. Selecione ou cadastre uma turma ativa.' });
       }
       if (db.students.some(s => s.enrollment.toLowerCase() === enrollment.toLowerCase())) {
         return json(res, 409, { error: 'Matrícula já cadastrada.' });
@@ -891,7 +895,99 @@ async function handler(req, res) {
 
     if (req.method === 'GET' && url.pathname === '/api/classes') {
       if (!canManageSchool(user.role)) return json(res, 403, { error: 'Perfil sem permissão.' });
-      return json(res, 200, { classes: db.classes });
+      const classesWithCounts = (db.classes || []).map((c) => {
+        const studentCount = (db.students || []).filter((s) => s.classId === c.id && s.status === 'ATIVO').length;
+        const totalStudents = (db.students || []).filter((s) => s.classId === c.id).length;
+        return {
+          id: c.id,
+          name: c.name,
+          shift: c.shift,
+          status: c.status || 'ATIVO',
+          studentCount,
+          totalStudents,
+        };
+      });
+      return json(res, 200, { classes: classesWithCounts });
+    }
+
+    if (req.method === 'POST' && url.pathname === '/api/classes') {
+      if (!canManageSchool(user.role)) return json(res, 403, { error: 'Perfil sem permissão para cadastrar turma.' });
+      const body = await parseBody(req);
+      db = readDb();
+      const name = String(body.name || '').trim();
+      const shift = String(body.shift || 'Manhã').trim();
+      const status = String(body.status || 'ATIVO').toUpperCase();
+      if (!name || name.length < 2 || name.length > 60) {
+        return json(res, 400, { error: 'Informe um nome de turma válido (ex.: 6º Ano A, 1º Ano Médio).' });
+      }
+      if (!['Manhã', 'Tarde', 'Noite', 'Integral'].includes(shift)) {
+        return json(res, 400, { error: 'Selecione um turno válido (Manhã, Tarde, Noite ou Integral).' });
+      }
+      if (!['ATIVO', 'INATIVO'].includes(status)) {
+        return json(res, 400, { error: 'Status da turma deve ser ATIVO ou INATIVO.' });
+      }
+      if ((db.classes || []).some((c) => c.name.toLowerCase() === name.toLowerCase())) {
+        return json(res, 409, { error: 'Já existe uma turma cadastrada com este nome.' });
+      }
+      const newClass = {
+        id: 'c_' + crypto.randomUUID().slice(0, 8),
+        name,
+        shift,
+        status,
+      };
+      db.classes = db.classes || [];
+      db.classes.push(newClass);
+      audit(db, user.id, 'CADASTRAR_TURMA', 'turma', newClass.id, `${name} (${shift}) - Situação: ${status}`);
+      writeDb(db);
+      return json(res, 201, { class: newClass });
+    }
+
+    if (req.method === 'PATCH' && /^\/api\/classes\/[^/]+$/.test(url.pathname)) {
+      if (!canManageSchool(user.role)) return json(res, 403, { error: 'Perfil sem permissão para editar turma.' });
+      const classId = url.pathname.split('/').pop();
+      const body = await parseBody(req);
+      db = readDb();
+      const schoolClass = (db.classes || []).find((c) => c.id === classId);
+      if (!schoolClass) return json(res, 404, { error: 'Turma não encontrada.' });
+      const name = body.name !== undefined ? String(body.name || '').trim() : schoolClass.name;
+      const shift = body.shift !== undefined ? String(body.shift || '').trim() : schoolClass.shift;
+      const status = body.status !== undefined ? String(body.status || '').toUpperCase() : (schoolClass.status || 'ATIVO');
+      if (!name || name.length < 2 || name.length > 60) {
+        return json(res, 400, { error: 'Nome de turma inválido.' });
+      }
+      if (!['Manhã', 'Tarde', 'Noite', 'Integral'].includes(shift)) {
+        return json(res, 400, { error: 'Turno inválido.' });
+      }
+      if (!['ATIVO', 'INATIVO'].includes(status)) {
+        return json(res, 400, { error: 'Status deve ser ATIVO ou INATIVO.' });
+      }
+      if ((db.classes || []).some((c) => c.id !== classId && c.name.toLowerCase() === name.toLowerCase())) {
+        return json(res, 409, { error: 'Já existe outra turma com este nome.' });
+      }
+      schoolClass.name = name;
+      schoolClass.shift = shift;
+      schoolClass.status = status;
+      audit(db, user.id, 'ATUALIZAR_TURMA', 'turma', schoolClass.id, `${name} (${shift}) - Situação: ${status}`);
+      writeDb(db);
+      return json(res, 200, { class: schoolClass });
+    }
+
+    if (req.method === 'DELETE' && /^\/api\/classes\/[^/]+$/.test(url.pathname)) {
+      if (!canManageSchool(user.role)) return json(res, 403, { error: 'Perfil sem permissão para excluir turma.' });
+      const classId = url.pathname.split('/').pop();
+      db = readDb();
+      const schoolClass = (db.classes || []).find((c) => c.id === classId);
+      if (!schoolClass) return json(res, 404, { error: 'Turma não encontrada.' });
+      const linkedStudents = (db.students || []).filter((s) => s.classId === classId);
+      if (linkedStudents.length > 0) {
+        return json(res, 409, {
+          error: `Não é possível excluir a turma "${schoolClass.name}" pois existem ${linkedStudents.length} aluno(s) vinculados a ela (restrição de chave estrangeira FOREIGN KEY). Inative a turma para preservar o histórico.`,
+        });
+      }
+      db.classes = db.classes.filter((c) => c.id !== classId);
+      audit(db, user.id, 'EXCLUIR_TURMA', 'turma', classId, schoolClass.name);
+      writeDb(db);
+      return json(res, 200, { ok: true, message: `Turma ${schoolClass.name} excluída.` });
     }
 
     if (req.method === 'POST' && url.pathname === '/api/guardians/invitations') {

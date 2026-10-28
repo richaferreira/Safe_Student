@@ -32,7 +32,7 @@ function seed() {
     }, {
       id: 'gest1', name: 'Gestão', email: 'gestor@demo.com', passwordHash: hashPassword('demo123', 'gest-test-salt01'), role: 'GESTAO', studentIds: [], status: 'ATIVO'
     }, ], classes: [{
-      id: 'c1', name: '6º Ano A', shift: 'Manhã'
+      id: 'c1', name: '6º Ano A', shift: 'Manhã', status: 'ATIVO'
     }], students: [ {
       id: 's1', name: 'Aluno Um', enrollment: '2026-001', classId: 'c1', token: 'SS-ALU001', status: 'ATIVO'
     }, {

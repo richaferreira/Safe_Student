@@ -21,12 +21,26 @@ Campos relevantes:
 - `status`: `ATIVO` ou `INATIVO`.
 
 ### `classes`
-Representa as turmas disponíveis para matrícula.
+Representa as turmas da escola criadas previamente pela Gestão Escolar.
+
+Campos relevantes:
+- `id`: identificador primário (PK, formato `c_...`);
+- `name`: nome único da turma (ex.: `6º Ano A`, `7º Ano B`);
+- `shift`: turno escolar (`Manhã`, `Tarde`, `Noite`, `Integral`);
+- `status`: situação cadastral (`ATIVO` ou `INATIVO`). Novas matrículas só são permitidas em turmas ativas.
 
 ### `students`
 Armazena alunos, matrícula, turma, token de Portaria e situação cadastral.
 
-A matrícula e o token possuem restrição de unicidade no próprio banco.
+Campos e restrições:
+- `id`: chave primária (PK);
+- `name`: nome completo do estudante;
+- `enrollment`: matrícula escolar (restrição `UNIQUE`);
+- `class_id`: chave estrangeira (`FK` &rarr; `classes.id` com `ON UPDATE CASCADE ON DELETE RESTRICT`);
+- `token`: token alfanumérico para Portaria/QR Code (`UNIQUE`);
+- `status`: `ATIVO` ou `INATIVO`.
+
+A restrição `FOREIGN KEY ... ON DELETE RESTRICT` garante integridade referencial: uma turma com alunos vinculados não pode ser excluída fisicamente do banco de dados, protegendo o histórico acadêmico. Caso a turma seja encerrada, seu `status` deve ser alterado para `INATIVO`.
 
 ## Relacionamento responsável x aluno
 

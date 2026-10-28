@@ -324,3 +324,128 @@ html[data-theme="dark"] .event-icon.exit{
   background:var(--danger-tint);
   color:var(--danger);
 }
+
+/* --------------------------------------------------------------------------
+   Gestão de Turmas e Documentação de Arquitetura (UML & DER)
+   -------------------------------------------------------------------------- */
+.shift-chip{
+  display:inline-block;
+  padding:2px 8px;
+  border-radius:12px;
+  font-size:12px;
+  font-weight:600;
+  background:var(--action-soft);
+  color:var(--action-soft-text);
+  border:1px solid var(--line);
+}
+.class-cell strong{display:block;font-size:14px;color:var(--ink)}
+.class-cell small{display:block;font-size:11px;color:var(--muted)}
+.inline-btn{
+  margin-left:auto;
+  font-size:12px;
+  padding:0;
+  color:var(--primary);
+  text-decoration:underline;
+  cursor:pointer;
+}
+.head-group-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.defense-card{
+  border-left:4px solid var(--primary);
+  background:linear-gradient(to bottom, var(--surface), var(--action-soft));
+}
+.defense-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
+  margin-top:16px;
+}
+.defense-item{
+  padding:14px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:8px;
+}
+.defense-item strong{
+  display:block;
+  font-size:14px;
+  margin-bottom:8px;
+  color:var(--ink);
+}
+.defense-item p{
+  font-size:13px;
+  line-height:1.5;
+  color:var(--muted);
+  margin:0;
+}
+.usecase-diagram-box{
+  margin-top:16px;
+  overflow-x:auto;
+}
+.uml-spec{
+  background:var(--surface-2);
+  color:var(--ink);
+  padding:18px;
+  border-radius:8px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  font-size:12px;
+  line-height:1.45;
+  border:1px solid var(--line);
+}
+.schema-tables-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:16px;
+  margin-top:16px;
+}
+.schema-table-card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:14px;
+}
+.schema-table-head{
+  border-bottom:1px solid var(--line);
+  padding-bottom:8px;
+  margin-bottom:10px;
+}
+.schema-table-head strong{display:block;font-size:15px;color:var(--ink)}
+.schema-table-head small{color:var(--muted);font-size:12px}
+.schema-table-card ul{list-style:none;padding:0;margin:0}
+.schema-table-card li{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:12.5px;
+  padding:3px 0;
+  font-family:ui-monospace,Menlo,monospace;
+  color:var(--ink);
+}
+.pk{
+  background:#2b6cb0;
+  color:#fff;
+  font-size:10px;
+  padding:1px 4px;
+  border-radius:3px;
+  font-weight:bold;
+}
+.fk{
+  background:#d69e2e;
+  color:#000;
+  font-size:10px;
+  padding:1px 4px;
+  border-radius:3px;
+  font-weight:bold;
+}
+.tag-status{
+  background:#38a169;
+  color:#fff;
+  font-size:10px;
+  padding:1px 4px;
+  border-radius:3px;
+  font-weight:bold;
+}
+

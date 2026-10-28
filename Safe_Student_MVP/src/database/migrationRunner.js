@@ -38,7 +38,13 @@ function runMigrations(databasePath = config.dbPath) {
       const sql = fs.readFileSync(path.join(config.migrationsDir, fileName), 'utf8');
       database.exec('BEGIN IMMEDIATE;');
       try {
-        database.exec(sql);
+        try {
+          database.exec(sql);
+        } catch (execErr) {
+          if (!execErr.message.includes('duplicate column name')) {
+            throw execErr;
+          }
+        }
         database.prepare('INSERT INTO schema_migrations(version, applied_at) VALUES (?, ?)')
           .run(version, new Date().toISOString());
         database.exec('COMMIT;');

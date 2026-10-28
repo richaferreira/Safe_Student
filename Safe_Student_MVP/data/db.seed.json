@@ -52,17 +52,20 @@
     {
       "id": "c1",
       "name": "6º Ano A",
-      "shift": "Manhã"
+      "shift": "Manhã",
+      "status": "ATIVO"
     },
     {
       "id": "c2",
       "name": "7º Ano B",
-      "shift": "Manhã"
+      "shift": "Manhã",
+      "status": "ATIVO"
     },
     {
       "id": "c3",
       "name": "8º Ano A",
-      "shift": "Tarde"
+      "shift": "Tarde",
+      "status": "ATIVO"
     }
   ],
   "students": [
