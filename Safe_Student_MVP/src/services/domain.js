@@ -6,23 +6,22 @@ function normalizeToken(value) {
 }
 
 function canRegisterAttendance(role) {
-  return ['PORTARIA', 'GESTAO', 'ADMIN'].includes(role);
+  return ['PORTARIA', 'GESTAO'].includes(role);
 }
 
 function canManageSchool(role) {
-  return ['GESTAO', 'ADMIN'].includes(role);
+  return ['GESTAO'].includes(role);
 }
 
 function canViewAudit(role) {
-  return ['GESTAO', 'ADMIN'].includes(role);
+  return ['GESTAO'].includes(role);
 }
 
 function canMessageRole(fromRole, toRole) {
   const rules = {
     RESPONSAVEL: ['GESTAO', 'PORTARIA'],
-    PORTARIA: ['RESPONSAVEL', 'GESTAO', 'ADMIN'],
-    GESTAO: ['RESPONSAVEL', 'PORTARIA', 'ADMIN'],
-    ADMIN: ['RESPONSAVEL', 'PORTARIA', 'GESTAO'],
+    PORTARIA: ['RESPONSAVEL', 'GESTAO'],
+    GESTAO: ['RESPONSAVEL', 'PORTARIA'],
   };
   return Boolean(rules[fromRole]?.includes(toRole));
 }
@@ -30,7 +29,7 @@ function canMessageRole(fromRole, toRole) {
 function allowedStudentIds(user, db) {
   if (!user) return [];
   if (user.role === 'RESPONSAVEL') return (user.studentIds || []).filter(id => db.students.some(s => s.id === id && s.status === 'ATIVO'));
-  if (['PORTARIA', 'GESTAO', 'ADMIN'].includes(user.role)) {
+  if (['PORTARIA', 'GESTAO'].includes(user.role)) {
     return db.students.filter((s) => s.status === 'ATIVO').map((s) => s.id);
   }
   return [];

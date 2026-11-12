@@ -14,7 +14,7 @@ function initials(name){
 }
 function roleName(role){
   return {
-    RESPONSAVEL:'Responsável',PORTARIA:'Portaria',GESTAO:'Gestão escolar',ADMIN:'Administrador'
+    RESPONSAVEL:'Responsável',PORTARIA:'Portaria',GESTAO:'Gestão escolar'
   }
   [role]||role
 }

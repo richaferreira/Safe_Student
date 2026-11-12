@@ -6,13 +6,13 @@ Integrantes: Flavio Gabrig Ferreira - 202323361; Richardson Conceição Ferreira
 
 ESTADO DESTA ENTREGA
 - Requisitos e critérios de aceite revisados a partir do comportamento real do MVP.
-- UML e DER reconstruídos com notação coerente e diagramas separados para melhorar leitura.
-- Casos de uso: associações simples entre ator e caso, sem setas de fluxo indevidas.
+- UML e DER refeitos: um único diagrama de classes de negócio, modelo relacional igual ao banco SQLite e diagrama de sequência do fluxo real.
+- Casos de uso: associação simples entre ator e caso; entre casos de uso só «include» e «extend», com a direção das setas conferida; inclui Gerenciar turmas.
 - Classes: associações e multiplicidades; perfis não foram inventados como subclasses quando o código usa atributo de perfil.
-- DER: PK, FK, UQ e cardinalidades explícitas; relacionamentos não são representados como fluxo.
+- Modelo relacional: PK, FK, UQ e CHECK conferidos nas migrações 001 e 002 do SQLite.
 - Diagrama de sequência: setas permanecem somente porque representam mensagens dirigidas.
 - Código, privacidade, autorização, testes e documentação foram confrontados entre si.
-- MVP executável: versão 2.1.0. Especificação acadêmica/modelagem: revisão V2.0. Testes locais desta entrega: 49/49.
+- MVP executável: versão 2.1.0. Especificação acadêmica/modelagem: revisão V2.0. Testes locais desta entrega: 84/84.
 
 CONTEÚDO
 01 Plano de Gerenciamento Unificado - DOCX

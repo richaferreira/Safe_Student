@@ -29,9 +29,9 @@ function loadArchitectureView() {
             <strong>2. Como funciona o relacionamento de Caso de Uso (UML)?</strong>
             <p>
               Caso de uso <b>nunca</b> se comunica diretamente com outro sem estereótipo formal:
-              <br>• <code>&lt;&lt;include&gt;&gt;</code>: obrigatório (linha tracejada com seta apontando para o caso incluído, ex.: Cadastrar Aluno inclui Selecionar Turma).
-              <br>• <code>&lt;&lt;extend&gt;&gt;</code>: opcional/condicional (linha tracejada com seta apontando para o caso base, ex.: Emitir Convite estende Vincular Responsável se o responsável não tiver conta).
-              <br>• <b>Generalização</b>: herança/especialização (seta com triângulo vazado, ex.: Registrar Presença generaliza para Leitura de QR Code e Digitação Manual de Token).
+              <br>• <code>&lt;&lt;include&gt;&gt;</code>: obrigatório (linha tracejada com seta apontando para o caso incluído, ex.: Gerenciar alunos e vínculos inclui Selecionar turma ativa e Vincular responsável).
+              <br>• <code>&lt;&lt;extend&gt;&gt;</code>: opcional/condicional (linha tracejada com seta apontando para o caso base, ex.: Recuperar senha estende Autenticar-se e Exportar relatório CSV estende Acompanhar presença).
+              <br>• <b>Generalização</b>: herança/especialização (seta com triângulo vazado, para variantes do mesmo comportamento). O Safe Student não usa generalização: entrada e saída, leitura de QR e digitação do token são formas de executar o mesmo caso de uso Registrar presença.
             </p>
           </div>
           <div class="defense-item">
@@ -66,42 +66,36 @@ function loadArchitectureView() {
         </p>
         <div class="usecase-diagram-box">
           <pre class="uml-spec">
-+---------------------------------------------------------------------------------------------------+
-|                                 SISTEMA SAFE STUDENT                                             |
-|                                                                                                   |
-|  [ Gestão Escolar ]                                                                               |
-|       |                                                                                           |
-|       +-----> ( UC01: Cadastrar / Gerenciar Turmas )                                             |
-|       |                                                                                           |
-|       +-----> ( UC02: Cadastrar Aluno )                                                          |
-|                    |                                                                              |
-|                    +--- &lt;&lt;include&gt;&gt; ---> ( UC01: Selecionar Turma Ativa ) [Obrigatório]           |
-|                    |                                                                              |
-|                    +--- &lt;&lt;include&gt;&gt; ---> ( UC03: Vincular Responsável ) [Mínimo 1 responsável]    |
-|                                                |                                                  |
-|                                                +<--- &lt;&lt;extend&gt;&gt; --- ( UC04: Emitir Convite )       |
-|                                                                      [Condição: sem conta ativa]  |
-|                                                                                                   |
-|  [ Operador de Portaria ]                                                                         |
-|       |                                                                                           |
-|       +-----> ( UC05: Registrar Presença ) [Caso Base]                                            |
-|                    |                                                                              |
-|                    +--- &lt;&lt;include&gt;&gt; ---> ( UC06: Validar Próxima Ação Válida ) [Entrada/Saída]    |
-|                    |                                                                              |
-|                    +--- &lt;&lt;include&gt;&gt; ---> ( UC07: Disparar Notificação Interna ) [Automático]     |
-|                    |                                                                              |
-|                    ^  [Generalização / Especialização - Triângulo Aberto]                         |
-|                   / \\                                                                            |
-|                  /   \\                                                                           |
-|   ( UC05a: Por Leitura de QR )   ( UC05b: Por Digitação de Token Manual )                        |
-|                                                                                                   |
-|  [ Responsável ]                                                                                  |
-|       |                                                                                           |
-|       +-----> ( UC08: Acompanhar Presença dos Filhos )                                           |
-|       +-----> ( UC09: Consultar Notificações Recebidas )                                          |
-|       +-----> ( UC10: Trocar Mensagens com a Escola )                                             |
-|                                                                                                   |
-+---------------------------------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------------------+
+|                        SISTEMA SAFE STUDENT (casos de uso UC-01 a UC-12)                        |
+|                                                                                                 |
+| [ Todos os perfis ]                                                                             |
+|      +-----> ( UC-01: Autenticar-se )                                                           |
+|      |          +<--- &lt;&lt;extend&gt;&gt; --- ( Recuperar senha )  [opcional]                            |
+|      +-----> ( UC-07: Trocar mensagens )                                                        |
+|      +-----> ( UC-09: Registrar feedback acadêmico )                                            |
+|                                                                                                 |
+| [ Gestão Escolar ]                                                                              |
+|      +-----> ( UC-11: Gerenciar turmas )                                                        |
+|      +-----> ( UC-03: Gerenciar alunos e vínculos )                                             |
+|      |          +--- &lt;&lt;include&gt;&gt; ---> ( Selecionar turma ativa )  [obrigatório]                 |
+|      |          +--- &lt;&lt;include&gt;&gt; ---> ( Vincular responsável )   [mínimo 1 responsável]         |
+|      +-----> ( UC-08: Consultar auditoria )                                                     |
+|      +-----> ( UC-10: Consultar validação acadêmica )                                           |
+|                                                                                                 |
+| [ Portaria  e  Gestão Escolar ]                                                                 |
+|      +-----> ( UC-02: Consultar alunos )                                                        |
+|      +-----> ( UC-04: Registrar presença )  [entrada e saída: um só caso de uso]                |
+|                 +--- &lt;&lt;include&gt;&gt; ---> ( Localizar aluno por token ou QR )  [obrigatório]        |
+|                 +--- &lt;&lt;include&gt;&gt; ---> ( Notificar responsáveis )           [automático]         |
+|                                                                                                 |
+| [ Responsável ]                                                                                 |
+|      +-----> ( UC-12: Ativar conta de responsável )                                             |
+|      +-----> ( UC-05: Acompanhar presença )                                                     |
+|      |          +<--- &lt;&lt;extend&gt;&gt; --- ( Exportar relatório CSV )  [opcional]                     |
+|      +-----> ( UC-06: Consultar notificações )                                                  |
+|                                                                                                 |
++-------------------------------------------------------------------------------------------------+
           </pre>
         </div>
       </article>
