@@ -21,7 +21,6 @@ function roleName(role) {
     RESPONSAVEL: 'Responsável',
     PORTARIA: 'Portaria',
     GESTAO: 'Gestão',
-    ADMIN: 'Administrador',
   }[role] || role;
 }
 

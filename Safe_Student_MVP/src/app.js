@@ -527,8 +527,14 @@ async function handler(req, res) {
       const name = String(body.name || '').trim();
       const enrollment = String(body.enrollment || '').trim();
       const classId = String(body.classId || '').trim();
-      if (!validPerson(name) || enrollment.length < 3 || enrollment.length > 40 || !db.classes.some(c => c.id === classId) ||
+      const targetClass = db.classes.find(c => c.id === classId);
+      if (!validPerson(name) || enrollment.length < 3 || enrollment.length > 40 || !targetClass ||
         !['ATIVO','INATIVO'].includes(body.status)) return json(res, 400, { error: 'Dados de atualização inválidos.' });
+      // RN-14: turma inativa não recebe matrículas nem transferências. Editar outros campos
+      // de um aluno que já está nessa turma continua permitido.
+      if (classId !== student.classId && targetClass.status === 'INATIVO') {
+        return json(res, 400, { error: 'A turma selecionada está inativa. Selecione uma turma ativa.' });
+      }
       if (db.students.some(s => s.id !== student.id && s.enrollment.toLowerCase() === enrollment.toLowerCase()))
         return json(res, 409, { error: 'Matrícula já cadastrada.' });
       Object.assign(student, { name, enrollment, classId, status: body.status });
@@ -557,6 +563,14 @@ async function handler(req, res) {
       const guardian = db.users.find(u => u.id === body.guardianId && u.role === 'RESPONSAVEL');
       const student = db.students.find(s => s.id === body.studentId);
       if (!guardian || !student || !(guardian.studentIds || []).includes(student.id)) return json(res, 404, { error: 'Vínculo não encontrado.' });
+      // RN-15: todo aluno mantém ao menos um responsável (conta ativa vinculada ou convite pendente).
+      const otherGuardians = db.users.filter(u => u.role === 'RESPONSAVEL' && u.status === 'ATIVO' &&
+        u.id !== guardian.id && (u.studentIds || []).includes(student.id)).length;
+      const pendingInvites = (db.guardianInvitations || []).filter(i => i.status === 'PENDENTE' &&
+        (i.studentIds || []).includes(student.id)).length;
+      if (otherGuardians + pendingInvites === 0) {
+        return json(res, 409, { error: 'Não é possível remover o último responsável do aluno. Vincule ou convide outro responsável antes.' });
+      }
       guardian.studentIds = guardian.studentIds.filter(id => id !== student.id);
       audit(db, user.id, 'REMOVER_VINCULO', 'aluno', student.id, guardian.id);
       writeDb(db);

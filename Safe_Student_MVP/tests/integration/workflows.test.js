@@ -103,11 +103,15 @@ test('gestão pode editar e revogar vínculo; portaria não pode editar ou ver c
     name:'Aluno Atualizado',enrollment:'2026-001',classId:'c1',status:'ATIVO'
   }); assert.equal(edited.status,200); assert.equal((await request('/api/links','DELETE',port,{
     studentId:'s1',guardianId:'u_resp_1'
-  })).status,403); assert.equal((await request('/api/links','DELETE',mgr,{
+  })).status,403); assert.equal((await request('/api/links','POST',mgr,{
+    studentId:'s1',guardianId:'u_resp_2'
+  })).status,200); assert.equal((await request('/api/links','DELETE',mgr,{
     studentId:'s1',guardianId:'u_resp_1'
-  })).status,200); const scoped=await request('/api/students','GET',resp);assert.equal(scoped.body.students.some(s=>s.id==='s1'),false); const op=await request('/api/students','GET',port);assert.equal(op.body.students.find(s=>s.id==='s1').guardians.length,0); assert.equal((await request('/api/links','DELETE',mgr,{
+  })).status,200); const scoped=await request('/api/students','GET',resp);assert.equal(scoped.body.students.some(s=>s.id==='s1'),false); const op=await request('/api/students','GET',port);assert.equal(op.body.students.find(s=>s.id==='s1').guardians.length,0); const mg=await request('/api/students','GET',mgr);assert.equal(mg.body.students.find(s=>s.id==='s1').guardians.length,1); assert.equal((await request('/api/links','DELETE',mgr,{
     studentId:'s1',guardianId:'u_resp_1'
-  })).status,404);
+  })).status,404); assert.equal((await request('/api/links','DELETE',mgr,{
+    studentId:'s1',guardianId:'u_resp_2'
+  })).status,409);
 });
 test('renovação de convite invalida código anterior e impede leitura pública do código',async()=>{
   const mgr=await login();const created=await request('/api/students','POST',mgr,student('INV',responsible)); const id=created.body.invitation.invitation.id; const renewed=await request(`/api/guardians/invitations/${id}/renew`,'POST',mgr); assert.equal(renewed.status,200); const list=await request('/api/guardians','GET',mgr);assert.equal(list.status,200); assert.equal(JSON.stringify(list.body).includes(renewed.body.activationCode),false); const payload=(code)=>({

@@ -18,57 +18,41 @@ Este documento detalha as decisões de modelagem, casos de uso, diagrama entidad
 
 ```text
 ===================================================================================
-                         MODELO DE CASOS DE USO UML
+        MODELO DE CASOS DE USO UML (alinhado ao documento 02, UC-01 a UC-12)
 ===================================================================================
 
+[ Todos os perfis ]
+   ├─► ( UC-01: Autenticar-se )
+   │         ▲
+   │         └── <<extend>> ── ( Recuperar senha )   [opcional]
+   ├─► ( UC-07: Trocar mensagens )
+   └─► ( UC-09: Registrar feedback acadêmico )
+
 [ Ator: Gestão Escolar ]
-   │
-   ├─► ( UC01: Gerenciar Turmas )
-   │      - Cadastrar turma (Nome, Turno, Status)
-   │      - Ativar / Inativar turma
-   │
-   └─► ( UC02: Cadastrar Aluno )
-          │
-          ├── <<include>> ──► ( UC01a: Selecionar Turma Ativa )
-          │                   [A turma deve existir previamente no banco SQLite]
-          │
-          └── <<include>> ──► ( UC03: Validar e Vincular Responsáveis )
-                                 │  [Mínimo de 1 responsável validado]
-                                 │
-                                 ▲
-                                 │ <<extend>> [Condição: Responsável sem conta ativa]
-                                 │
-                              ( UC04: Emitir Convite de Ativação com Token )
+   ├─► ( UC-11: Gerenciar turmas )
+   │      - cadastrar, editar, inativar e excluir (exclusão bloqueada se houver alunos)
+   ├─► ( UC-03: Gerenciar alunos e vínculos )
+   │      ├── <<include>> ──► ( Selecionar turma ativa )     [obrigatório]
+   │      └── <<include>> ──► ( Vincular responsável )       [mínimo de 1 responsável]
+   ├─► ( UC-08: Consultar auditoria )
+   └─► ( UC-10: Consultar validação acadêmica )
 
-
-[ Ator: Operador de Portaria ]
-   │
-   └─► ( UC05: Registrar Presença Escolar )  [Caso Base Abstrato]
-          │
-          ├── <<include>> ──► ( UC06: Validar Próxima Ação Operacional )
-          │                   [Impede entrada dupla ou saída sem entrada prévia]
-          │
-          ├── <<include>> ──► ( UC07: Disparar Notificação ao Responsável )
-          │                   [Auditoria e aviso gerados atomicamente]
-          │
-          ▲
-         / \  [Generalização: Triângulo vazado apontando para o caso base]
-        /   \
-       /     \
-  ( UC05a:     ( UC05b:
-    Registrar    Registrar
-    via QR       via Token
-    Code )       Manual )
-
+[ Atores: Portaria e Gestão Escolar ]
+   ├─► ( UC-02: Consultar alunos )
+   └─► ( UC-04: Registrar presença )   [um só caso de uso: entrada e saída são formas de execução]
+          ├── <<include>> ──► ( Localizar aluno por token ou QR )
+          └── <<include>> ──► ( Notificar responsáveis )     [automático]
 
 [ Ator: Responsável ]
-   │
-   ├─► ( UC08: Acompanhar Presença dos Filhos )
-   │      [Restrito exclusivamente aos estudantes sob sua tutela via RBAC]
-   │
-   ├─► ( UC09: Consultar Notificações em Tempo Real )
-   │
-   └─► ( UC10: Trocar Mensagens Internas com a Escola )
+   ├─► ( UC-12: Ativar conta de responsável )
+   ├─► ( UC-05: Acompanhar presença )
+   │         ▲
+   │         └── <<extend>> ── ( Exportar relatório CSV )   [opcional]
+   └─► ( UC-06: Consultar notificações )
+
+Observações
+- Não há generalização: ler o QR Code ou digitar o token são formas de executar o mesmo caso de uso.
+- O perfil ADMIN não existe: os perfis válidos são RESPONSAVEL, PORTARIA e GESTAO.
 ```
 
 ---
@@ -108,7 +92,7 @@ O banco é executado via módulo nativo `node:sqlite` do Node.js (sem dependênc
    - `id` (PK), `name`, `email` (UNIQUE), `phone`, `cpf` (UNIQUE), `password_hash`, `role` (CHECK: GESTAO, PORTARIA, RESPONSAVEL), `status` (CHECK: ATIVO, INATIVO).
 
 3. **`classes`**: Turmas cadastradas pela Gestão.
-   - `id` (PK), `name` (UNIQUE), `shift` (Turno), `status` (CHECK: ATIVO, INATIVO).
+   - `id` (PK), `name` (nome único, validado pela API e não por restrição do banco), `shift` (Turno), `status` (CHECK: ATIVO, INATIVO; migração 002).
 
 4. **`students`**: Estudantes matriculados.
    - `id` (PK), `name`, `enrollment` (UNIQUE), `class_id` (FK &rarr; `classes.id`), `token` (UNIQUE), `status` (CHECK: ATIVO, INATIVO).
@@ -117,16 +101,27 @@ O banco é executado via módulo nativo `node:sqlite` do Node.js (sem dependênc
    - `guardian_id` (PK, FK &rarr; `users.id`), `student_id` (PK, FK &rarr; `students.id`).
 
 6. **`attendance`**: Registros operacionais de entrada e saída.
-   - `id` (PK), `student_id` (FK &rarr; `students.id`), `type` (CHECK: ENTRADA, SAIDA), `method` (TOKEN_MANUAL, QR_CAMERA), `timestamp`, `registered_by` (FK &rarr; `users.id`), `origin`.
+   - `id` (PK), `student_id` (FK &rarr; `students.id`), `type` (CHECK: ENTRADA, SAIDA), `method` (TOKEN_MANUAL, QR_CAMERA, QR_TOKEN), `timestamp`, `registered_by` (FK &rarr; `users.id`), `origin`.
 
 7. **`notifications`**: Notificações automáticas aos responsáveis.
-   - `id` (PK), `user_id` (FK &rarr; `users.id`), `student_id` (FK), `title`, `message`, `created_at`, `is_read` (0 ou 1), `severity`.
+   - `id` (PK), `user_id` (FK &rarr; `users.id`), `student_id` (FK, opcional), `title`, `message`, `created_at`, `is_read` (0 ou 1), `severity`.
 
 8. **`guardian_invitations`**: Convites com código temporário para ativação de novos responsáveis.
    - `id` (PK), `name`, `email`, `phone`, `cpf`, `relationship`, `status` (CHECK: PENDENTE, UTILIZADO, REVOGADO), `code_hash`, `expires_at`.
 
 9. **`audit_log`**: Trilha de auditoria administrativa e de segurança.
-   - `id` (PK), `user_id`, `action`, `entity`, `entity_id`, `details`, `created_at`.
+   - `id` (PK), `user_id` (sem chave estrangeira declarada), `action`, `entity`, `entity_id`, `details`, `created_at`.
+
+10. **`messages`**: Mensagens internas entre perfis permitidos.
+   - `id` (PK), `from_user_id` (FK &rarr; `users.id`), `to_user_id` (FK &rarr; `users.id`), `text`, `created_at`.
+
+11. **`feedback`**: Feedback acadêmico anônimo (o sistema não grava o autor).
+   - `id` (PK), `user_id` (FK &rarr; `users.id`, não preenchido), `profile`, `scenario`, `success`, `time_seconds`, `score` (1 a 5), `comment`, `source`, `created_at`.
+
+12. **`guardian_invitation_students`**: Tabela associativa N:N entre convites e alunos.
+   - `invitation_id` (PK, FK &rarr; `guardian_invitations.id`), `student_id` (PK, FK &rarr; `students.id`).
+
+Regras de integridade confirmadas pelo código: aluno sempre em turma ativa na matrícula e na transferência (RN-14), e todo aluno mantém ao menos um responsável, por conta ativa ou convite pendente (RN-15).
 
 ---
 

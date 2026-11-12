@@ -33,8 +33,8 @@ let studentProfileData=null;
 let studentProfileTab='timeline';
 const $=id=>document.getElementById(id);
 const qsa=s=>Array.from(document.querySelectorAll(s));
-const isManager=()=>['GESTAO','ADMIN'].includes(currentUser?.role);
-const isOperator=()=>['PORTARIA','GESTAO','ADMIN'].includes(currentUser?.role);
+const isManager=()=>['GESTAO'].includes(currentUser?.role);
+const isOperator=()=>['PORTARIA','GESTAO'].includes(currentUser?.role);
 const viewMeta={
   dashboard:['Painel','Visão geral','O que precisa de atenção na rotina escolar.'],
   presence:['Operação','Portaria','Consulte o estudante e execute somente a próxima movimentação válida.'],
