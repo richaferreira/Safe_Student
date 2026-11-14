@@ -12,7 +12,7 @@ ESTADO DESTA ENTREGA
 - Modelo relacional: PK, FK, UQ e CHECK conferidos nas migrações 001 e 002 do SQLite.
 - Diagrama de sequência: setas permanecem somente porque representam mensagens dirigidas.
 - Código, privacidade, autorização, testes e documentação foram confrontados entre si.
-- MVP executável: versão 2.1.0. Especificação acadêmica/modelagem: revisão V2.0. Testes locais desta entrega: 84/84.
+- MVP executável: versão 2.1.0. Especificação acadêmica/modelagem: revisão V2.0. Testes locais desta entrega: 88/88.
 
 CONTEÚDO
 01 Plano de Gerenciamento Unificado - DOCX
