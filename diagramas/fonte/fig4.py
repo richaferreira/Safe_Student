@@ -18,12 +18,12 @@ for k,x in X.items():
     ax.text(x,94,names[k][1],ha="center",va="center",fontsize=8.6,color="#4b5563",zorder=4)
 def msg(y,a,b,text,ret=False,bold=False):
     xa,xb=X[a],X[b]
-    ax.annotate("",xy=(xb,y),xytext=(xa,y),arrowprops=dict(arrowstyle=("->,head_length=0.6,head_width=0.3" if ret else "-|>,head_length=0.6,head_width=0.3"),color="#1d4ed8" if bold else EDGE,lw=2 if bold else 1.3,ls=(0,(4,3)) if ret else "-",shrinkA=0,shrinkB=0),zorder=3)
+    ax.annotate("",xy=(xb,y),xytext=(xa,y),arrowprops=dict(arrowstyle=("->" if ret else "-|>"),mutation_scale=18,color="#1d4ed8" if bold else "#111827",lw=2.4 if bold else 1.7,ls=(0,(4,2.5)) if ret else "-",shrinkA=0,shrinkB=0),zorder=3)
     ax.text((xa+xb)/2,y-7,text,ha="center",va="bottom",fontsize=9,color=INK,fontweight="bold" if bold else "normal",zorder=5,bbox=dict(fc="white",ec="none",pad=0.8))
 def selfmsg(y,a,text,right=True):
     x=X[a]; 
-    ax.plot([x,x+34,x+34],[y,y,y+22],color=EDGE,lw=1.3,zorder=3)
-    ax.annotate("",xy=(x,y+22),xytext=(x+34,y+22),arrowprops=dict(arrowstyle="-|>,head_length=0.6,head_width=0.3",color=EDGE,lw=1.3),zorder=3)
+    ax.plot([x,x+34,x+34],[y,y,y+22],color="#111827",lw=1.7,zorder=3)
+    ax.annotate("",xy=(x,y+22),xytext=(x+34,y+22),arrowprops=dict(arrowstyle="-|>",mutation_scale=18,color="#111827",lw=1.7),zorder=3)
     ax.text(x+42,y+11,text,ha="left",va="center",fontsize=9,color=INK,zorder=5,bbox=dict(fc="white",ec="none",pad=0.8))
 y=140
 msg(y,"a","t","digita o token ou lê o QR Code");y+=40
@@ -57,6 +57,6 @@ y=top+200+36
 msg(y,"t","a","exibe o resultado",ret=True)
 y+=50
 ax.add_patch(Rectangle((40,y),880,34,fc="#fff8dc",ec="#c9a227",lw=1,zorder=2))
-ax.text(52,y+17,"Nota: perfil sem permissão (403) ou token inexistente (404) encerram a requisição antes da validação, também sem gravar nada.",ha="left",va="center",fontsize=8.6,color="#5b4a00",zorder=3)
+ax.text(52,y+17,"Nota: perfil sem permissão (403) ou token inexistente (404) encerram antes da validação, sem gravar nada.",ha="left",va="center",fontsize=8.6,color="#5b4a00",zorder=3)
 fig.savefig("fig4_sequencia.png",bbox_inches="tight",pad_inches=0.15,facecolor="white")
 print(y)

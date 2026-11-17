@@ -16,7 +16,7 @@ T = {
  "guardian_invitations": ("#fde7f3",[("id","PK","id",""),("name","","name",""),("email","","email",""),("phone","","phone",""),("cpf","","cpf",""),("rel","","relationship",""),("status","","status","PENDENTE, UTILIZADO, REVOGADO"),("code","","code_hash",""),("exp","","expires_at","")]),
  "guardian_invitation_students": ("#fde7f3",[("i","PK, FK","invitation_id","→ guardian_invitations.id"),("s","PK, FK","student_id","→ students.id")]),
 }
-d=['digraph G {','graph [rankdir=LR, nodesep=0.25, ranksep=1.1, splines=spline, fontname="DejaVu Sans", bgcolor="white", pad=0.2];',
+d=['digraph G {','graph [label="Notação pé de galinha, no lado do pai:  ||  exatamente um     o|  zero ou um     (lado da chave estrangeira:  o<  zero ou muitos)", labelloc=b, fontsize=15, rankdir=LR, nodesep=0.25, ranksep=1.1, splines=spline, fontname="DejaVu Sans", bgcolor="white", pad=0.2];',
    'node [shape=plain, fontname="DejaVu Sans"];','edge [color="#374151", arrowhead=normal, arrowsize=0.8, penwidth=1.2];']
 for n,(c,cols) in T.items(): d.append(f'{n} [label={table(n,cols,c)}];')
 fk=[("students","class_id","classes","id"),("guardian_students","g","users","id"),("guardian_students","s","students","id"),
@@ -24,7 +24,9 @@ fk=[("students","class_id","classes","id"),("guardian_students","g","users","id"
     ("messages","f","users","id"),("messages","t","users","id"),("feedback","u","users","id"),
     ("guardian_invitation_students","i","guardian_invitations","id"),("guardian_invitation_students","s","students","id")]
 for a,pa,b,pb in fk:
-    d.append(f'{a}:{pa}_r:e -> {b}:{pb}_l:w;')
+    info=[c for c in T[a][1] if c[0]==pa][0][3]
+    parent="teeodot" if "nulo" in info else "teetee"
+    d.append(f'{a}:{pa}_r:e -> {b} [dir=both, arrowtail=crowodot, arrowhead={parent}, arrowsize=1.5, penwidth=1.8];')
 d.append('}')
 open("fig3.dot","w").write("\n".join(d))
 r=subprocess.run(["dot","-Tpng","-Gdpi=120","fig3.dot","-o","fig3_er.png"],capture_output=True,text=True)
