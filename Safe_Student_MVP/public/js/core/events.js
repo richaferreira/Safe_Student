@@ -60,7 +60,7 @@ function bindEvents(){
     const renew=event.target.closest('[data-renew-invite]');if(renew){
       const data=await api(`/api/guardians/invitations/${renew.dataset.renewInvite}/renew`,{
         method:'POST'
-      });await navigator.clipboard.writeText(`Código Safe Student: ${data.activationCode}`).catch(()=>{
+      });await navigator.clipboard.writeText(data.activationCode).catch(()=>{
       });toast(`Código renovado: ${data.activationCode}`);await loadGuardians();return
     }
     const revoke=event.target.closest('[data-revoke-invite]');if(revoke){
