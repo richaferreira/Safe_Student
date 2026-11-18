@@ -40,6 +40,8 @@ function testSeed() {
       invitation('inv_exp', 'expirado@demo.com', 'EXPIRADO1', 'PENDENTE', PAST),
       invitation('inv_rev', 'revogado@demo.com', 'REVOGADO1', 'REVOGADO', FUTURE),
       invitation('inv_ok', 'valido@demo.com', 'VALIDO001', 'PENDENTE', FUTURE),
+      invitation('inv_cp', 'copiado@demo.com', 'A1B2C3D4E5F60718293A4B5C', 'PENDENTE', FUTURE),
+      invitation('inv_em', 'certo@demo.com', 'F1E2D3C4B5A60718293A4B5C', 'PENDENTE', FUTURE),
     ],
   };
 }
@@ -103,6 +105,17 @@ test('RN-16: convite válido ativa a conta e passa a UTILIZADO', async () => {
   const inv = readDatabase().guardianInvitations.find((i) => i.id === 'inv_ok');
   assert.equal(inv.status, 'UTILIZADO');
   assert.equal(inv.codeHash, null);
+});
+
+test('RN-16: aceita o código colado junto do texto copiado pela tela', async () => {
+  const res = await register('copiado@demo.com', 'Código Safe Student: COPIADO01'.replace('COPIADO01', 'A1B2C3D4E5F60718293A4B5C'));
+  assert.equal(res.status, 201);
+});
+
+test('RN-16: e-mail diferente do convite não ativa a conta', async () => {
+  const res = await register('outro@demo.com', 'F1E2D3C4B5A60718293A4B5C');
+  assert.equal(res.status, 400);
+  assert.match(res.data.error, /e-mail/i);
 });
 
 test('RN-16: o código de um convite já utilizado não funciona de novo', async () => {

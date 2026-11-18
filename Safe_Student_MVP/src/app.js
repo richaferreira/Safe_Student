@@ -30,6 +30,7 @@ const {
   isValidCpf: validCpf,
   maskCpf,
   digestCode,
+  extractActivationCode,
   isValidPersonName: validPerson,
 } = require('./utils/validation');
 const { dateKey, formatSchoolDateTime } = require('./utils/dateTime');
@@ -155,7 +156,7 @@ async function handler(req, res) {
       const body = await parseBody(req);
       db = readDb();
       const email = normalizeEmail(body.email);
-      const code = String(body.code || '').trim().toUpperCase();
+      const code = extractActivationCode(body.code);
       const password = String(body.password || '');
       const confirmation = String(body.confirmPassword || '');
       const cpf = normalizeCpf(body.cpf);
@@ -163,7 +164,7 @@ async function handler(req, res) {
       if (cpf && db.users.some(u => u.cpf === cpf)) return json(res, 409, { error: 'Este CPF já está associado a outra conta. Entre com sua senha ou contate a escola.' });
       const invitation = (db.guardianInvitations || []).find(i => i.email === email &&
         i.status === 'PENDENTE' && i.codeHash === digestCode(code) && new Date(i.expiresAt).getTime() > Date.now());
-      if (!invitation) return json(res, 400, { error: 'Convite inválido ou expirado. Solicite um novo código à escola.' });
+      if (!invitation) return json(res, 400, { error: 'Convite inválido ou expirado. Confira se o e-mail é o mesmo cadastrado pela escola e se o código é o mais recente; se precisar, solicite um novo código à escola.' });
       if (db.users.some(u => normalizeEmail(u.email) === email)) return json(res, 409, { error: 'Esta conta já existe. Entre com sua senha e solicite à escola a vinculação, se necessário.' });
       if (password.length < 10 || password.length > 128 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password) || password !== confirmation) {
         return json(res, 400, { error: 'Informe uma senha de 10 a 128 caracteres, com letras e números, e confirme corretamente.' });

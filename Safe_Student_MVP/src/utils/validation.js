@@ -48,6 +48,16 @@ function maskCpf(cpf) {
     : '';
 }
 
+/**
+ * Extrai o código de ativação de um texto colado. Aceita o código sozinho ou junto de um
+ * rótulo (por exemplo, "Código Safe Student: 2EC5...") e ignora maiúsculas e espaços.
+ */
+function extractActivationCode(value) {
+  const text = String(value || '').trim().toUpperCase();
+  const match = text.match(/\b[A-F0-9]{24}\b/);
+  return match ? match[0] : text;
+}
+
 function digestCode(value) {
   return crypto
     .createHash('sha256')
@@ -66,5 +76,6 @@ module.exports = {
   isValidCpf,
   maskCpf,
   digestCode,
+  extractActivationCode,
   isValidPersonName,
 };
